@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when
 
 @SpringBootTest
 @Stepwise
-class AuthenticationServiceImplSpec extends Specification {
+class AuthenticationServiceImplTest extends Specification {
     @Autowired
     AuthenticationService authenticationService
     @Autowired

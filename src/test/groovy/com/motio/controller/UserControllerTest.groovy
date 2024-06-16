@@ -28,6 +28,10 @@ class UserControllerTest extends Specification {
         userRepository.deleteAll()
     }
 
+    def cleanup() {
+        userRepository.deleteAll()
+    }
+
     def "test creating a user"() {
         given: "A user object"
         def user = new User(username: "john_doe", firstName: "John", lastName: "Doe", password: "securepassword123", email: "john.doe@example.com")
