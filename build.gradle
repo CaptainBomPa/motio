@@ -1,8 +1,24 @@
 plugins {
 	id 'java'
 	id 'groovy'
+	id 'jacoco'
 	id 'org.springframework.boot' version '3.3.0'
 	id 'io.spring.dependency-management' version '1.1.5'
+}
+
+jacoco {
+	toolVersion = "0.8.8"
+}
+
+test {
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true
+		html.required = true
+	}
 }
 
 group = 'com.motio'
@@ -33,10 +49,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security:3.3.0'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
 	compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 	compileOnly 'org.projectlombok:lombok:1.18.32'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools:3.3.0'
 	runtimeOnly 'com.h2database:h2:2.2.224'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:3.3.0'
 	annotationProcessor 'org.projectlombok:lombok:1.18.32'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.0'

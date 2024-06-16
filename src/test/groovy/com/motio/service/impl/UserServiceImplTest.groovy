@@ -12,15 +12,11 @@ import spock.lang.Stepwise
 @SpringBootTest
 @Stepwise
 class UserServiceImplTest extends Specification {
-
     @Autowired
     UserService userService
-
     @Autowired
     UserRepository userRepository
-
-    @Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder
+    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder()
 
     def cleanup() {
         userRepository.deleteAll()
