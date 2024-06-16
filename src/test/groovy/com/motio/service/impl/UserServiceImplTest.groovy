@@ -7,10 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import spock.lang.Specification
-import spock.lang.Stepwise
 
 @SpringBootTest
-@Stepwise
 class UserServiceImplTest extends Specification {
     @Autowired
     UserService userService
