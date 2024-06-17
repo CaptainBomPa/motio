@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,16 @@ import java.util.Optional;
 @Tag(name = "User Management System", description = "Operations pertaining to users in User Management System")
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/me")
+    @Operation(summary = "Return user information", description = "Return a user that send a request", tags = {"Authentication"})
+    public ResponseEntity<User> getMe(Authentication authentication) {
+        final Optional<User> user = userService.getUserByUsername(authentication.getName());
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        }
+        throw new RuntimeException("User not found.");
+    }
 
     @PostMapping
     @Operation(summary = "Create a new user", description = "Create a new user in the system", tags = {"User Management System"})
