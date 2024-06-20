@@ -4,6 +4,7 @@ import com.motio.model.User;
 import com.motio.repository.UserRepository;
 import com.motio.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -57,5 +58,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public User getUserByAuthentication(Authentication authentication) {
+        return getUserByUsername(authentication.getName()).orElseThrow(() -> new RuntimeException("User not found."));
     }
 }

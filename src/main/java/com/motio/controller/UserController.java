@@ -22,11 +22,7 @@ public class UserController {
     @GetMapping("/me")
     @Operation(summary = "Return user information", description = "Return a user that send a request", tags = {"Authentication"})
     public ResponseEntity<User> getMe(Authentication authentication) {
-        final Optional<User> user = userService.getUserByUsername(authentication.getName());
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
-        }
-        throw new RuntimeException("User not found.");
+        return ResponseEntity.ok(userService.getUserByAuthentication(authentication));
     }
 
     @PostMapping
