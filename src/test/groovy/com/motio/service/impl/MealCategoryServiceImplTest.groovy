@@ -19,7 +19,7 @@ class MealCategoryServiceImplTest extends Specification {
 
     def "should save meal category"() {
         given:
-        MealCategory mealCategory = new MealCategory("Breakfast")
+        MealCategory mealCategory = new MealCategory("Breakfast", "http://example.org")
 
         when:
         MealCategory savedCategory = mealCategoryService.saveMealCategory(mealCategory)
@@ -31,9 +31,9 @@ class MealCategoryServiceImplTest extends Specification {
 
     def "should update meal category"() {
         given:
-        MealCategory existingCategory = new MealCategory("Lunch")
+        MealCategory existingCategory = new MealCategory("Lunch", "http://example.org")
         mealCategoryRepository.save(existingCategory)
-        MealCategory updatedCategory = new MealCategory("Brunch")
+        MealCategory updatedCategory = new MealCategory("Brunch", "http://example.org")
 
         when:
         MealCategory result = mealCategoryService.updateMealCategory("Lunch", updatedCategory)
@@ -45,7 +45,7 @@ class MealCategoryServiceImplTest extends Specification {
 
     def "should delete meal category"() {
         given:
-        MealCategory mealCategory = new MealCategory("Snack")
+        MealCategory mealCategory = new MealCategory("Snack", "http://example.org")
         mealCategoryRepository.save(mealCategory)
 
         when:
@@ -57,7 +57,7 @@ class MealCategoryServiceImplTest extends Specification {
 
     def "should get meal category by name"() {
         given:
-        MealCategory mealCategory = new MealCategory("Dessert")
+        MealCategory mealCategory = new MealCategory("Dessert", "http://example.org")
         mealCategoryRepository.save(mealCategory)
 
         when:
@@ -70,8 +70,8 @@ class MealCategoryServiceImplTest extends Specification {
 
     def "should get all meal categories"() {
         given:
-        MealCategory category1 = new MealCategory("Breakfast")
-        MealCategory category2 = new MealCategory("Lunch")
+        MealCategory category1 = new MealCategory("Breakfast", "http://example.org")
+        MealCategory category2 = new MealCategory("Lunch", "http://example.org")
         mealCategoryRepository.saveAll([category1, category2])
 
         when:

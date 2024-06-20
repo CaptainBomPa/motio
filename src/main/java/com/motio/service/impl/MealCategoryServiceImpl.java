@@ -25,6 +25,7 @@ public class MealCategoryServiceImpl implements MealCategoryService {
         if (optionalMealCategory.isPresent()) {
             MealCategory category = optionalMealCategory.get();
             category.setName(mealCategory.getName());
+            category.setImageUrl(mealCategory.getImageUrl());
             return mealCategoryRepository.save(category);
         }
         throw new RuntimeException("Meal category not found");

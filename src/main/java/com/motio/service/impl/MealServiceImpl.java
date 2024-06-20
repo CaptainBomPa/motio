@@ -25,7 +25,7 @@ public class MealServiceImpl implements MealService {
     @Override
     public Meal updateMeal(Long id, Meal meal) {
         return mealRepository.findById(id).map(existingMeal -> {
-            existingMeal.setCategory(meal.getCategory());
+            existingMeal.setCategories(meal.getCategories());
             existingMeal.setSteps(meal.getSteps());
             existingMeal.setIngredients(meal.getIngredients());
             existingMeal.setImageUrl(meal.getImageUrl());

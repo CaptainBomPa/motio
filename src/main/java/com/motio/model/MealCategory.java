@@ -20,4 +20,8 @@ public class MealCategory {
     @NotBlank(message = "Category name is mandatory")
     @Column(nullable = false, unique = true)
     private String name;
+
+    @NotBlank(message = "Image URL link is mandatory")
+    @Column(nullable = false)
+    private String imageUrl;
 }

@@ -56,10 +56,10 @@ class MealControllerTest extends Specification {
     def "test creating a meal"() {
         given: "A user, category and meal object"
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
 
         expect:
         mockMvc.perform(post("/meals")
@@ -67,7 +67,7 @@ class MealControllerTest extends Specification {
                 .content(objectMapper.writeValueAsString(meal)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$.createdByUser.username').value("chef123"))
-                .andExpect(jsonPath('$.category.name').value("Dinner"))
+                .andExpect(jsonPath('$.categories[0].name').value("Dinner"))
                 .andExpect(jsonPath('$.steps[0]').value("Step 1"))
                 .andExpect(jsonPath('$.ingredients[0]').value("Ingredient 1"))
                 .andExpect(jsonPath('$.imageUrl').value("http://example.com/image.jpg"))
@@ -76,13 +76,13 @@ class MealControllerTest extends Specification {
     def "test updating a meal"() {
         given: "An existing meal"
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
         mealService.saveMeal(meal)
 
-        def updatedMeal = new Meal(createdByUser: user, category: category, steps: ["Updated Step 1", "Updated Step 2"], ingredients: ["Updated Ingredient 1", "Updated Ingredient 2"], imageUrl: "http://example.com/updated_image.jpg")
+        def updatedMeal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Updated Step 1", "Updated Step 2"], ingredients: ["Updated Ingredient 1", "Updated Ingredient 2"], imageUrl: "http://example.com/updated_image.jpg")
 
         expect:
         mockMvc.perform(put("/meals/${meal.getId()}")
@@ -97,10 +97,10 @@ class MealControllerTest extends Specification {
     def "test deleting a meal"() {
         given: "An existing meal"
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
         mealService.saveMeal(meal)
 
         expect:
@@ -111,17 +111,17 @@ class MealControllerTest extends Specification {
     def "test getting a meal by ID"() {
         given: "An existing meal"
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
         mealService.saveMeal(meal)
 
         expect:
         mockMvc.perform(get("/meals/${meal.getId()}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$.createdByUser.username').value("chef123"))
-                .andExpect(jsonPath('$.category.name').value("Dinner"))
+                .andExpect(jsonPath('$.categories[0].name').value("Dinner"))
                 .andExpect(jsonPath('$.steps[0]').value("Step 1"))
                 .andExpect(jsonPath('$.ingredients[0]').value("Ingredient 1"))
                 .andExpect(jsonPath('$.imageUrl').value("http://example.com/image.jpg"))
@@ -130,11 +130,11 @@ class MealControllerTest extends Specification {
     def "test getting all meals"() {
         given: "Multiple meals"
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user)
         mealCategoryService.saveMealCategory(category)
-        def meal1 = new Meal(createdByUser: user, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image1.jpg")
-        def meal2 = new Meal(createdByUser: user, category: category, steps: ["Step A", "Step B"], ingredients: ["Ingredient A", "Ingredient B"], imageUrl: "http://example.com/image2.jpg")
+        def meal1 = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image1.jpg")
+        def meal2 = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step A", "Step B"], ingredients: ["Ingredient A", "Ingredient B"], imageUrl: "http://example.com/image2.jpg")
         mealService.saveMeal(meal1)
         mealService.saveMeal(meal2)
 
@@ -149,11 +149,11 @@ class MealControllerTest extends Specification {
         given: "An existing meal and user"
         def user1 = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
         def user2 = new User(username: "user123", firstName: "John", lastName: "Doe", password: "securepassword123", email: "john.doe@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user1)
         userService.saveUser(user2)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user1, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user1, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
         mealService.saveMeal(meal)
 
         expect:
@@ -169,11 +169,11 @@ class MealControllerTest extends Specification {
         given: "An existing meal with access granted to user"
         def user1 = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
         def user2 = new User(username: "user123", firstName: "John", lastName: "Doe", password: "securepassword123", email: "john.doe@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user1)
         userService.saveUser(user2)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user1, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user1, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
         meal.getAccessibleUsers().add(user2)
         mealService.saveMeal(meal)
 

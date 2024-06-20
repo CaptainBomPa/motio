@@ -18,7 +18,7 @@ class MealCategoryRepositoryTest extends Specification {
 
     def "save and findByName should work correctly"() {
         given: "a new MealCategory"
-        def category = new MealCategory(name: "Breakfast")
+        def category = new MealCategory("Breakfast", "http://example.org")
 
         when: "saving the category"
         mealCategoryRepository.save(category)
@@ -31,7 +31,7 @@ class MealCategoryRepositoryTest extends Specification {
 
     def "delete should remove the category"() {
         given: "an existing MealCategory"
-        def category = new MealCategory(name: "Lunch")
+        def category = new MealCategory("Lunch", "http://example.org")
         mealCategoryRepository.save(category)
 
         when: "deleting the category"
@@ -44,7 +44,7 @@ class MealCategoryRepositoryTest extends Specification {
 
     def "cache should be used for findByName"() {
         given: "an existing MealCategory"
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         mealCategoryRepository.save(category)
         cacheManager.getCache("mealCategories").clear()
 

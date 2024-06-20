@@ -32,10 +32,10 @@ class MealServiceImplTest extends Specification {
     def "should save meal"() {
         given:
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         entityManager.persistAndFlush(user)
         entityManager.persistAndFlush(category)
-        def meal = new Meal(createdByUser: user, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
 
         when:
         Meal savedMeal = mealService.saveMeal(meal)
@@ -49,12 +49,12 @@ class MealServiceImplTest extends Specification {
     def "should update meal"() {
         given:
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         entityManager.persistAndFlush(user)
         entityManager.persistAndFlush(category)
-        def meal = new Meal(createdByUser: user, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
         entityManager.persistAndFlush(meal)
-        def updatedMeal = new Meal(createdByUser: user, category: category, steps: ["Updated Step 1", "Updated Step 2"], ingredients: ["Updated Ingredient 1", "Updated Ingredient 2"], imageUrl: "http://example.com/updated_image.jpg")
+        def updatedMeal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Updated Step 1", "Updated Step 2"], ingredients: ["Updated Ingredient 1", "Updated Ingredient 2"], imageUrl: "http://example.com/updated_image.jpg")
 
         when:
         Meal result = mealService.updateMeal(meal.getId(), updatedMeal)
@@ -69,10 +69,10 @@ class MealServiceImplTest extends Specification {
     def "should delete meal"() {
         given:
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         entityManager.persistAndFlush(user)
         entityManager.persistAndFlush(category)
-        def meal = new Meal(createdByUser: user, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
         entityManager.persistAndFlush(meal)
 
         when:
@@ -85,10 +85,10 @@ class MealServiceImplTest extends Specification {
     def "should get meal by ID"() {
         given:
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         entityManager.persistAndFlush(user)
         entityManager.persistAndFlush(category)
-        def meal = new Meal(createdByUser: user, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
         entityManager.persistAndFlush(meal)
 
         when:
@@ -102,11 +102,11 @@ class MealServiceImplTest extends Specification {
     def "should get all meals"() {
         given:
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         entityManager.persistAndFlush(user)
         entityManager.persistAndFlush(category)
-        def meal1 = new Meal(createdByUser: user, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image1.jpg")
-        def meal2 = new Meal(createdByUser: user, category: category, steps: ["Step A", "Step B"], ingredients: ["Ingredient A", "Ingredient B"], imageUrl: "http://example.com/image2.jpg")
+        def meal1 = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image1.jpg")
+        def meal2 = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step A", "Step B"], ingredients: ["Ingredient A", "Ingredient B"], imageUrl: "http://example.com/image2.jpg")
         entityManager.persistAndFlush(meal1)
         entityManager.persistAndFlush(meal2)
 
@@ -122,11 +122,11 @@ class MealServiceImplTest extends Specification {
         given:
         def user1 = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
         def user2 = new User(username: "user123", firstName: "John", lastName: "Doe", password: "securepassword123", email: "john.doe@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         entityManager.persistAndFlush(user1)
         entityManager.persistAndFlush(user2)
         entityManager.persistAndFlush(category)
-        def meal = new Meal(createdByUser: user1, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user1, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
         entityManager.persistAndFlush(meal)
 
         when:
@@ -140,11 +140,11 @@ class MealServiceImplTest extends Specification {
         given:
         def user1 = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
         def user2 = new User(username: "user123", firstName: "John", lastName: "Doe", password: "securepassword123", email: "john.doe@example.com")
-        def category = new MealCategory(name: "Dinner")
+        def category = new MealCategory("Dinner", "http://example.org")
         entityManager.persistAndFlush(user1)
         entityManager.persistAndFlush(user2)
         entityManager.persistAndFlush(category)
-        def meal = new Meal(createdByUser: user1, category: category, steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user1, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
         meal.getAccessibleUsers().add(user2)
         entityManager.persistAndFlush(meal)
 

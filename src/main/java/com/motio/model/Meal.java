@@ -22,6 +22,10 @@ public class Meal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Meal name is mandatory")
+    @Column(nullable = false)
+    private String mealName;
+
     @ManyToOne
     @JoinColumn(name = "created_by_user_id", nullable = false)
     private User createdByUser;
@@ -34,9 +38,13 @@ public class Meal {
     )
     private Set<User> accessibleUsers = new HashSet<>();
 
-    @ManyToOne
-    @JoinColumn(name = "category_name", nullable = false)
-    private MealCategory category;
+    @ManyToMany
+    @JoinTable(
+            name = "meal_and_meal_category_association",
+            joinColumns = @JoinColumn(name = "meal_id"),
+            inverseJoinColumns = @JoinColumn(name = "meal_category_id")
+    )
+    private Set<MealCategory> categories;
 
     @ElementCollection
     @CollectionTable(name = "meal_steps", joinColumns = @JoinColumn(name = "meal_id"))

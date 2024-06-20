@@ -38,7 +38,7 @@ class MealCategoryControllerTest extends Specification {
 
     def "test creating a meal category"() {
         given: "A meal category object"
-        def mealCategory = new MealCategory("Breakfast")
+        def mealCategory = new MealCategory("Breakfast", "http://example.org")
 
         expect:
         mockMvc.perform(post("/mealCategories")
@@ -50,9 +50,9 @@ class MealCategoryControllerTest extends Specification {
 
     def "test updating a meal category"() {
         given: "An existing meal category"
-        def mealCategory = new MealCategory("Lunch")
+        def mealCategory = new MealCategory("Lunch", "http://example.org")
         mealCategoryRepository.save(mealCategory)
-        def updatedMealCategory = new MealCategory("Brunch")
+        def updatedMealCategory = new MealCategory("Brunch", "http://example.org")
 
         expect:
         mockMvc.perform(put("/mealCategories/${mealCategory.name}")
@@ -64,7 +64,7 @@ class MealCategoryControllerTest extends Specification {
 
     def "test deleting a meal category"() {
         given: "An existing meal category"
-        def mealCategory = new MealCategory("Snack")
+        def mealCategory = new MealCategory("Snack", "http://example.org")
         mealCategoryRepository.save(mealCategory)
 
         expect:
@@ -74,7 +74,7 @@ class MealCategoryControllerTest extends Specification {
 
     def "test getting a meal category by name"() {
         given: "An existing meal category"
-        def mealCategory = new MealCategory("Dessert")
+        def mealCategory = new MealCategory("Dessert", "http://example.org")
         mealCategoryRepository.save(mealCategory)
 
         expect:
@@ -85,8 +85,8 @@ class MealCategoryControllerTest extends Specification {
 
     def "test getting all meal categories"() {
         given: "Multiple meal categories"
-        def mealCategory1 = new MealCategory("Breakfast")
-        def mealCategory2 = new MealCategory("Lunch")
+        def mealCategory1 = new MealCategory("Breakfast", "http://example.org")
+        def mealCategory2 = new MealCategory("Lunch", "http://example.org")
         mealCategoryRepository.saveAll([mealCategory1, mealCategory2])
 
         expect:
