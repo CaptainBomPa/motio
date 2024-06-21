@@ -19,4 +19,6 @@ public interface MealService {
     void grantAccessToUser(Long mealId, Long userId);
 
     void revokeAccessFromUser(Long mealId, Long userId);
+
+    List<Meal> getMealsByCategoryAndUser(String categoryName, Long userId);
 }

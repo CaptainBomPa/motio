@@ -67,4 +67,9 @@ public class MealServiceImpl implements MealService {
         meal.getAccessibleUsers().remove(user);
         mealRepository.save(meal);
     }
+
+    @Override
+    public List<Meal> getMealsByCategoryAndUser(String categoryName, Long userId) {
+        return mealRepository.findByCategoryAndUser(categoryName, userId);
+    }
 }

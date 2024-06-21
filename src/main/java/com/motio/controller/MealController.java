@@ -1,11 +1,15 @@
 package com.motio.controller;
 
 import com.motio.model.Meal;
+import com.motio.model.User;
 import com.motio.service.MealService;
+import com.motio.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +21,7 @@ import java.util.Optional;
 @Tag(name = "Meal Management System", description = "Operations pertaining to meals in Meal Management System")
 public class MealController {
     private final MealService mealService;
+    private final UserService userService;
 
     @PostMapping
     @Operation(summary = "Create a new meal", description = "Create a new meal in the system", tags = {"Meal Management System"})
@@ -65,5 +70,14 @@ public class MealController {
     public ResponseEntity<Void> revokeAccessFromUser(@PathVariable Long mealId, @PathVariable Long userId) {
         mealService.revokeAccessFromUser(mealId, userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/category/{categoryName}")
+    @Operation(summary = "Get meals by category", description = "Retrieve a list of meals by category and user", tags = {"Meal Management System"})
+    public ResponseEntity<List<Meal>> getMealsByCategory(@PathVariable String categoryName, @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<Meal> meals = mealService.getMealsByCategoryAndUser(categoryName, user.getId());
+        return ResponseEntity.ok(meals);
     }
 }
