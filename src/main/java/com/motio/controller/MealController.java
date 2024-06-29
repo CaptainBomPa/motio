@@ -11,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +36,27 @@ public class MealController {
     @Operation(summary = "Update an existing meal", description = "Update the details of an existing meal", tags = {"Meal Management System"})
     public ResponseEntity<Meal> updateMeal(@PathVariable Long id, @RequestBody Meal meal) {
         Meal updatedMeal = mealService.updateMeal(id, meal);
+        return ResponseEntity.ok(updatedMeal);
+    }
+
+    @PostMapping("/{id}/image")
+    @Operation(summary = "Upload an image for a meal", description = "Upload an image for a specific meal", tags = {"Meal Management System"})
+    public ResponseEntity<Meal> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
+        Meal meal = mealService.getMealById(id).orElseThrow(() -> new RuntimeException("Meal not found"));
+        String filePath = mealService.saveImage(file, meal.getCreatedByUser().getUsername(), meal.getMealName());
+        meal.setImagePath(filePath);
+        Meal updatedMeal = mealService.saveMeal(meal);
+        return ResponseEntity.ok(updatedMeal);
+    }
+
+    @PutMapping("/{id}/image")
+    @Operation(summary = "Update the image of a meal", description = "Update the image of a specific meal", tags = {"Meal Management System"})
+    public ResponseEntity<Meal> updateImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
+        Meal meal = mealService.getMealById(id)
+                .orElseThrow(() -> new RuntimeException("Meal not found"));
+        String filePath = mealService.saveImage(file, meal.getCreatedByUser().getUsername(), meal.getMealName());
+        meal.setImagePath(filePath);
+        Meal updatedMeal = mealService.saveMeal(meal);
         return ResponseEntity.ok(updatedMeal);
     }
 

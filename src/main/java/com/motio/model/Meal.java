@@ -56,7 +56,6 @@ public class Meal {
     @Column(name = "ingredient")
     private List<String> ingredients = new LinkedList<>();
 
-    @NotBlank(message = "Image URL is mandatory")
-    @Column(nullable = false)
-    private String imageUrl;
+    @Column
+    private String imagePath;
 }

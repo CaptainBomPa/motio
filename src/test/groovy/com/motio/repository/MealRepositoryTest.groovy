@@ -30,7 +30,7 @@ class MealRepositoryTest extends Specification {
         def user = new User(username: "john_doe", firstName: "John", lastName: "Doe", password: "securepassword123", email: "john.doe@example.com")
         def category = new MealCategory("Breakfast", "http://example.org")
         def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: List.of("Step 1", "Step 2"),
-                ingredients: List.of("Ingredient 1", "Ingredient 2"), imageUrl: "http://example.com/image.jpg")
+                ingredients: List.of("Ingredient 1", "Ingredient 2"), imagePath: "/img/meals/john_doe/2")
 
         when: "Saving the user, category and meal"
         userRepository.saveAndFlush(user)
@@ -55,7 +55,7 @@ class MealRepositoryTest extends Specification {
         given: "A user, category and meal object"
         def user = new User(username: "jane_doe", firstName: "Jane", lastName: "Doe", password: "securepassword123", email: "jane.doe@example.com")
         def category = new MealCategory("Dinner", "http://example.org")
-        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: List.of("Step 1", "Step 2"), ingredients: List.of("Ingredient 1", "Ingredient 2"), imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: List.of("Step 1", "Step 2"), ingredients: List.of("Ingredient 1", "Ingredient 2"), imagePath: "/img/meals/john_doe/2")
 
         when: "Saving the user, category and meal"
         userRepository.saveAndFlush(user)

@@ -9,7 +9,12 @@ import com.motio.repository.UserRepository;
 import com.motio.service.MealService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +23,7 @@ import java.util.Optional;
 public class MealServiceImpl implements MealService {
     private final MealRepository mealRepository;
     private final UserRepository userRepository;
+    private static final String IMAGES_DIRECTORY = "/img/meals";
 
     @Override
     public Meal saveMeal(Meal meal) {
@@ -30,7 +36,7 @@ public class MealServiceImpl implements MealService {
             existingMeal.setCategories(meal.getCategories());
             existingMeal.setSteps(meal.getSteps());
             existingMeal.setIngredients(meal.getIngredients());
-            existingMeal.setImageUrl(meal.getImageUrl());
+            existingMeal.setImagePath(meal.getImagePath());
             return mealRepository.save(existingMeal);
         }).orElseThrow(() -> new GenericObjectNotFoundException(Meal.class));
     }
@@ -73,5 +79,17 @@ public class MealServiceImpl implements MealService {
     @Override
     public List<Meal> getMealsByCategoryAndUser(String categoryName, Long userId) {
         return mealRepository.findByCategoryAndUser(categoryName, userId);
+    }
+
+    @Override
+    public String saveImage(MultipartFile file, String username, String mealName) throws IOException {
+        String directoryPath = IMAGES_DIRECTORY + "/" + username + "/" + mealName;
+        Path directory = Paths.get(directoryPath);
+        if (!Files.exists(directory)) {
+            Files.createDirectories(directory);
+        }
+        Path filePath = directory.resolve(file.getOriginalFilename());
+        Files.write(filePath, file.getBytes());
+        return filePath.toString();
     }
 }

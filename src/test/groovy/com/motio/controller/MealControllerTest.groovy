@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 
@@ -59,7 +60,7 @@ class MealControllerTest extends Specification {
         def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imagePath: null)
 
         expect:
         mockMvc.perform(post("/meals")
@@ -70,7 +71,36 @@ class MealControllerTest extends Specification {
                 .andExpect(jsonPath('$.categories[0].name').value("Dinner"))
                 .andExpect(jsonPath('$.steps[0]').value("Step 1"))
                 .andExpect(jsonPath('$.ingredients[0]').value("Ingredient 1"))
-                .andExpect(jsonPath('$.imageUrl').value("http://example.com/image.jpg"))
+                .andExpect(jsonPath('$.imagePath').doesNotExist())
+    }
+
+    def "test uploading an image for a meal"() {
+        given: "An existing meal"
+        def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
+        def category = new MealCategory("Dinner", "http://example.org")
+        userService.saveUser(user)
+        mealCategoryService.saveMealCategory(category)
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imagePath: null)
+        mealService.saveMeal(meal)
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "image.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "test image content".getBytes()
+        )
+
+        expect:
+        def response = mockMvc.perform(multipart("/meals/${meal.getId()}/image")
+                .file(file)
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk())
+                .andReturn()
+
+        def jsonResponse = response.getResponse().getContentAsString()
+        def responseObject = objectMapper.readValue(jsonResponse, Meal)
+        assert responseObject.imagePath.startsWith("/img/meals/chef123/Pasta/") || responseObject.imagePath.startsWith('\\img\\meals\\chef123\\Pasta')
+        assert responseObject.imagePath.endsWith("image.jpg")
     }
 
     def "test updating a meal"() {
@@ -79,10 +109,10 @@ class MealControllerTest extends Specification {
         def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imagePath: null)
         mealService.saveMeal(meal)
 
-        def updatedMeal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Updated Step 1", "Updated Step 2"], ingredients: ["Updated Ingredient 1", "Updated Ingredient 2"], imageUrl: "http://example.com/updated_image.jpg")
+        def updatedMeal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Updated Step 1", "Updated Step 2"], ingredients: ["Updated Ingredient 1", "Updated Ingredient 2"], imagePath: null)
 
         expect:
         mockMvc.perform(put("/meals/${meal.getId()}")
@@ -91,7 +121,36 @@ class MealControllerTest extends Specification {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$.steps[0]').value("Updated Step 1"))
                 .andExpect(jsonPath('$.ingredients[0]').value("Updated Ingredient 1"))
-                .andExpect(jsonPath('$.imageUrl').value("http://example.com/updated_image.jpg"))
+                .andExpect(jsonPath('$.imagePath').doesNotExist())
+    }
+
+    def "test updating a meal image"() {
+        given: "An existing meal with an image"
+        def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
+        def category = new MealCategory("Dinner", "http://example.org")
+        userService.saveUser(user)
+        mealCategoryService.saveMealCategory(category)
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imagePath: "img/meals/chef123/Pasta/image.jpg")
+        mealService.saveMeal(meal)
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "updated_image.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "updated test image content".getBytes()
+        )
+
+        expect:
+        def response = mockMvc.perform(multipart("/meals/${meal.getId()}/image")
+                .file(file)
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk())
+                .andReturn()
+
+        def jsonResponse = response.getResponse().getContentAsString()
+        def responseObject = objectMapper.readValue(jsonResponse, Meal)
+        assert responseObject.imagePath.startsWith("img/meals/chef123/Pasta/") || responseObject.imagePath.startsWith("\\img\\meals\\chef123\\Pasta\\")
+        assert responseObject.imagePath.endsWith("updated_image.jpg")
     }
 
     def "test deleting a meal"() {
@@ -100,7 +159,7 @@ class MealControllerTest extends Specification {
         def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imagePath: null)
         mealService.saveMeal(meal)
 
         expect:
@@ -114,7 +173,7 @@ class MealControllerTest extends Specification {
         def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imagePath: "img/meals/chef123/Pasta/image.jpg")
         mealService.saveMeal(meal)
 
         expect:
@@ -124,7 +183,7 @@ class MealControllerTest extends Specification {
                 .andExpect(jsonPath('$.categories[0].name').value("Dinner"))
                 .andExpect(jsonPath('$.steps[0]').value("Step 1"))
                 .andExpect(jsonPath('$.ingredients[0]').value("Ingredient 1"))
-                .andExpect(jsonPath('$.imageUrl').value("http://example.com/image.jpg"))
+                .andExpect(jsonPath('$.imagePath').value("img/meals/chef123/Pasta/image.jpg"))
     }
 
     def "test getting all meals"() {
@@ -133,8 +192,8 @@ class MealControllerTest extends Specification {
         def category = new MealCategory("Dinner", "http://example.org")
         userService.saveUser(user)
         mealCategoryService.saveMealCategory(category)
-        def meal1 = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image1.jpg")
-        def meal2 = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step A", "Step B"], ingredients: ["Ingredient A", "Ingredient B"], imageUrl: "http://example.com/image2.jpg")
+        def meal1 = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imagePath: "img/meals/chef123/Pasta/image1.jpg")
+        def meal2 = new Meal(createdByUser: user, mealName: "Pasta", categories: [category], steps: ["Step A", "Step B"], ingredients: ["Ingredient A", "Ingredient B"], imagePath: "img/meals/chef123/Pasta/image2.jpg")
         mealService.saveMeal(meal1)
         mealService.saveMeal(meal2)
 
@@ -153,7 +212,7 @@ class MealControllerTest extends Specification {
         userService.saveUser(user1)
         userService.saveUser(user2)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user1, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user1, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imagePath: null)
         mealService.saveMeal(meal)
 
         expect:
@@ -173,7 +232,7 @@ class MealControllerTest extends Specification {
         userService.saveUser(user1)
         userService.saveUser(user2)
         mealCategoryService.saveMealCategory(category)
-        def meal = new Meal(createdByUser: user1, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imageUrl: "http://example.com/image.jpg")
+        def meal = new Meal(createdByUser: user1, mealName: "Pasta", categories: [category], steps: ["Step 1", "Step 2"], ingredients: ["Ingredient 1", "Ingredient 2"], imagePath: null)
         meal.getAccessibleUsers().add(user2)
         mealService.saveMeal(meal)
 
