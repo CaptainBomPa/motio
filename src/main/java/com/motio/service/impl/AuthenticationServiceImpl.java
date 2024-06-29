@@ -1,5 +1,8 @@
 package com.motio.service.impl;
 
+import com.motio.exception.throwable.InvalidCredentialsException;
+import com.motio.exception.throwable.InvalidJwtRefreshToken;
+import com.motio.exception.throwable.UserNotFoundException;
 import com.motio.model.User;
 import com.motio.repository.UserRepository;
 import com.motio.security.dto.JwtResponse;
@@ -27,10 +30,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public JwtResponse loginUser(String username, String password) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException();
         }
 
         return createJwtResponse(user);
@@ -52,7 +55,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtResponse refreshAccessToken(String refreshToken) {
         String username = jwtTokenUtil.getUsernameFromToken(refreshToken);
         UserDetails userDetails = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         if (jwtTokenUtil.validateToken(refreshToken, userDetails)) {
             String newAccessToken = jwtTokenUtil.generateToken(userDetails);
@@ -66,7 +69,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             return new JwtResponse(newAccessToken, newRefreshToken);
         } else {
-            throw new RuntimeException("Invalid refresh token");
+            throw new InvalidJwtRefreshToken();
         }
     }
 }

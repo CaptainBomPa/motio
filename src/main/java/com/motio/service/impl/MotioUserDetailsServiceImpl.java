@@ -1,5 +1,6 @@
 package com.motio.service.impl;
 
+import com.motio.exception.throwable.UserNotFoundException;
 import com.motio.model.User;
 import com.motio.repository.UserRepository;
 import com.motio.service.MotioUserDetailsService;
@@ -19,7 +20,7 @@ public class MotioUserDetailsServiceImpl implements MotioUserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
+            throw new UserNotFoundException(username);
         }
         return user.get();
     }

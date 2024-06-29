@@ -25,7 +25,7 @@ public class DataInitializer {
 
                 mealModelInitializer.addContextObjects(users, User.class);
                 mealModelInitializer.addContextObjects(mealCategories, MealCategory.class);
-                Collection<Meal> meals = mealModelInitializer.initializeObjects();
+                mealModelInitializer.initializeObjects();
             };
         }
         return args -> {

@@ -1,5 +1,7 @@
 package com.motio.service.impl;
 
+import com.motio.exception.throwable.GenericObjectNotFoundException;
+import com.motio.exception.throwable.UserNotFoundException;
 import com.motio.model.Meal;
 import com.motio.model.User;
 import com.motio.repository.MealRepository;
@@ -30,7 +32,7 @@ public class MealServiceImpl implements MealService {
             existingMeal.setIngredients(meal.getIngredients());
             existingMeal.setImageUrl(meal.getImageUrl());
             return mealRepository.save(existingMeal);
-        }).orElseThrow(() -> new RuntimeException("Meal not found"));
+        }).orElseThrow(() -> new GenericObjectNotFoundException(Meal.class));
     }
 
     @Override
@@ -51,9 +53,9 @@ public class MealServiceImpl implements MealService {
     @Override
     public void grantAccessToUser(Long mealId, Long userId) {
         Meal meal = mealRepository.findById(mealId)
-                .orElseThrow(() -> new RuntimeException("Meal not found"));
+                .orElseThrow(() -> new GenericObjectNotFoundException(Meal.class));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
         meal.getAccessibleUsers().add(user);
         mealRepository.save(meal);
     }
@@ -61,9 +63,9 @@ public class MealServiceImpl implements MealService {
     @Override
     public void revokeAccessFromUser(Long mealId, Long userId) {
         Meal meal = mealRepository.findById(mealId)
-                .orElseThrow(() -> new RuntimeException("Meal not found"));
+                .orElseThrow(() -> new GenericObjectNotFoundException(Meal.class));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
         meal.getAccessibleUsers().remove(user);
         mealRepository.save(meal);
     }

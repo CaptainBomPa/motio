@@ -1,5 +1,6 @@
 package com.motio.service.impl;
 
+import com.motio.exception.throwable.UserNotFoundException;
 import com.motio.model.User;
 import com.motio.repository.UserRepository;
 import com.motio.service.UserService;
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
             existingUser.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             existingUser.setEmail(user.getEmail());
             return userRepository.save(existingUser);
-        }).orElseThrow(() -> new RuntimeException("User not found"));
+        }).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
@@ -62,6 +63,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByAuthentication(Authentication authentication) {
-        return getUserByUsername(authentication.getName()).orElseThrow(() -> new RuntimeException("User not found."));
+        return getUserByUsername(authentication.getName()).orElseThrow(UserNotFoundException::new);
     }
 }

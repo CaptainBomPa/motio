@@ -95,4 +95,16 @@ class MealCategoryControllerTest extends Specification {
                 .andExpect(jsonPath('$[0].name').value("Breakfast"))
                 .andExpect(jsonPath('$[1].name').value("Lunch"))
     }
+
+    def "test updating a non-existing meal category throws exception"() {
+        given: "A meal category that does not exist"
+        def updatedMealCategory = new MealCategory("NonExistingCategory", "http://example.org")
+
+        expect:
+        mockMvc.perform(put("/mealCategories/NonExistingCategory")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedMealCategory)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath('$').value("MealCategory not found"))
+    }
 }

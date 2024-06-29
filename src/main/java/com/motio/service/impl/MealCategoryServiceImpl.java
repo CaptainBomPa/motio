@@ -1,5 +1,6 @@
 package com.motio.service.impl;
 
+import com.motio.exception.throwable.GenericObjectNotFoundException;
 import com.motio.model.MealCategory;
 import com.motio.repository.MealCategoryRepository;
 import com.motio.service.MealCategoryService;
@@ -28,7 +29,7 @@ public class MealCategoryServiceImpl implements MealCategoryService {
             category.setImageUrl(mealCategory.getImageUrl());
             return mealCategoryRepository.save(category);
         }
-        throw new RuntimeException("Meal category not found");
+        throw new GenericObjectNotFoundException(MealCategory.class);
     }
 
     @Override

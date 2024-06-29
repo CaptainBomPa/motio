@@ -1,9 +1,9 @@
 package com.motio.service.impl
 
+import com.motio.exception.throwable.UserNotFoundException
 import com.motio.model.User
 import com.motio.repository.UserRepository
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import spock.lang.Specification
 
 class MotioUserDetailsServiceImplTest extends Specification {
@@ -33,7 +33,7 @@ class MotioUserDetailsServiceImplTest extends Specification {
         when: "Loading user by username"
         userDetailsService.loadUserByUsername(username)
 
-        then: "UsernameNotFoundException should be thrown"
-        thrown(UsernameNotFoundException)
+        then: "UserNotFoundException should be thrown"
+        thrown(UserNotFoundException)
     }
 }
