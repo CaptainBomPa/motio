@@ -4,9 +4,12 @@ import com.motio.exception.throwable.GenericObjectNotFoundException;
 import com.motio.model.MealCategory;
 import com.motio.repository.MealCategoryRepository;
 import com.motio.service.MealCategoryService;
+import com.motio.service.util.ImageSaveUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MealCategoryServiceImpl implements MealCategoryService {
     private final MealCategoryRepository mealCategoryRepository;
+    private static final String BASE_DIRECTORY = "img/meal_category";
 
     @Override
     public MealCategory saveMealCategory(MealCategory mealCategory) {
@@ -26,7 +30,7 @@ public class MealCategoryServiceImpl implements MealCategoryService {
         if (optionalMealCategory.isPresent()) {
             MealCategory category = optionalMealCategory.get();
             category.setName(mealCategory.getName());
-            category.setImageUrl(mealCategory.getImageUrl());
+            category.setImagePath(mealCategory.getImagePath());
             return mealCategoryRepository.save(category);
         }
         throw new GenericObjectNotFoundException(MealCategory.class);
@@ -45,5 +49,10 @@ public class MealCategoryServiceImpl implements MealCategoryService {
     @Override
     public List<MealCategory> getAllMealCategories() {
         return mealCategoryRepository.findAll();
+    }
+
+    @Override
+    public String saveImage(MultipartFile file, String categoryName) throws IOException {
+        return ImageSaveUtil.saveImage(file, BASE_DIRECTORY + "/" + categoryName);
     }
 }

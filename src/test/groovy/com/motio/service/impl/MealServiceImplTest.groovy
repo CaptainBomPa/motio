@@ -92,11 +92,11 @@ class MealServiceImplTest extends Specification {
         entityManager.persistAndFlush(meal)
 
         when:
-        Optional<Meal> result = mealService.getMealById(meal.getId())
+        Meal result = mealService.getMealById(meal.getId())
 
         then:
-        result.isPresent()
-        result.get().getId() == meal.getId()
+        result != null
+        result.getId() == meal.getId()
     }
 
     def "should get all meals"() {

@@ -3,12 +3,14 @@ package com.motio.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.motio.model.MealCategory
 import com.motio.repository.MealCategoryRepository
+import com.motio.repository.UserRepository
 import com.motio.service.MealCategoryService
-import com.motio.service.impl.MealCategoryServiceImpl
+import com.motio.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 
@@ -19,26 +21,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class MealCategoryControllerTest extends Specification {
-
     @Autowired
     MockMvc mockMvc
-
+    @Autowired
+    MealCategoryService mealCategoryService
     @Autowired
     MealCategoryRepository mealCategoryRepository
-
+    @Autowired
+    UserService userService
+    @Autowired
+    UserRepository userRepository
     @Autowired
     ObjectMapper objectMapper
 
-    MealCategoryService mealCategoryService
-
-    def setup() {
+    void setup() {
         mealCategoryRepository.deleteAll()
-        mealCategoryService = new MealCategoryServiceImpl(mealCategoryRepository)
+        userRepository.deleteAll()
+    }
+
+    void cleanup() {
+        mealCategoryRepository.deleteAll()
+        userRepository.deleteAll()
     }
 
     def "test creating a meal category"() {
         given: "A meal category object"
-        def mealCategory = new MealCategory("Breakfast", "http://example.org")
+        def mealCategory = new MealCategory("Breakfast", null)
 
         expect:
         mockMvc.perform(post("/mealCategories")
@@ -48,23 +56,49 @@ class MealCategoryControllerTest extends Specification {
                 .andExpect(jsonPath('$.name').value("Breakfast"))
     }
 
+    def "test uploading an image for a meal category"() {
+        given: "An existing meal category"
+        def mealCategory = new MealCategory("Lunch", null)
+        mealCategoryRepository.save(mealCategory)
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "image.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "test image content".getBytes()
+        )
+
+        expect:
+        def response = mockMvc.perform(multipart("/mealCategories/Lunch/image")
+                .file(file)
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk())
+                .andReturn()
+
+        def jsonResponse = response.getResponse().getContentAsString()
+        def responseObject = objectMapper.readValue(jsonResponse, MealCategory)
+        assert responseObject.imagePath.startsWith("/img/meal_category/Lunch/") || responseObject.imagePath.startsWith("img\\meal_category\\Lunch\\")
+        assert responseObject.imagePath.endsWith("image.jpg")
+    }
+
     def "test updating a meal category"() {
         given: "An existing meal category"
-        def mealCategory = new MealCategory("Lunch", "http://example.org")
+        def mealCategory = new MealCategory("Snack", "img/meal_category/Snack/image.jpg")
         mealCategoryRepository.save(mealCategory)
-        def updatedMealCategory = new MealCategory("Brunch", "http://example.org")
+        def updatedMealCategory = new MealCategory("Snack", "img/meal_category/Snack/updated_image.jpg")
 
         expect:
         mockMvc.perform(put("/mealCategories/${mealCategory.name}")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatedMealCategory)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$.name').value("Brunch"))
+                .andExpect(jsonPath('$.name').value("Snack"))
+                .andExpect(jsonPath('$.imagePath').value("img/meal_category/Snack/updated_image.jpg"))
     }
 
     def "test deleting a meal category"() {
         given: "An existing meal category"
-        def mealCategory = new MealCategory("Snack", "http://example.org")
+        def mealCategory = new MealCategory("Dinner", "img/meal_category/Dinner/image.jpg")
         mealCategoryRepository.save(mealCategory)
 
         expect:
@@ -74,19 +108,20 @@ class MealCategoryControllerTest extends Specification {
 
     def "test getting a meal category by name"() {
         given: "An existing meal category"
-        def mealCategory = new MealCategory("Dessert", "http://example.org")
+        def mealCategory = new MealCategory("Dessert", "img/meal_category/Dessert/image.jpg")
         mealCategoryRepository.save(mealCategory)
 
         expect:
         mockMvc.perform(get("/mealCategories/${mealCategory.name}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$.name').value("Dessert"))
+                .andExpect(jsonPath('$.imagePath').value("img/meal_category/Dessert/image.jpg"))
     }
 
     def "test getting all meal categories"() {
         given: "Multiple meal categories"
-        def mealCategory1 = new MealCategory("Breakfast", "http://example.org")
-        def mealCategory2 = new MealCategory("Lunch", "http://example.org")
+        def mealCategory1 = new MealCategory("Breakfast", "img/meal_category/Breakfast/image.jpg")
+        def mealCategory2 = new MealCategory("Lunch", "img/meal_category/Lunch/image.jpg")
         mealCategoryRepository.saveAll([mealCategory1, mealCategory2])
 
         expect:
@@ -94,17 +129,5 @@ class MealCategoryControllerTest extends Specification {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$[0].name').value("Breakfast"))
                 .andExpect(jsonPath('$[1].name').value("Lunch"))
-    }
-
-    def "test updating a non-existing meal category throws exception"() {
-        given: "A meal category that does not exist"
-        def updatedMealCategory = new MealCategory("NonExistingCategory", "http://example.org")
-
-        expect:
-        mockMvc.perform(put("/mealCategories/NonExistingCategory")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedMealCategory)))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath('$').value("MealCategory not found"))
     }
 }

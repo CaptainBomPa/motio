@@ -83,10 +83,9 @@ public class MealModelInitializer implements ModelInitializer<Meal> {
 
             List<String> steps = getRandomElements(possibleSteps, 4 + random.nextInt(3));
             List<String> ingredients = getRandomElements(possibleIngredients, 4 + random.nextInt(3));
-            String imageUrl = "https://i.ibb.co/YD14M97/italian-food.png";
             String mealName = possibleMeals.get(random.nextInt(possibleMeals.size()));
 
-            Meal meal = new Meal(null, mealName, creator, accessibleUsers, new HashSet<>(categories), steps, ingredients, imageUrl);
+            Meal meal = new Meal(null, mealName, creator, accessibleUsers, new HashSet<>(categories), steps, ingredients, null);
             loadedMeals.add(mealService.saveMeal(meal));
         });
         return loadedMeals;

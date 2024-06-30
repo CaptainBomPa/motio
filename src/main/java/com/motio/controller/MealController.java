@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/meals")
@@ -42,7 +41,7 @@ public class MealController {
     @PostMapping("/{id}/image")
     @Operation(summary = "Upload an image for a meal", description = "Upload an image for a specific meal", tags = {"Meal Management System"})
     public ResponseEntity<Meal> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
-        Meal meal = mealService.getMealById(id).orElseThrow(() -> new RuntimeException("Meal not found"));
+        Meal meal = mealService.getMealById(id);
         String filePath = mealService.saveImage(file, meal.getCreatedByUser().getUsername(), meal.getMealName());
         meal.setImagePath(filePath);
         Meal updatedMeal = mealService.saveMeal(meal);
@@ -52,8 +51,7 @@ public class MealController {
     @PutMapping("/{id}/image")
     @Operation(summary = "Update the image of a meal", description = "Update the image of a specific meal", tags = {"Meal Management System"})
     public ResponseEntity<Meal> updateImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
-        Meal meal = mealService.getMealById(id)
-                .orElseThrow(() -> new RuntimeException("Meal not found"));
+        Meal meal = mealService.getMealById(id);
         String filePath = mealService.saveImage(file, meal.getCreatedByUser().getUsername(), meal.getMealName());
         meal.setImagePath(filePath);
         Meal updatedMeal = mealService.saveMeal(meal);
@@ -70,8 +68,8 @@ public class MealController {
     @GetMapping("/{id}")
     @Operation(summary = "Get a meal by ID", description = "Retrieve a meal by its ID", tags = {"Meal Management System"})
     public ResponseEntity<Meal> getMealById(@PathVariable Long id) {
-        Optional<Meal> meal = mealService.getMealById(id);
-        return meal.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Meal meal = mealService.getMealById(id);
+        return ResponseEntity.ok(meal);
     }
 
     @GetMapping

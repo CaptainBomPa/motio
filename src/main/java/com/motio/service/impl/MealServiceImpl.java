@@ -7,16 +7,13 @@ import com.motio.model.User;
 import com.motio.repository.MealRepository;
 import com.motio.repository.UserRepository;
 import com.motio.service.MealService;
+import com.motio.service.util.ImageSaveUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,8 +44,8 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public Optional<Meal> getMealById(Long id) {
-        return mealRepository.findById(id);
+    public Meal getMealById(Long id) {
+        return mealRepository.findById(id).orElseThrow(() -> new GenericObjectNotFoundException(Meal.class));
     }
 
     @Override
@@ -83,13 +80,6 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public String saveImage(MultipartFile file, String username, String mealName) throws IOException {
-        String directoryPath = IMAGES_DIRECTORY + "/" + username + "/" + mealName;
-        Path directory = Paths.get(directoryPath);
-        if (!Files.exists(directory)) {
-            Files.createDirectories(directory);
-        }
-        Path filePath = directory.resolve(file.getOriginalFilename());
-        Files.write(filePath, file.getBytes());
-        return filePath.toString();
+        return ImageSaveUtil.saveImage(file, IMAGES_DIRECTORY + "/" + username + "/" + mealName);
     }
 }

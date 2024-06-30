@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +31,17 @@ public class MealCategoryController {
     @Operation(summary = "Update an existing meal category", description = "Update the details of an existing meal category", tags = {"Meal Category Management System"})
     public ResponseEntity<MealCategory> updateMealCategory(@PathVariable String name, @RequestBody MealCategory mealCategory) {
         MealCategory updatedCategory = mealCategoryService.updateMealCategory(name, mealCategory);
+        return ResponseEntity.ok(updatedCategory);
+    }
+
+    @PostMapping("/{name}/image")
+    @Operation(summary = "Upload an image for a meal category", description = "Upload an image for a specific meal category", tags = {"Meal Category Management System"})
+    public ResponseEntity<MealCategory> uploadImage(@PathVariable String name, @RequestParam("file") MultipartFile file) throws IOException {
+        String filePath = mealCategoryService.saveImage(file, name);
+        MealCategory category = mealCategoryService.getMealCategoryByName(name)
+                .orElseThrow(() -> new RuntimeException("Meal category not found"));
+        category.setImagePath(filePath);
+        MealCategory updatedCategory = mealCategoryService.saveMealCategory(category);
         return ResponseEntity.ok(updatedCategory);
     }
 

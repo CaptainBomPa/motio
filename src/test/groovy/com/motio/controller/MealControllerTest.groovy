@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.MockMvc
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -75,7 +74,6 @@ class MealControllerTest extends Specification {
                 .andExpect(jsonPath('$.imagePath').doesNotExist())
     }
 
-    @Ignore
     def "test uploading an image for a meal"() {
         given: "An existing meal"
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
@@ -126,7 +124,6 @@ class MealControllerTest extends Specification {
                 .andExpect(jsonPath('$.imagePath').doesNotExist())
     }
 
-    @Ignore
     def "test updating a meal image"() {
         given: "An existing meal with an image"
         def user = new User(username: "chef123", firstName: "Gordon", lastName: "Ramsay", password: "securepassword123", email: "gordon.ramsay@example.com")
@@ -223,7 +220,7 @@ class MealControllerTest extends Specification {
                 .andExpect(status().isNoContent())
 
         and:
-        def updatedMeal = mealService.getMealById(meal.getId()).get()
+        def updatedMeal = mealService.getMealById(meal.getId())
         updatedMeal.getAccessibleUsers().contains(user2)
     }
 
@@ -244,7 +241,7 @@ class MealControllerTest extends Specification {
                 .andExpect(status().isNoContent())
 
         and:
-        def updatedMeal = mealService.getMealById(meal.getId()).get()
+        def updatedMeal = mealService.getMealById(meal.getId())
         !updatedMeal.getAccessibleUsers().contains(user2)
     }
 }
