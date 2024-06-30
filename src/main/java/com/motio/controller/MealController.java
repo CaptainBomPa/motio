@@ -1,5 +1,7 @@
 package com.motio.controller;
 
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.MetadataException;
 import com.motio.model.Meal;
 import com.motio.model.User;
 import com.motio.service.MealService;
@@ -40,7 +42,7 @@ public class MealController {
 
     @PostMapping("/{id}/image")
     @Operation(summary = "Upload an image for a meal", description = "Upload an image for a specific meal", tags = {"Meal Management System"})
-    public ResponseEntity<Meal> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Meal> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException, ImageProcessingException, MetadataException {
         Meal meal = mealService.getMealById(id);
         String filePath = mealService.saveImage(file, meal.getCreatedByUser().getUsername(), meal.getMealName());
         meal.setImagePath(filePath);
@@ -50,7 +52,7 @@ public class MealController {
 
     @PutMapping("/{id}/image")
     @Operation(summary = "Update the image of a meal", description = "Update the image of a specific meal", tags = {"Meal Management System"})
-    public ResponseEntity<Meal> updateImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Meal> updateImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException, ImageProcessingException, MetadataException {
         Meal meal = mealService.getMealById(id);
         String filePath = mealService.saveImage(file, meal.getCreatedByUser().getUsername(), meal.getMealName());
         meal.setImagePath(filePath);

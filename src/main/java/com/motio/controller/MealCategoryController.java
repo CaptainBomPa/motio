@@ -1,5 +1,7 @@
 package com.motio.controller;
 
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.MetadataException;
 import com.motio.model.MealCategory;
 import com.motio.service.MealCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +38,7 @@ public class MealCategoryController {
 
     @PostMapping("/{name}/image")
     @Operation(summary = "Upload an image for a meal category", description = "Upload an image for a specific meal category", tags = {"Meal Category Management System"})
-    public ResponseEntity<MealCategory> uploadImage(@PathVariable String name, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<MealCategory> uploadImage(@PathVariable String name, @RequestParam("file") MultipartFile file) throws IOException, ImageProcessingException, MetadataException {
         String filePath = mealCategoryService.saveImage(file, name);
         MealCategory category = mealCategoryService.getMealCategoryByName(name)
                 .orElseThrow(() -> new RuntimeException("Meal category not found"));

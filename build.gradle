@@ -56,6 +56,8 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+	implementation 'org.imgscalr:imgscalr-lib:4.2'
+	implementation 'com.drewnoakes:metadata-extractor:2.19.0'
 	compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 	compileOnly 'org.projectlombok:lombok:1.18.32'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools:3.3.0'

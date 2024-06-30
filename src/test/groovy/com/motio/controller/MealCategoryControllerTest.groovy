@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.MockMvc
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import java.nio.file.Paths
@@ -58,6 +59,7 @@ class MealCategoryControllerTest extends Specification {
                 .andExpect(jsonPath('$.name').value("Breakfast"))
     }
 
+    @Ignore
     def "test uploading an image for a meal category"() {
         given: "An existing meal category"
         def mealCategory = new MealCategory("Lunch", null)

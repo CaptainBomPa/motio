@@ -1,5 +1,7 @@
 package com.motio.service;
 
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.MetadataException;
 import com.motio.model.MealCategory;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,5 +20,5 @@ public interface MealCategoryService {
 
     List<MealCategory> getAllMealCategories();
 
-    String saveImage(MultipartFile file, String categoryName) throws IOException;
+    String saveImage(MultipartFile file, String categoryName) throws IOException, ImageProcessingException, MetadataException;
 }

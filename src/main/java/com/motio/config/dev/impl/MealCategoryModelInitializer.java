@@ -16,13 +16,13 @@ public class MealCategoryModelInitializer implements ModelInitializer<MealCatego
     private final MealCategoryService mealCategoryService;
 
     private List<MealCategory> mealCategories = List.of(
-            new MealCategory("Meksykańskie", null),
-            new MealCategory("Włoskie", null),
-            new MealCategory("Słodkie", null),
-            new MealCategory("Placki", null),
-            new MealCategory("Napoje", null),
-            new MealCategory("Przekąski", null),
-            new MealCategory("Fast Food", null)
+            new MealCategory("Fast Food", "img/meal_category/Fast Food/img.png"),
+            new MealCategory("Meksykańskie", "img/meal_category/Meksykańskie/img.png"),
+            new MealCategory("Napoje", "img/meal_category/Napoje/img.png"),
+            new MealCategory("Placki", "img/meal_category/Placki/img.png"),
+            new MealCategory("Przekąski", "img/meal_category/Przekąski/img.png"),
+            new MealCategory("Słodkie", "img/meal_category/Słodkie/img.png"),
+            new MealCategory("Włoskie", "img/meal_category/Włoskie/img.png")
     );
 
     @Override

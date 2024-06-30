@@ -1,5 +1,7 @@
 package com.motio.service.impl;
 
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.MetadataException;
 import com.motio.exception.throwable.GenericObjectNotFoundException;
 import com.motio.exception.throwable.UserNotFoundException;
 import com.motio.model.Meal;
@@ -20,7 +22,7 @@ import java.util.List;
 public class MealServiceImpl implements MealService {
     private final MealRepository mealRepository;
     private final UserRepository userRepository;
-    private static final String IMAGES_DIRECTORY = "/img/meals";
+    private static final String IMAGES_DIRECTORY = "img/meals";
 
     @Override
     public Meal saveMeal(Meal meal) {
@@ -79,7 +81,7 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public String saveImage(MultipartFile file, String username, String mealName) throws IOException {
+    public String saveImage(MultipartFile file, String username, String mealName) throws IOException, ImageProcessingException, MetadataException {
         return ImageSaveUtil.saveImage(file, IMAGES_DIRECTORY + "/" + username + "/" + mealName);
     }
 }

@@ -1,5 +1,7 @@
 package com.motio.service.impl;
 
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.MetadataException;
 import com.motio.exception.throwable.GenericObjectNotFoundException;
 import com.motio.model.MealCategory;
 import com.motio.repository.MealCategoryRepository;
@@ -52,7 +54,7 @@ public class MealCategoryServiceImpl implements MealCategoryService {
     }
 
     @Override
-    public String saveImage(MultipartFile file, String categoryName) throws IOException {
+    public String saveImage(MultipartFile file, String categoryName) throws IOException, ImageProcessingException, MetadataException {
         return ImageSaveUtil.saveImage(file, BASE_DIRECTORY + "/" + categoryName);
     }
 }
