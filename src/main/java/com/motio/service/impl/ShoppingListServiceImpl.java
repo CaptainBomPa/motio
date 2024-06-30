@@ -1,6 +1,7 @@
 package com.motio.service.impl;
 
 import com.motio.exception.throwable.GenericObjectNotFoundException;
+import com.motio.exception.throwable.UserNotFoundException;
 import com.motio.model.ShoppingItem;
 import com.motio.model.ShoppingList;
 import com.motio.model.User;
@@ -22,8 +23,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingList saveShoppingList(ShoppingList shoppingList, String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
         shoppingList.setCreatedByUser(user);
         return shoppingListRepository.save(shoppingList);
     }
@@ -31,6 +31,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     @Override
     public ShoppingList updateShoppingList(Long id, ShoppingList shoppingList) {
         return shoppingListRepository.findById(id).map(existingList -> {
+            existingList.setListName(shoppingList.getListName());
             existingList.setItems(shoppingList.getItems());
             existingList.setAccessibleUsers(shoppingList.getAccessibleUsers());
             return shoppingListRepository.save(existingList);
@@ -44,8 +45,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingList getShoppingListById(Long id) {
-        return shoppingListRepository.findById(id)
-                .orElseThrow(() -> new GenericObjectNotFoundException(ShoppingList.class));
+        return shoppingListRepository.findById(id).orElseThrow(() -> new GenericObjectNotFoundException(ShoppingList.class));
     }
 
     @Override

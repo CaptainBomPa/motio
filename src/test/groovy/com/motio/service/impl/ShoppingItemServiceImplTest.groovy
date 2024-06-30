@@ -40,7 +40,7 @@ class ShoppingItemServiceImplTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(createdByUser: user)
+        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
         entityManager.persistAndFlush(shoppingList)
         def shoppingItem = new ShoppingItem(description: "Milk")
 
@@ -57,7 +57,7 @@ class ShoppingItemServiceImplTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(createdByUser: user)
+        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
         entityManager.persistAndFlush(shoppingList)
         def shoppingItem = new ShoppingItem(description: "Milk")
         entityManager.persistAndFlush(shoppingItem)
@@ -75,7 +75,7 @@ class ShoppingItemServiceImplTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(createdByUser: user)
+        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
         entityManager.persistAndFlush(shoppingList)
         def shoppingItem = new ShoppingItem(description: "Milk")
         entityManager.persistAndFlush(shoppingItem)
@@ -91,7 +91,7 @@ class ShoppingItemServiceImplTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(createdByUser: user)
+        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
         entityManager.persistAndFlush(shoppingList)
         def shoppingItem = new ShoppingItem(description: "Milk")
         entityManager.persistAndFlush(shoppingItem)
@@ -109,7 +109,7 @@ class ShoppingItemServiceImplTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(createdByUser: user)
+        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
         entityManager.persistAndFlush(shoppingList)
         def shoppingItem1 = new ShoppingItem(description: "Milk")
         def shoppingItem2 = new ShoppingItem(description: "Bread")

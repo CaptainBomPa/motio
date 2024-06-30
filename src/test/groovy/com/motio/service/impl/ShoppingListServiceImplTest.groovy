@@ -37,7 +37,7 @@ class ShoppingListServiceImplTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList()
+        def shoppingList = new ShoppingList(listName: "test_list")
 
         when:
         ShoppingList savedShoppingList = shoppingListService.saveShoppingList(shoppingList, user.getUsername())
@@ -52,7 +52,7 @@ class ShoppingListServiceImplTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(createdByUser: user)
+        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
         entityManager.persistAndFlush(shoppingList)
         def newItems = [new ShoppingItem(description: "Milk"), new ShoppingItem(description: "Bread")]
 
@@ -68,7 +68,7 @@ class ShoppingListServiceImplTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(createdByUser: user)
+        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
         entityManager.persistAndFlush(shoppingList)
 
         when:
@@ -82,7 +82,7 @@ class ShoppingListServiceImplTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(createdByUser: user)
+        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
         entityManager.persistAndFlush(shoppingList)
 
         when:
@@ -97,8 +97,8 @@ class ShoppingListServiceImplTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList1 = new ShoppingList(createdByUser: user)
-        def shoppingList2 = new ShoppingList(createdByUser: user)
+        def shoppingList1 = new ShoppingList(listName: "test_list", createdByUser: user)
+        def shoppingList2 = new ShoppingList(listName: "test_list", createdByUser: user)
         entityManager.persistAndFlush(shoppingList1)
         entityManager.persistAndFlush(shoppingList2)
 

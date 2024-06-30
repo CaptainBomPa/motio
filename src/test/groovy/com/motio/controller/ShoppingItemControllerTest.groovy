@@ -53,7 +53,7 @@ class ShoppingItemControllerTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(createdByUser: user), user.getUsername())
+        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list", createdByUser: user), user.getUsername())
         def shoppingItem = new ShoppingItem(description: "Milk")
         def auth = new TestingAuthenticationToken(user.getUsername(), "password")
         SecurityContextHolder.getContext().setAuthentication(auth)
@@ -80,7 +80,7 @@ class ShoppingItemControllerTest extends Specification {
         given:
         def user = new User(username: "user124", firstName: "John", lastName: "Doe", password: "password124", email: "john.doe2@example.com")
         userService.saveUser(user)
-        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(createdByUser: user), user.getUsername())
+        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list", createdByUser: user), user.getUsername())
         def shoppingItem = shoppingItemService.saveShoppingItem(new ShoppingItem(description: "Milk"))
         shoppingList.getItems().add(shoppingItem)
         shoppingListService.updateShoppingList(shoppingList.getId(), shoppingList)
@@ -102,7 +102,7 @@ class ShoppingItemControllerTest extends Specification {
         given:
         def user = new User(username: "user126", firstName: "John", lastName: "Doe", password: "password126", email: "john.doe4@example.com")
         userService.saveUser(user)
-        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(createdByUser: user), user.getUsername())
+        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list", createdByUser: user), user.getUsername())
         def shoppingItem = shoppingItemService.saveShoppingItem(new ShoppingItem(description: "Milk"))
         shoppingList.getItems().add(shoppingItem)
         shoppingListService.updateShoppingList(shoppingList.getId(), shoppingList)
@@ -124,7 +124,7 @@ class ShoppingItemControllerTest extends Specification {
         given:
         def user = new User(username: "user127", firstName: "John", lastName: "Doe", password: "password127", email: "john.doe5@example.com")
         userService.saveUser(user)
-        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(createdByUser: user), user.getUsername())
+        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list", createdByUser: user), user.getUsername())
         def shoppingItem1 = shoppingItemService.saveShoppingItem(new ShoppingItem(description: "Milk"))
         def shoppingItem2 = shoppingItemService.saveShoppingItem(new ShoppingItem(description: "Bread"))
         shoppingList.getItems().addAll([shoppingItem1, shoppingItem2])

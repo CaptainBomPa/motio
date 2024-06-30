@@ -50,7 +50,7 @@ class ShoppingListControllerTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList = new ShoppingList()
+        def shoppingList = new ShoppingList(listName: "test_list")
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), "password123", [new SimpleGrantedAuthority("ROLE_USER")])
         SecurityContextHolder.getContext().setAuthentication(auth)
 
@@ -68,7 +68,7 @@ class ShoppingListControllerTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(), user.getUsername())
+        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list"), user.getUsername())
         def items = [new ShoppingItem(description: "Milk"), new ShoppingItem(description: "Bread")]
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), "password123", [new SimpleGrantedAuthority("ROLE_USER")])
         SecurityContextHolder.getContext().setAuthentication(auth)
@@ -87,7 +87,7 @@ class ShoppingListControllerTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(), user.getUsername())
+        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list"), user.getUsername())
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), "password123", [new SimpleGrantedAuthority("ROLE_USER")])
         SecurityContextHolder.getContext().setAuthentication(auth)
 
@@ -101,7 +101,7 @@ class ShoppingListControllerTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(), user.getUsername())
+        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list"), user.getUsername())
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), "password123", [new SimpleGrantedAuthority("ROLE_USER")])
         SecurityContextHolder.getContext().setAuthentication(auth)
 
@@ -117,8 +117,8 @@ class ShoppingListControllerTest extends Specification {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList1 = shoppingListService.saveShoppingList(new ShoppingList(), user.getUsername())
-        def shoppingList2 = shoppingListService.saveShoppingList(new ShoppingList(), user.getUsername())
+        def shoppingList1 = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list"), user.getUsername())
+        def shoppingList2 = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list"), user.getUsername())
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), "password123", [new SimpleGrantedAuthority("ROLE_USER")])
         SecurityContextHolder.getContext().setAuthentication(auth)
 

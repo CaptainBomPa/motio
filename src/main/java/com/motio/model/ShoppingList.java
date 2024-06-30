@@ -24,6 +24,9 @@ public class ShoppingList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String listName;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ShoppingItem> items = new LinkedList<>();
 
