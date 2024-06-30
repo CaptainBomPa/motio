@@ -18,6 +18,8 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 
+import java.nio.file.Paths
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -99,8 +101,8 @@ class MealControllerTest extends Specification {
 
         def jsonResponse = response.getResponse().getContentAsString()
         def responseObject = objectMapper.readValue(jsonResponse, Meal)
-        assert responseObject.imagePath.startsWith("/img/meals/chef123/Pasta/") || responseObject.imagePath.startsWith('\\img\\meals\\chef123\\Pasta')
-        assert responseObject.imagePath.endsWith("image.jpg")
+        def expectedPath = Paths.get("img", "meals", "chef123", "Pasta", "image.jpg").toString()
+        assert responseObject.imagePath.endsWith(expectedPath)
     }
 
     def "test updating a meal"() {
@@ -149,8 +151,8 @@ class MealControllerTest extends Specification {
 
         def jsonResponse = response.getResponse().getContentAsString()
         def responseObject = objectMapper.readValue(jsonResponse, Meal)
-        assert responseObject.imagePath.startsWith("/img/meals/chef123/Pasta/") || responseObject.imagePath.startsWith("\\img\\meals\\chef123\\Pasta\\")
-        assert responseObject.imagePath.endsWith("updated_image.jpg")
+        def expectedPath = Paths.get("img", "meals", "chef123", "Pasta", "updated_image.jpg").toString()
+        assert responseObject.imagePath.endsWith(expectedPath)
     }
 
     def "test deleting a meal"() {

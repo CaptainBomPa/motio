@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
-class AuthenticationControllerSpec extends Specification {
+class AuthenticationControllerTest extends Specification {
 
     @Autowired
     AuthenticationController authenticationController

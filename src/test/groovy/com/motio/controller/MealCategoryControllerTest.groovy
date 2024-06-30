@@ -14,6 +14,8 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 
+import java.nio.file.Paths
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -77,8 +79,8 @@ class MealCategoryControllerTest extends Specification {
 
         def jsonResponse = response.getResponse().getContentAsString()
         def responseObject = objectMapper.readValue(jsonResponse, MealCategory)
-        assert responseObject.imagePath.startsWith("/img/meal_category/Lunch/") || responseObject.imagePath.startsWith("img\\meal_category\\Lunch\\")
-        assert responseObject.imagePath.endsWith("image.jpg")
+        def expectedPath = Paths.get("img", "meal_category", "Lunch", "image.jpg").toString()
+        assert responseObject.imagePath.endsWith(expectedPath)
     }
 
     def "test updating a meal category"() {
