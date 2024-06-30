@@ -50,6 +50,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web:3.3.0'
 	implementation 'org.springframework.boot:spring-boot-starter-validation:3.3.0'
 	implementation 'org.springframework.boot:spring-boot-starter-security:3.3.0'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket:3.3.0'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'

@@ -1,5 +1,6 @@
 package com.motio.service.impl
 
+import com.motio.config.TestConfig
 import com.motio.model.ShoppingItem
 import com.motio.model.ShoppingList
 import com.motio.model.User
@@ -7,30 +8,31 @@ import com.motio.repository.ShoppingItemRepository
 import com.motio.repository.ShoppingListRepository
 import com.motio.repository.UserRepository
 import com.motio.service.ShoppingListService
+import com.motio.service.sender.ShoppingListUpdateSender
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import org.springframework.context.annotation.Import
 import spock.lang.Specification
 
 @DataJpaTest
+@Import(TestConfig)
 class ShoppingListServiceImplTest extends Specification {
 
     @Autowired
     ShoppingListRepository shoppingListRepository
-
     @Autowired
     ShoppingItemRepository shoppingItemRepository
-
     @Autowired
     UserRepository userRepository
-
     @Autowired
     TestEntityManager entityManager
-
+    @Autowired
+    ShoppingListUpdateSender shoppingListUpdateSender
     ShoppingListService shoppingListService
 
     void setup() {
-        shoppingListService = new ShoppingListServiceImpl(shoppingListRepository, shoppingItemRepository, userRepository)
+        shoppingListService = new ShoppingListServiceImpl(shoppingListRepository, shoppingItemRepository, userRepository, shoppingListUpdateSender)
     }
 
     def "should save shopping list"() {

@@ -9,6 +9,7 @@ import com.motio.repository.ShoppingItemRepository;
 import com.motio.repository.ShoppingListRepository;
 import com.motio.repository.UserRepository;
 import com.motio.service.ShoppingListService;
+import com.motio.service.sender.ShoppingListUpdateSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     private final ShoppingListRepository shoppingListRepository;
     private final ShoppingItemRepository shoppingItemRepository;
     private final UserRepository userRepository;
+    private final ShoppingListUpdateSender updateSender;
 
     @Override
     public ShoppingList saveShoppingList(ShoppingList shoppingList, String username) {
@@ -30,12 +32,16 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
     @Override
     public ShoppingList updateShoppingList(Long id, ShoppingList shoppingList) {
-        return shoppingListRepository.findById(id).map(existingList -> {
+        ShoppingList updatedList = shoppingListRepository.findById(id).map(existingList -> {
             existingList.setListName(shoppingList.getListName());
             existingList.setItems(shoppingList.getItems());
             existingList.setAccessibleUsers(shoppingList.getAccessibleUsers());
             return shoppingListRepository.save(existingList);
         }).orElseThrow(() -> new GenericObjectNotFoundException(ShoppingList.class));
+
+        updateSender.sendUpdate(updatedList);
+
+        return updatedList;
     }
 
     @Override
@@ -59,6 +65,8 @@ public class ShoppingListServiceImpl implements ShoppingListService {
         shoppingList.getItems().clear();
         shoppingList.getItems().addAll(items);
         shoppingItemRepository.saveAll(items);
-        return shoppingListRepository.save(shoppingList);
+        ShoppingList updatedList = shoppingListRepository.save(shoppingList);
+        updateSender.sendUpdate(updatedList);
+        return updatedList;
     }
 }

@@ -56,7 +56,7 @@ public class ShoppingListController {
 
     @PutMapping("/{shoppingListId}/items")
     @Operation(summary = "Add items to a shopping list", description = "Add or update items in a shopping list", tags = {"Shopping List Management"})
-    public ResponseEntity<ShoppingList> addItemsToShoppingList(@PathVariable Long shoppingListId, @RequestBody List<ShoppingItem> items) {
+    public ResponseEntity<ShoppingList> updateItemsInShoppingList(@PathVariable Long shoppingListId, @RequestBody List<ShoppingItem> items) {
         ShoppingList updatedShoppingList = shoppingListService.updateItemsInShoppingList(shoppingListId, items);
         return ResponseEntity.ok(updatedShoppingList);
     }
