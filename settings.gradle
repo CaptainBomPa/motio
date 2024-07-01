@@ -1,1 +1,6 @@
 rootProject.name = 'motio-api'
+include 'motio-core'
+include 'motio-commons'
+include 'motio-auth'
+include 'motio-admin'
+

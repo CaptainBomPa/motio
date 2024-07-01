@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: motio-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: motio
+      POSTGRES_USER: motio_admin
+      POSTGRES_PASSWORD: motio_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
