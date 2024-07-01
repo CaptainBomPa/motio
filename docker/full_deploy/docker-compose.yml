@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: motio-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: motio
+      POSTGRES_USER: motio_admin
+      POSTGRES_PASSWORD: motio_password
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  motio-core:
+    build:
+      context: ../../motio-core
+      dockerfile: Dockerfile
+    container_name: motio-core
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://motio-postgres:5432/motio
+      SPRING_DATASOURCE_USERNAME: motio_admin
+      SPRING_DATASOURCE_PASSWORD: motio_password
+    restart: on-failure
+
+  motio-auth:
+    build:
+      context: ../../motio-auth
+      dockerfile: Dockerfile
+    container_name: motio-auth
+    depends_on:
+      - motio-core
+    ports:
+      - "8070:8070"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://motio-postgres:5432/motio
+      SPRING_DATASOURCE_USERNAME: motio_admin
+      SPRING_DATASOURCE_PASSWORD: motio_password
+    restart: on-failure
