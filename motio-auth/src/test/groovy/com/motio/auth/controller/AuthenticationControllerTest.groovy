@@ -2,6 +2,7 @@ package com.motio.auth.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.motio.auth.service.AuthenticationService
+import com.motio.commons.model.Role
 import com.motio.commons.model.User
 import com.motio.commons.security.dto.JwtResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,8 +35,8 @@ class AuthenticationControllerTest extends Specification {
 
     def "registerUser should register a new user"() {
         given: "A user object"
-        def user = new User(username: "john_doe", firstName: "John", lastName: "Doe", password: "securepassword123", email: "john.doe@example.com")
-        def registeredUser = new User(id: 1L, username: "john_doe", firstName: "John", lastName: "Doe", password: "encodedPassword", email: "john.doe@example.com")
+        def user = new User(username: "john_doe", firstName: "John", lastName: "Doe", password: "securepassword123", email: "john.doe@example.com", role: Role.USER)
+        def registeredUser = new User(id: 1L, username: "john_doe", firstName: "John", lastName: "Doe", password: "encodedPassword", email: "john.doe@example.com", role: Role.USER)
         when(authenticationService.registerUser(any(User))).thenReturn(registeredUser)
 
         def objectMapper = new ObjectMapper()
@@ -53,7 +54,7 @@ class AuthenticationControllerTest extends Specification {
 
     def "loginUser should authenticate user and return JWT tokens"() {
         given: "A user object and valid login credentials"
-        def user = new User(username: "john_doe", password: "securepassword123")
+        def user = new User(username: "john_doe", password: "securepassword123", role: Role.USER)
         def jwtResponse = new JwtResponse("accessToken", "refreshToken")
         when(authenticationService.loginUser(anyString(), anyString())).thenReturn(jwtResponse)
 
