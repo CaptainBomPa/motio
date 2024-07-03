@@ -1,4 +1,4 @@
-rootProject.name = 'motio-api'
+rootProject.name = 'motio'
 include 'motio-core'
 include 'motio-commons'
 include 'motio-auth'
