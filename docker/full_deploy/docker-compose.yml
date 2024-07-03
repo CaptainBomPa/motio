@@ -14,9 +14,7 @@ services:
       - ./postgres_data:/var/lib/postgresql/data
 
   motio-core:
-    build:
-      context: ../../motio-core
-      dockerfile: Dockerfile
+    image: motio-core
     container_name: motio-core
     depends_on:
       - postgres
@@ -29,9 +27,7 @@ services:
     restart: on-failure
 
   motio-auth:
-    build:
-      context: ../../motio-auth
-      dockerfile: Dockerfile
+    image: motio-auth
     container_name: motio-auth
     depends_on:
       - motio-core
