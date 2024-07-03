@@ -1,5 +1,6 @@
 package com.motio.core.config.dev.impl;
 
+import com.motio.commons.model.Role;
 import com.motio.commons.model.User;
 import com.motio.commons.service.UserService;
 import com.motio.core.config.dev.ModelInitializer;
@@ -16,9 +17,9 @@ public class UserModelInitializer implements ModelInitializer<User> {
     private final UserService userService;
 
     private List<User> userList = List.of(
-            new User(null, "admin", "Gordon", "Ramsay", "securepassword123", "gordon.ramsay@example.com"),
-            new User(null, "user", "John", "Doe", "securepassword123", "john.doe@example.com"),
-            new User(null, "bompa", "Filip", "Mróz", "securepassword123", "filip.mroz@example.com")
+            new User(null, "gordon", "Gordon", "Ramsay", "securepassword123", "gordon.ramsay@example.com", Role.USER),
+            new User(null, "user", "John", "Doe", "securepassword123", "john.doe@example.com", Role.USER),
+            new User(null, "bompa", "Filip", "Mróz", "securepassword123", "filip.mroz@example.com", Role.USER)
     );
 
     @Override

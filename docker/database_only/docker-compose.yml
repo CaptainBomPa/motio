@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: motio_admin
       POSTGRES_PASSWORD: motio_password
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
