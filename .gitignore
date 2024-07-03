@@ -37,3 +37,4 @@ out/
 .vscode/
 /img/
 /docker/full_deploy/postgres_data/
+/docker/database_only/postgres_data/
