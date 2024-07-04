@@ -1,9 +1,6 @@
 package com.motio.commons.exception;
 
-import com.motio.commons.exception.throwable.GenericObjectNotFoundException;
-import com.motio.commons.exception.throwable.InvalidCredentialsException;
-import com.motio.commons.exception.throwable.InvalidJwtRefreshToken;
-import com.motio.commons.exception.throwable.UserNotFoundException;
+import com.motio.commons.exception.throwable.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,6 +27,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCredentialsException.class)
     private ResponseEntity<?> handleInvalidCredentials(InvalidCredentialsException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(NotSufficientRoleException.class)
+    private ResponseEntity<?> handleNotSufficientRole(NotSufficientRoleException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 

@@ -2,7 +2,9 @@ package com.motio.auth.service;
 
 import com.motio.commons.exception.throwable.InvalidCredentialsException;
 import com.motio.commons.exception.throwable.InvalidJwtRefreshToken;
+import com.motio.commons.exception.throwable.NotSufficientRoleException;
 import com.motio.commons.exception.throwable.UserNotFoundException;
+import com.motio.commons.model.Role;
 import com.motio.commons.model.User;
 import com.motio.commons.repository.UserRepository;
 import com.motio.commons.security.dto.JwtResponse;
@@ -28,14 +30,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public JwtResponse loginUser(String username, String password) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(UserNotFoundException::new);
+        final User user = validateUser(username, password);
+        return createJwtResponse(user);
+    }
+
+    @Override
+    public JwtResponse loginAsAdmin(String username, String password) {
+        final User user = validateUser(username, password);
+        if (user.getRole().equals(Role.ADMIN)) {
+            return createJwtResponse(user);
+        }
+        throw new NotSufficientRoleException();
+    }
+
+    private User validateUser(String username, String password) {
+        final User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
 
         if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
             throw new InvalidCredentialsException();
         }
-
-        return createJwtResponse(user);
+        return user;
     }
 
     private JwtResponse createJwtResponse(User user) {

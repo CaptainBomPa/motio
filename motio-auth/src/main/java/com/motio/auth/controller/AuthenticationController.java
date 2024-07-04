@@ -33,6 +33,13 @@ public class AuthenticationController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/login/admin")
+    @Operation(summary = "Authenticate a admin", description = "Authenticate a admin and return a JWT token", tags = {"Authentication"})
+    public ResponseEntity<JwtResponse> loginAsAdmin(@RequestBody User user) {
+        final JwtResponse response = authenticationService.loginAsAdmin(user.getUsername(), user.getPassword());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/refresh-token")
     @Operation(summary = "Refresh JWT Token", description = "Refresh the JWT token using a refresh token", tags = {"Authentication"})
     public ResponseEntity<JwtResponse> refreshToken(@RequestBody JwtResponse request) {

@@ -8,5 +8,7 @@ public interface AuthenticationService {
 
     JwtResponse loginUser(String username, String password);
 
+    JwtResponse loginAsAdmin(String username, String password);
+
     JwtResponse refreshAccessToken(String oldToken);
 }
