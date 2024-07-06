@@ -33,7 +33,10 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/h2-console",
             "/h2-console/**",
-            "/auth/**"
+            "/register",
+            "/login",
+            "/login/admin",
+            "/refresh-token"
     };
     private final MotioUserDetailsService motioUserDetailsService;
     private final JwtRequestFilter jwtRequestFilter;

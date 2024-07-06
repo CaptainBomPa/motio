@@ -8,7 +8,7 @@ import '../util/host_api_data.dart';
 import 'base_service.dart';
 
 class AuthService extends BaseService {
-  static const String _authUrl = "${HostApiData.baseAuthApiUrl}/auth";
+  static const String _authUrl = "${HostApiData.baseAuthApiUrl}";
 
   Future<JwtResponse?> loginUser(String username, String password) async {
     final response = await sendAuthenticatedRequest(
