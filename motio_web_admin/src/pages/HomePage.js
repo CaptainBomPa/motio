@@ -3,6 +3,7 @@ import {Link, Navigate, Route, Routes, useNavigate} from 'react-router-dom';
 import {Box, Button, List, ListItem, ListItemText, Paper} from '@mui/material';
 import StatusPage from '../components/StatusPage';
 import MealCategoryPage from '../components/MealCategoryPage';
+import SystemInfoPage from '../components/SystemInfoPage';
 
 const listItemStyle = {
     fontWeight: 'bold',
@@ -34,6 +35,9 @@ export default function HomePage() {
                     <ListItem component={Link} to="/home/meal-category" sx={listItemStyle}>
                         <ListItemText primary="Meal Category" primaryTypographyProps={{fontWeight: 'bold', color: '#9c27b0'}}/>
                     </ListItem>
+                    <ListItem component={Link} to="/home/system-info" sx={listItemStyle}>
+                        <ListItemText primary="System Info" primaryTypographyProps={{fontWeight: 'bold', color: '#9c27b0'}}/>
+                    </ListItem>
                     <ListItem component={Button} sx={listItemStyle} onClick={handleLogout}>
                         <ListItemText primary="Wyloguj" primaryTypographyProps={{fontWeight: 'bold', color: '#9c27b0'}}/>
                     </ListItem>
@@ -43,6 +47,7 @@ export default function HomePage() {
                 <Routes>
                     <Route path="status" element={<StatusPage/>}/>
                     <Route path="meal-category" element={<MealCategoryPage/>}/>
+                    <Route path="system-info" element={<SystemInfoPage/>}/> {/* Nowy route */}
                     <Route path="/" element={<Navigate to="status"/>}/>
                 </Routes>
             </Box>

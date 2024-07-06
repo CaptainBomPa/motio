@@ -7,6 +7,7 @@ const StatusPage = () => {
         <Box display="flex" justifyContent="center" flexWrap="wrap">
             <StatusBox serviceName="motio-auth" apiUrl="http://localhost:8070/v1.0/api/auth/health/status"/>
             <StatusBox serviceName="motio-core" apiUrl="http://localhost:8080/v1.0/api/core/health/status"/>
+            <StatusBox serviceName="motio-admin" apiUrl="http://localhost:8060/v1.0/api/admin/health/status"/>
         </Box>
     );
 };
