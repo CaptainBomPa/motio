@@ -38,3 +38,23 @@ services:
       SPRING_DATASOURCE_USERNAME: motio_admin
       SPRING_DATASOURCE_PASSWORD: motio_password
     restart: on-failure
+
+  motio-admin:
+    image: motio-admin
+    container_name: motio-admin
+    depends_on:
+      - motio-core
+    ports:
+      - "8060:8060"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://motio-postgres:5432/motio
+      SPRING_DATASOURCE_USERNAME: motio_admin
+      SPRING_DATASOURCE_PASSWORD: motio_password
+    restart: on-failure
+
+  motio-web-admin:
+    image: motio-web-admin
+    container_name: motio-web-admin
+    ports:
+      - "3000:3000"
+    restart: on-failure
