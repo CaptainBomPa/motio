@@ -43,7 +43,7 @@ class AuthenticationControllerTest extends Specification {
         def userJson = objectMapper.writeValueAsString(user)
 
         expect: "User is registered"
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isOk())
@@ -62,7 +62,7 @@ class AuthenticationControllerTest extends Specification {
         def userJson = objectMapper.writeValueAsString(user)
 
         expect: "User is authenticated and JWT tokens are returned"
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson))
                 .andExpect(status().isOk())
@@ -79,7 +79,7 @@ class AuthenticationControllerTest extends Specification {
         def jwtResponseJson = objectMapper.writeValueAsString(new JwtResponse(null, "refreshToken"))
 
         expect: "New JWT tokens are returned"
-        mockMvc.perform(post("/auth/refresh-token")
+        mockMvc.perform(post("/refresh-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jwtResponseJson))
                 .andExpect(status().isOk())
