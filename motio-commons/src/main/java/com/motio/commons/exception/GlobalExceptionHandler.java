@@ -39,4 +39,9 @@ public class GlobalExceptionHandler {
     private ResponseEntity<?> handleObjectNotFound(GenericObjectNotFoundException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ContainerNotFoundException.class)
+    private ResponseEntity<?> handleContainerNotFoundException(ContainerNotFoundException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

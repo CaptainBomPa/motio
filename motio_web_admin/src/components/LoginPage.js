@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Box, Button, Grid, Paper, TextField} from '@mui/material';
 import axios from '../axios';
@@ -7,19 +7,26 @@ import logo from '../logo.png';
 export default function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
 
-    const isAuthenticated = !!localStorage.getItem('accessToken');
-    if (isAuthenticated) {
+    const test = !!localStorage.getItem('accessToken');
+    if (test) {
         navigate('/home/status');
     }
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/home/status');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleLogin = async () => {
         try {
             const response = await axios.post('/auth/login/admin', {username, password});
             localStorage.setItem('accessToken', response.data.accessToken);
             localStorage.setItem('refreshToken', response.data.refreshToken);
-            navigate('/home/status');
+            setIsAuthenticated(true);
         } catch (error) {
             alert('Nie udało się zalogować. Sprawdź swoje dane lub uprawnienia.');
         }

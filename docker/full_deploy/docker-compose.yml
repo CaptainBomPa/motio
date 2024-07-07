@@ -50,6 +50,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://motio-postgres:5432/motio
       SPRING_DATASOURCE_USERNAME: motio_admin
       SPRING_DATASOURCE_PASSWORD: motio_password
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: on-failure
 
   motio-web-admin:

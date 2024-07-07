@@ -1,13 +1,14 @@
 import React from 'react';
 import {Box} from '@mui/material';
 import StatusBox from './StatusBox';
+import config from '../config';
 
 const StatusPage = () => {
     return (
         <Box display="flex" justifyContent="center" flexWrap="wrap">
-            <StatusBox serviceName="motio-auth" apiUrl="http://localhost:8070/v1.0/api/auth/health/status"/>
-            <StatusBox serviceName="motio-core" apiUrl="http://localhost:8080/v1.0/api/core/health/status"/>
-            <StatusBox serviceName="motio-admin" apiUrl="http://localhost:8060/v1.0/api/admin/health/status"/>
+            <StatusBox serviceName="motio-auth" apiUrl={`${config.authApiUrl}/health/status`} containerId="motio-auth"/>
+            <StatusBox serviceName="motio-core" apiUrl={`${config.coreApiUrl}/health/status`} containerId="motio-core"/>
+            <StatusBox serviceName="motio-admin" apiUrl={`${config.adminApiUrl}/health/status`} containerId="motio-admin"/>
         </Box>
     );
 };
