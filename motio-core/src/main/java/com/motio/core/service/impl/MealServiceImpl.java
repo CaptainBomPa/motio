@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -82,6 +84,7 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public String saveImage(MultipartFile file, String username, String mealName) throws IOException, ImageProcessingException, MetadataException {
-        return ImageSaveUtil.saveImage(file, IMAGES_DIRECTORY + "/" + username + "/" + mealName);
+        Path path = Paths.get(IMAGES_DIRECTORY, username, mealName);
+        return ImageSaveUtil.saveImage(file, path.toString());
     }
 }

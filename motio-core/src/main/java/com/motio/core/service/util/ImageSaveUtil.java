@@ -41,6 +41,7 @@ public class ImageSaveUtil {
             BufferedImage resizedImage = Scalr.resize(rotatedImage, 800);
             Path filePath = directory.resolve(originalFileName);
             ImageIO.write(resizedImage, "jpg", filePath.toFile());
+            ImageIO.write(resizedImage, "png", filePath.toFile());
             return filePath.toString();
         }
         throw new IllegalArgumentException("File name cannot be empty");
