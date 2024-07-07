@@ -1,7 +1,8 @@
 import axios from 'axios';
+import config from "./config";
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8070/v1.0/api',
+    baseURL: `${config.authApiUrl}`,
     headers: {
         'Content-Type': 'application/json'
     }
@@ -23,7 +24,7 @@ axiosInstance.interceptors.response.use(response => response, async error => {
         originalRequest._retry = true;
         try {
             const refreshToken = localStorage.getItem('refreshToken');
-            const response = await axios.post('http://localhost:8070/v1.0/api/auth/refresh-token', {refreshToken});
+            const response = await axios.post(`${config.authApiUrl}/refresh-token`, {refreshToken});
             localStorage.setItem('accessToken', response.data.accessToken);
             localStorage.setItem('refreshToken', response.data.refreshToken);
             axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`;
