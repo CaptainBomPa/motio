@@ -1,7 +1,6 @@
 package com.motio.admin.service.impl;
 
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
@@ -39,17 +38,19 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public void startContainer(String containerId) {
-        if (!isContainerManaged(containerId)) {
-            throw new ContainerNotFoundException("Container not managed by Docker: " + containerId);
+    public void startContainer(String imageName) {
+        String containerId = getContainerIdByImage(imageName);
+        if (containerId == null) {
+            throw new ContainerNotFoundException("Container not managed by Docker: " + imageName);
         }
         dockerClient.startContainerCmd(containerId).exec();
     }
 
     @Override
-    public void stopContainer(String containerId) {
-        if (!isContainerManaged(containerId)) {
-            throw new ContainerNotFoundException("Container not managed by Docker: " + containerId);
+    public void stopContainer(String imageName) {
+        String containerId = getContainerIdByImage(imageName);
+        if (containerId == null) {
+            throw new ContainerNotFoundException("Container not managed by Docker: " + imageName);
         }
         dockerClient.stopContainerCmd(containerId).exec();
     }
@@ -62,7 +63,7 @@ public class DockerServiceImpl implements DockerService {
         return dockerClient.listContainersCmd()
                 .exec()
                 .stream()
-                .map(Container::getId)
+                .map(Container::getImage)
                 .collect(Collectors.toList());
     }
 
@@ -70,12 +71,13 @@ public class DockerServiceImpl implements DockerService {
         return Files.exists(Paths.get("/.dockerenv"));
     }
 
-    private boolean isContainerManaged(String containerId) {
-        try {
-            dockerClient.inspectContainerCmd(containerId).exec();
-            return true;
-        } catch (NotFoundException e) {
-            return false;
+    private String getContainerIdByImage(String imageName) {
+        List<Container> containers = dockerClient.listContainersCmd().exec();
+        for (Container container : containers) {
+            if (container.getImage().equals(imageName)) {
+                return container.getId();
+            }
         }
+        return null;
     }
 }
