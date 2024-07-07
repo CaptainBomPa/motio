@@ -23,8 +23,7 @@ const StatusBox = ({serviceName, apiUrl, containerId}) => {
                 setResponseTime(endTime - startTime);
             } catch (error) {
                 setStatus('error');
-                const endTime = Date.now();
-                setResponseTime(endTime - startTime);
+                setResponseTime("-");
             }
         };
 
@@ -112,7 +111,7 @@ const StatusBox = ({serviceName, apiUrl, containerId}) => {
                     color="success"
                     startIcon={<PlayArrowIcon/>}
                     onClick={handleStart}
-                    disabled={status === 'ok' || !isDockerManaged}
+                    disabled={status === 'ok'}
                     sx={{marginRight: 1}}
                 >
                     Start

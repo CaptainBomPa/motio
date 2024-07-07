@@ -43,7 +43,7 @@ public class SystemInfoServiceImpl implements SystemInfoService {
             // Pobierz informacje o pamięci
             Map<String, Long> memInfo = getMemInfo();
             systemInfo.put("totalMemory", memInfo.get("MemTotal"));
-            systemInfo.put("freeMemory", memInfo.get("MemFree"));
+            systemInfo.put("availableMemory", memInfo.get("MemAvailable"));
 
             // Pobierz informacje o procesorach
             long availableProcessors = Files.lines(Paths.get("/proc/cpuinfo"))
@@ -74,7 +74,7 @@ public class SystemInfoServiceImpl implements SystemInfoService {
         if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
             com.sun.management.OperatingSystemMXBean sunOsBean = (com.sun.management.OperatingSystemMXBean) osBean;
             systemInfo.put("totalPhysicalMemorySize", sunOsBean.getTotalPhysicalMemorySize());
-            systemInfo.put("freePhysicalMemorySize", sunOsBean.getFreePhysicalMemorySize());
+            systemInfo.put("availablePhysicalMemorySize", sunOsBean.getFreePhysicalMemorySize());
             systemInfo.put("usedPhysicalMemorySize", sunOsBean.getTotalPhysicalMemorySize() - sunOsBean.getFreePhysicalMemorySize());
         }
 
@@ -94,8 +94,8 @@ public class SystemInfoServiceImpl implements SystemInfoService {
             String[] parts = line.split("\\s+");
             if (parts[0].startsWith("MemTotal:")) {
                 memInfo.put("MemTotal", Long.parseLong(parts[1]) * 1024); // Konwersja z kB na bajty
-            } else if (parts[0].startsWith("MemFree:")) {
-                memInfo.put("MemFree", Long.parseLong(parts[1]) * 1024); // Konwersja z kB na bajty
+            } else if (parts[0].startsWith("MemAvailable:")) {
+                memInfo.put("MemAvailable", Long.parseLong(parts[1]) * 1024); // Konwersja z kB na bajty
             }
         });
 

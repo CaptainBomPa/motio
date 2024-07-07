@@ -46,6 +46,7 @@ scp motio-auth/motio-auth.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp motio-admin/motio-admin.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp motio_web_admin/motio-web-admin.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp docker/full_deploy/docker-compose.yml ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
+scp docker/full_deploy/.env ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 
 echo "Wczytywanie obrazów Docker na Raspberry Pi..."
 ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-core.tar"
