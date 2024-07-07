@@ -23,7 +23,7 @@ export default function LoginPage() {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('/auth/login/admin', {username, password});
+            const response = await axios.post('/login/admin', {username, password});
             localStorage.setItem('accessToken', response.data.accessToken);
             localStorage.setItem('refreshToken', response.data.refreshToken);
             setIsAuthenticated(true);
