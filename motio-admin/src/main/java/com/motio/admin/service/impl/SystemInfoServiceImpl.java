@@ -1,5 +1,6 @@
-package com.motio.admin.service;
+package com.motio.admin.service.impl;
 
+import com.motio.admin.service.SystemInfoService;
 import org.springframework.stereotype.Service;
 
 import java.lang.management.ManagementFactory;
