@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +57,7 @@ public class MealCategoryServiceImpl implements MealCategoryService {
 
     @Override
     public String saveImage(MultipartFile file, String categoryName) throws IOException, ImageProcessingException, MetadataException {
-        return ImageSaveUtil.saveImage(file, BASE_DIRECTORY + "/" + categoryName);
+        Path path = Paths.get(BASE_DIRECTORY, categoryName);
+        return ImageSaveUtil.saveImage(file, path.toString());
     }
 }
