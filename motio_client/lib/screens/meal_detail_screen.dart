@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/meal.dart';
+import '../models/user.dart';
 import '../providers/user_provider.dart';
 import '../services/meal_service.dart';
+import '../services/user_service.dart';
 import 'add_edit_meal_screen.dart';
 
 class MealDetailScreen extends ConsumerStatefulWidget {
@@ -23,6 +25,7 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
   File? _imageFile;
   bool _isLoading = false;
   final MealService _mealService = MealService();
+  final UserService _userService = UserService();
 
   @override
   void initState() {
@@ -52,6 +55,84 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
     }
   }
 
+  Future<void> _shareMeal() async {
+    final allUsers = await _userService.getAllUsers();
+    final currentUser = ref.read(userProvider);
+    final usersToShow = allUsers.where((user) => user.id != currentUser!.id).toList();
+    final theme = Theme.of(context);
+    Set<User> accessibleUsers = Set.from(_meal!.accessibleUsers); // Use a local Set to manage the state
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Udostępnij przepis'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: usersToShow.length,
+                    itemBuilder: (context, index) {
+                      final user = usersToShow[index];
+                      return CheckboxListTile(
+                        title: Text('${user.firstName} ${user.lastName}',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.primary
+                          ),),
+                        value: accessibleUsers.contains(user),
+                        onChanged: (bool? value) {
+                          setState(() {
+                            if (value == true) {
+                              accessibleUsers.add(user);
+                            } else {
+                              accessibleUsers.remove(user);
+                            }
+                          });
+                        },
+                        activeColor: theme.colorScheme.primary,
+                        checkColor: theme.colorScheme.onPrimary,
+                        selectedTileColor: theme.colorScheme.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      );
+                    },
+                  );
+                }
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Anuluj'),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  setState(() {
+                    _meal!.accessibleUsers = accessibleUsers; // Update the meal's accessible users
+                  });
+                  await _mealService.updateMeal(_meal!.id.toString(), _meal!.toJson());
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Przepis został udostępniony.')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Błąd podczas udostępniania przepisu: $e')),
+                  );
+                }
+              },
+              child: Text('Zapisz'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -68,7 +149,7 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
           },
         ),
         actions: [
-          if (currentUser != null && _meal!.createdByUser.id == currentUser.id)
+          if (currentUser != null && _meal!.createdByUser.id == currentUser.id) ...[
             IconButton(
               icon: Icon(Icons.edit),
               onPressed: () {
@@ -82,6 +163,11 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                 });
               },
             ),
+            IconButton(
+              icon: Icon(Icons.share),
+              onPressed: _shareMeal,
+            ),
+          ],
         ],
       ),
       body: _isLoading
