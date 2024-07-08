@@ -33,10 +33,7 @@ class MealCategoryService extends BaseService {
 
   Future<List<MealCategory>> _fetchAndUpdateCategories() async {
     final response = await sendAuthenticatedRequest(
-      http.Request('GET', Uri.parse(_mealCategoryUrl))
-        ..headers.addAll({
-          'Content-Type': 'application/json; charset=UTF-8',
-        }),
+        http.Request('GET', Uri.parse(_mealCategoryUrl))
     );
 
     if (response.statusCode == 200) {
@@ -70,7 +67,6 @@ class MealCategoryService extends BaseService {
           await _downloadAndSaveImage(imageUrl, imagePath);
         }
       } catch (e) {
-        print('Failed to download image for category ${category.name}: $e');
       }
     }
   }
@@ -88,7 +84,6 @@ class MealCategoryService extends BaseService {
       final imageFile = File(file.path);
       await imageFile.writeAsBytes(response.data!);
     } catch (e) {
-      print('Failed to download image from $url: $e');
       throw Exception('Failed to download image');
     }
   }

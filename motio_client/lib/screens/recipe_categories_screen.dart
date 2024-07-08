@@ -5,7 +5,7 @@ import '../models/meal_category.dart';
 import '../providers/meal_category_provider.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/category_tile.dart';
-import 'add_meal_screen.dart';
+import 'add_edit_meal_screen.dart';
 
 class RecipeCategoriesScreen extends ConsumerStatefulWidget {
   const RecipeCategoriesScreen({Key? key}) : super(key: key);
@@ -60,7 +60,7 @@ class _RecipeCategoriesScreenState extends ConsumerState<RecipeCategoriesScreen>
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AddMealScreen()),
+                MaterialPageRoute(builder: (context) => const AddEditMealScreen()),
               );
             },
           ),

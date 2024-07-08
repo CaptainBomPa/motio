@@ -1,19 +1,23 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/meal.dart';
+import '../providers/user_provider.dart';
+import 'add_edit_meal_screen.dart';
 
-class MealDetailScreen extends StatelessWidget {
+class MealDetailScreen extends ConsumerWidget {
   final Meal meal;
   final File? imageFile;
 
   MealDetailScreen({Key? key, required this.meal, this.imageFile}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
+    final currentUser = ref.watch(userProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -24,6 +28,20 @@ class MealDetailScreen extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
+        actions: [
+          if (currentUser != null && meal.createdByUser.id == currentUser.id)
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddEditMealScreen(meal: meal),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

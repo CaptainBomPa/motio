@@ -33,7 +33,7 @@ abstract class BaseService {
     }
 
     final response = await http.post(
-      Uri.parse('$_authUrl/auth/refresh-token'),
+      Uri.parse('$_authUrl/refresh-token'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

@@ -17,13 +17,10 @@ class MealService extends BaseService {
 
   Future<List<Meal>> fetchMealsByCategory(String categoryName) async {
     final response = await sendAuthenticatedRequest(
-      http.Request(
-        'GET',
-        Uri.parse('$_mealsByCategoryUrl/$categoryName'),
-      )
-        ..headers.addAll({
-          'Content-Type': 'application/json; charset=UTF-8',
-        }),
+        http.Request(
+          'GET',
+          Uri.parse('$_mealsByCategoryUrl/$categoryName'),
+        )
     );
 
     if (response.statusCode == 200) {
@@ -32,6 +29,22 @@ class MealService extends BaseService {
       return body.map((dynamic item) => Meal.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load meals');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateMeal(String mealId, Map<String, dynamic> mealData) async {
+    final response = await sendAuthenticatedRequest(
+        http.Request(
+          'PUT',
+          Uri.parse('$_mealsUrl/$mealId'),
+        )
+          ..body = jsonEncode(mealData)
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to update meal');
     }
   }
 
@@ -66,14 +79,11 @@ class MealService extends BaseService {
 
   Future<Map<String, dynamic>> createMeal(Map<String, dynamic> mealData) async {
     final response = await sendAuthenticatedRequest(
-      http.Request(
-        'POST',
-        Uri.parse('$_mealsUrl'),
-      )
-        ..headers.addAll({
-          'Content-Type': 'application/json; charset=UTF-8',
-        })
-        ..body = jsonEncode(mealData),
+        http.Request(
+          'POST',
+          Uri.parse('$_mealsUrl'),
+        )
+          ..body = jsonEncode(mealData)
     );
 
     if (response.statusCode == 200) {

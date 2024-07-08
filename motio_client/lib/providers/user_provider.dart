@@ -11,12 +11,9 @@ class UserNotifier extends StateNotifier<User?> {
 
   Future<void> fetchUser() async {
     try {
-      print('Fetching user info...');
       final user = await _userService.getUserInfo();
       if (user != null) {
-        print('User info fetched successfully: ${user.firstName} ${user.lastName}');
       } else {
-        print('Failed to fetch user info.');
       }
       state = user;
     } catch (e) {
