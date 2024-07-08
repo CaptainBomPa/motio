@@ -17,4 +17,18 @@ class MealCategory {
       'imagePath': imagePath,
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! MealCategory) {
+      return false;
+    }
+    return name == other.name && imagePath == other.imagePath;
+  }
+
+  @override
+  int get hashCode => name.hashCode ^ imagePath.hashCode;
 }

@@ -54,7 +54,7 @@ class StepField extends StatelessWidget {
               sizeFactor: animation,
               child: DynamicField(
                 controller: controller,
-                labelText: 'Krok',
+                labelText: '',
                 onRemove: () => removeField(index),
               ),
             );

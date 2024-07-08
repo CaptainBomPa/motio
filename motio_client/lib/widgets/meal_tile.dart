@@ -1,21 +1,24 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/meal.dart';
+import '../providers/user_provider.dart';
 import '../screens/meal_detail_screen.dart';
 import '../services/meal_service.dart';
 
-class MealTile extends StatelessWidget {
+class MealTile extends ConsumerWidget {
   final Meal meal;
   final MealService mealService = MealService();
 
   MealTile({Key? key, required this.meal}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
+    final currentUser = ref.watch(userProvider);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -53,7 +56,6 @@ class MealTile extends StatelessWidget {
               );
             });
           },
-
           child: Container(
             height: 150,
             child: FutureBuilder<File?>(
@@ -81,11 +83,23 @@ class MealTile extends StatelessWidget {
                         child: Container(
                           color: isDarkMode ? Colors.grey[800]!.withOpacity(0.7) : Colors.grey[200]!.withOpacity(0.7),
                           alignment: Alignment.center,
-                          child: Text(
-                            meal.mealName,
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                meal.mealName,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  color: isDarkMode ? Colors.white : Colors.black,
+                                ),
+                              ),
+                              if (currentUser != null && meal.createdByUser.id != currentUser.id)
+                                Text(
+                                  'Udostępnione przez: ${meal.createdByUser.firstName} ${meal.createdByUser.lastName}',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: isDarkMode ? Colors.white : Colors.black,
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ),
@@ -116,11 +130,23 @@ class MealTile extends StatelessWidget {
                           child: Container(
                             color: isDarkMode ? Colors.grey[800]!.withOpacity(0.7) : Colors.grey[200]!.withOpacity(0.7),
                             alignment: Alignment.center,
-                            child: Text(
-                              meal.mealName,
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                              ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  meal.mealName,
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    color: isDarkMode ? Colors.white : Colors.black,
+                                  ),
+                                ),
+                                if (currentUser != null && meal.createdByUser.id != currentUser.id)
+                                  Text(
+                                    'Udostępnione przez: ${meal.createdByUser.firstName} ${meal.createdByUser.lastName}',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: isDarkMode ? Colors.white : Colors.black,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         ),

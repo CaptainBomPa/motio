@@ -54,7 +54,7 @@ class IngredientField extends StatelessWidget {
               sizeFactor: animation,
               child: DynamicField(
                 controller: controller,
-                labelText: 'Składnik',
+                labelText: '',
                 onRemove: () => removeField(index),
               ),
             );
