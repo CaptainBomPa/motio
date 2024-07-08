@@ -3,14 +3,14 @@ import 'package:motio_client/models/user.dart';
 import 'meal_category.dart';
 
 class Meal {
-  final int id;
-  final String mealName;
-  final User createdByUser;
-  final Set<User> accessibleUsers;
-  final Set<MealCategory> categories;
-  final List<String> steps;
-  final List<String> ingredients;
-  final String? imagePath; // Nullable field
+  int id;
+  String mealName;
+  User createdByUser;
+  Set<User> accessibleUsers;
+  Set<MealCategory> categories;
+  List<String> steps;
+  List<String> ingredients;
+  String? imagePath; // Nullable field
 
   Meal({
     required this.id,

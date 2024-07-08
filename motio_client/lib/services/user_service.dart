@@ -11,20 +11,32 @@ class UserService extends BaseService {
 
   Future<User?> getUserInfo({bool retry = true}) async {
     final response = await sendAuthenticatedRequest(
-      http.Request(
-        'GET',
-        Uri.parse('$_userUrl/me'),
-      )
-        ..headers.addAll({
-          'Content-Type': 'application/json; charset=UTF-8',
-        }),
-      retry: retry,
+        http.Request(
+          'GET',
+          Uri.parse('$_userUrl/me'),
+        )
     );
 
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
     } else {
       return null;
+    }
+  }
+
+  Future<List<User>> getAllUsers() async {
+    final response = await sendAuthenticatedRequest(
+        http.Request(
+          'GET',
+          Uri.parse('$_userUrl'),
+        )
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));
+      return body.map((dynamic item) => User.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load users');
     }
   }
 }
