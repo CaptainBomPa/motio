@@ -32,6 +32,21 @@ class MealService extends BaseService {
     }
   }
 
+  Future<Meal> getMealById(String mealId) async {
+    final response = await sendAuthenticatedRequest(
+        http.Request(
+          'GET',
+          Uri.parse('$_mealsUrl/$mealId'),
+        )
+    );
+
+    if (response.statusCode == 200) {
+      return Meal.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load meal');
+    }
+  }
+
   Future<Map<String, dynamic>> updateMeal(String mealId, Map<String, dynamic> mealData) async {
     final response = await sendAuthenticatedRequest(
         http.Request(
@@ -45,6 +60,19 @@ class MealService extends BaseService {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to update meal');
+    }
+  }
+
+  Future<void> deleteMeal(String mealId) async {
+    final response = await sendAuthenticatedRequest(
+        http.Request(
+          'DELETE',
+          Uri.parse('$_mealsUrl/$mealId'),
+        )
+    );
+
+    if (response.statusCode != 204) {
+      throw Exception('Failed to delete meal');
     }
   }
 

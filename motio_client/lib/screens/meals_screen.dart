@@ -59,35 +59,35 @@ class _MealsScreenState extends ConsumerState<MealsScreen> with SingleTickerProv
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : FutureBuilder<List<Meal>>(
-        future: _mealsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Brak przepisów'));
-          } else {
-            final meals = snapshot.data!;
-            return FadeTransition(
-              opacity: _animation,
-              child: ListView.builder(
-                itemCount: meals.length,
-                itemBuilder: (context, index) {
-                  final meal = meals[index];
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, -0.1),
-                      end: Offset.zero,
-                    ).animate(_animation),
-                    child: MealTile(meal: meal),
+              future: _mealsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('Brak przepisów'));
+                } else {
+                  final meals = snapshot.data!;
+                  return FadeTransition(
+                    opacity: _animation,
+                    child: ListView.builder(
+                      itemCount: meals.length,
+                      itemBuilder: (context, index) {
+                        final meal = meals[index];
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, -0.1),
+                            end: Offset.zero,
+                          ).animate(_animation),
+                          child: MealTile(meal: meal),
+                        );
+                      },
+                    ),
                   );
-                },
-              ),
-            );
-          }
-        },
-      ),
+                }
+              },
+            ),
     );
   }
 }
