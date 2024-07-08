@@ -52,11 +52,9 @@ abstract class BaseService {
   }
 
   Future<http.Response> sendAuthenticatedRequest(http.Request request, {bool retry = true}) async {
-    final accessToken = await getAccessToken();
+    final headers = await getAuthHeaders();
 
-    if (accessToken != null) {
-      request.headers['Authorization'] = 'Bearer $accessToken';
-    }
+    request.headers.addAll(headers);
 
     final response = await request.send();
     final streamResponse = await http.Response.fromStream(response);
@@ -65,7 +63,7 @@ abstract class BaseService {
       final newTokens = await refreshToken();
       if (newTokens != null) {
         final clonedRequest = http.Request(request.method, request.url)
-          ..headers.addAll(request.headers)
+          ..headers.addAll(headers)
           ..body = request.body;
         clonedRequest.headers['Authorization'] = 'Bearer ${newTokens.accessToken}';
         return await sendAuthenticatedRequest(clonedRequest, retry: false);
@@ -76,11 +74,9 @@ abstract class BaseService {
   }
 
   Future<http.StreamedResponse> sendAuthenticatedMultipartRequest(http.MultipartRequest request, {bool retry = true}) async {
-    final accessToken = await getAccessToken();
+    final headers = await getAuthHeaders();
 
-    if (accessToken != null) {
-      request.headers['Authorization'] = 'Bearer $accessToken';
-    }
+    request.headers.addAll(headers);
 
     final response = await request.send();
 
@@ -88,7 +84,7 @@ abstract class BaseService {
       final newTokens = await refreshToken();
       if (newTokens != null) {
         final clonedRequest = http.MultipartRequest(request.method, request.url)
-          ..headers.addAll(request.headers)
+          ..headers.addAll(headers)
           ..files.addAll(request.files);
         clonedRequest.headers['Authorization'] = 'Bearer ${newTokens.accessToken}';
         return await sendAuthenticatedMultipartRequest(clonedRequest, retry: false);
