@@ -50,11 +50,24 @@ class _AddEditMealScreenState extends ConsumerState<AddEditMealScreen> with Tick
         _ingredientsControllers.add(TextEditingController(text: ingredient));
       });
       if (widget.meal!.imagePath != null) {
-        _selectedImage = File(widget.meal!.imagePath!);
+        _loadImage(widget.meal!.id.toString());
       }
     } else {
       _stepsControllers.add(TextEditingController());
       _ingredientsControllers.add(TextEditingController());
+    }
+  }
+
+  Future<void> _loadImage(String mealId) async {
+    try {
+      final imageFile = await _mealService.getImageFile(mealId);
+      if (imageFile != null) {
+        setState(() {
+          _selectedImage = imageFile;
+        });
+      }
+    } catch (e) {
+      print('Failed to load image: $e');
     }
   }
 
@@ -120,8 +133,6 @@ class _AddEditMealScreenState extends ConsumerState<AddEditMealScreen> with Tick
     final categories = ref.watch(mealCategoryProvider).asData?.value ?? [];
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-
-    _selectedCategories.forEach((category) {print(category.name);});
 
     return Scaffold(
       appBar: AppBar(

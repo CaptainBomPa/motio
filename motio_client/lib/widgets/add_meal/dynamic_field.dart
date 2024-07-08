@@ -15,7 +15,7 @@ class DynamicField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
         children: [
           Expanded(
@@ -25,7 +25,7 @@ class DynamicField extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.remove_circle),
+            icon: Icon(Icons.remove_circle, color: Theme.of(context).iconTheme.color),
             onPressed: onRemove,
           ),
         ],
