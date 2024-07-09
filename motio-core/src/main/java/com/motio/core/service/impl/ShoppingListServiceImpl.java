@@ -11,6 +11,7 @@ import com.motio.core.repository.ShoppingListRepository;
 import com.motio.core.service.ShoppingListService;
 import com.motio.core.service.sender.ShoppingListUpdateSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,8 +56,11 @@ public class ShoppingListServiceImpl implements ShoppingListService {
     }
 
     @Override
-    public List<ShoppingList> getAllShoppingLists() {
-        return shoppingListRepository.findAll();
+    public List<ShoppingList> getAllShoppingLists(Authentication authentication) {
+        final User user = userRepository.findByUsername(authentication.getName()).orElseThrow(UserNotFoundException::new);
+        return shoppingListRepository.findAll().stream()
+                .filter(shoppingList -> shoppingList.getCreatedByUser().equals(user) || shoppingList.getAccessibleUsers().contains(user))
+                .toList();
     }
 
     @Override

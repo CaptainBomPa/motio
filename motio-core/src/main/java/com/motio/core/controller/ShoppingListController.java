@@ -49,8 +49,8 @@ public class ShoppingListController {
 
     @GetMapping
     @Operation(summary = "Get all shopping lists", description = "Retrieve a list of all shopping lists", tags = {"Shopping List Management"})
-    public ResponseEntity<List<ShoppingList>> getAllShoppingLists() {
-        List<ShoppingList> shoppingLists = shoppingListService.getAllShoppingLists();
+    public ResponseEntity<List<ShoppingList>> getAllShoppingLists(Authentication authentication) {
+        List<ShoppingList> shoppingLists = shoppingListService.getAllShoppingLists(authentication);
         return ResponseEntity.ok(shoppingLists);
     }
 
