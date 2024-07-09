@@ -1,6 +1,7 @@
 package com.motio.commons.service.impl;
 
 import com.motio.commons.exception.throwable.UserNotFoundException;
+import com.motio.commons.model.Role;
 import com.motio.commons.model.User;
 import com.motio.commons.repository.UserRepository;
 import com.motio.commons.service.UserService;
@@ -58,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAll().stream().filter(user -> user.getRole().equals(Role.USER)).toList();
     }
 
     @Override
