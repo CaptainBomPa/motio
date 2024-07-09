@@ -5,6 +5,7 @@ import com.motio.commons.model.ShoppingItem
 import com.motio.commons.model.ShoppingList
 import com.motio.commons.model.User
 import com.motio.commons.service.UserService
+import com.motio.core.repository.ShoppingListRepository
 import com.motio.core.service.ShoppingListService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -31,18 +32,21 @@ class ShoppingListControllerTest extends Specification {
     ShoppingListService shoppingListService
 
     @Autowired
+    ShoppingListRepository shoppingListRepository
+
+    @Autowired
     UserService userService
 
     @Autowired
     ObjectMapper objectMapper
 
     void setup() {
-        shoppingListService.getAllShoppingLists().each { shoppingListService.deleteShoppingList(it.id) }
+        shoppingListRepository.findAll().each { shoppingListService.deleteShoppingList(it.id) }
         userService.getAllUsers().each { userService.deleteUser(it.id) }
     }
 
     void cleanup() {
-        shoppingListService.getAllShoppingLists().each { shoppingListService.deleteShoppingList(it.id) }
+        shoppingListRepository.findAll().each { shoppingListService.deleteShoppingList(it.id) }
         userService.getAllUsers().each { userService.deleteUser(it.id) }
     }
 

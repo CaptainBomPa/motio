@@ -3,6 +3,7 @@ package com.motio.core.service;
 
 import com.motio.commons.model.ShoppingItem;
 import com.motio.commons.model.ShoppingList;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface ShoppingListService {
 
     ShoppingList getShoppingListById(Long id);
 
-    List<ShoppingList> getAllShoppingLists();
+    List<ShoppingList> getAllShoppingLists(Authentication authentication);
 
     ShoppingList updateItemsInShoppingList(Long shoppingListId, List<ShoppingItem> items);
 }

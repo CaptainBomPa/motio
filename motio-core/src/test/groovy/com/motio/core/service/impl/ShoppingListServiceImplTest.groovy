@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.context.annotation.Import
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.GrantedAuthority
 import spock.lang.Specification
 
 @DataJpaTest
@@ -104,10 +106,51 @@ class ShoppingListServiceImplTest extends Specification {
         entityManager.persistAndFlush(shoppingList1)
         entityManager.persistAndFlush(shoppingList2)
 
+        Authentication authentication = createAuthentication(user)
+
         when:
-        List<ShoppingList> shoppingLists = shoppingListService.getAllShoppingLists()
+        List<ShoppingList> shoppingLists = shoppingListService.getAllShoppingLists(authentication)
 
         then:
         shoppingLists.size() == 2
+    }
+
+    private Authentication createAuthentication(User user) {
+        return new Authentication() {
+            @Override
+            Collection<? extends GrantedAuthority> getAuthorities() {
+                return user.getAuthorities()
+            }
+
+            @Override
+            Object getCredentials() {
+                return null
+            }
+
+            @Override
+            Object getDetails() {
+                return null
+            }
+
+            @Override
+            Object getPrincipal() {
+                return null
+            }
+
+            @Override
+            boolean isAuthenticated() {
+                return false
+            }
+
+            @Override
+            void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+
+            }
+
+            @Override
+            String getName() {
+                return user.getUsername()
+            }
+        }
     }
 }
