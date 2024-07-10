@@ -2,6 +2,7 @@ package com.motio.core.config.dev;
 
 import com.motio.commons.model.Meal;
 import com.motio.commons.model.MealCategory;
+import com.motio.commons.model.ShoppingList;
 import com.motio.commons.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -17,7 +18,8 @@ public class DataInitializer {
     private boolean initializeMockData;
 
     @Bean
-    CommandLineRunner initData(ModelInitializer<User> userModelInitializer, ModelInitializer<MealCategory> mealCategoryModelInitializer, ModelInitializer<Meal> mealModelInitializer) {
+    CommandLineRunner initData(ModelInitializer<User> userModelInitializer, ModelInitializer<MealCategory> mealCategoryModelInitializer,
+                               ModelInitializer<Meal> mealModelInitializer, ModelInitializer<ShoppingList> shoppingListModelInitializer) {
         if (initializeMockData) {
             return args -> {
                 Collection<User> users = userModelInitializer.initializeObjects();
@@ -26,6 +28,7 @@ public class DataInitializer {
                 mealModelInitializer.addContextObjects(users, User.class);
                 mealModelInitializer.addContextObjects(mealCategories, MealCategory.class);
                 mealModelInitializer.initializeObjects();
+                shoppingListModelInitializer.initializeObjects();
             };
         }
         return args -> {
