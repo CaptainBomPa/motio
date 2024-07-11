@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TodoListUpdateSender {
-    public static final String TODO_LIST_UPDATES_TOPIC = "/topic/todo/ListUpdates";
+    public static final String TODO_LIST_UPDATES_TOPIC = "/topic/todo/listUpdates";
     private final SimpMessagingTemplate messagingTemplate;
 
     public TodoListUpdateSender(SimpMessagingTemplate messagingTemplate) {

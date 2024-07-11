@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:motio_client/util/host_api_data.dart';
+import 'package:stomp_dart_client/stomp_dart_client.dart';
 import '../models/todo_item.dart';
 import '../models/todo_list.dart';
 import '../models/user.dart';
 import '../providers/todo_list_detail_provider.dart';
 import '../providers/user_provider.dart';
 import '../services/user_service.dart';
+import '../widgets/todo_item_tile.dart';
 
 class TodoListDetailScreen extends ConsumerStatefulWidget {
   final TodoList todoList;
@@ -23,6 +28,7 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
   late TodoList _originalTodoList;
   final TextEditingController _newItemController = TextEditingController();
   final UserService _userService = UserService();
+  late StompClient _stompClient;
 
   @override
   void initState() {
@@ -31,6 +37,46 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
     _originalTodoList = widget.todoList.copyWith(
       items: List.from(widget.todoList.items),
     );
+    _initializeWebSocket();
+  }
+
+  void _initializeWebSocket() {
+    _stompClient = StompClient(
+      config: StompConfig(
+        url: "${HostApiData.baseCoreApiWsUrl}/ws/websocket",
+        onConnect: _onStompConnect,
+        onWebSocketError: (dynamic error) => print(error.toString()),
+      ),
+    );
+    _stompClient.activate();
+  }
+
+  void _onStompConnect(StompFrame frame) {
+    _stompClient.subscribe(
+      destination: '/topic/todo/listUpdates',
+      callback: (StompFrame frame) {
+        if (frame.body != null) {
+          final updatedTodoList = TodoList.fromJson(jsonDecode(frame.body!));
+          if (updatedTodoList.id == widget.todoList.id) {
+            setState(() {
+              _notifier.state = updatedTodoList.copyWith(
+                items: [
+                  ...updatedTodoList.items,
+                  ..._notifier.state.items.where((item) => item.id == null),
+                ],
+              );
+            });
+          }
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _newItemController.dispose();
+    _stompClient.deactivate();
+    super.dispose();
   }
 
   void _onItemCheckedToggle(int itemId) {
@@ -75,7 +121,6 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
       if (shouldSave == true) {
         await _notifier.saveTodoList();
       } else {
-        // Przywróć oryginalny stan
         _notifier.state = _originalTodoList.copyWith(
           items: List.from(_originalTodoList.items),
         );
@@ -199,6 +244,13 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
     );
   }
 
+  Future<void> _deleteItem(int itemId) async {
+    _notifier.removeItem(itemId);
+    setState(() {
+      _hasChanges = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -224,7 +276,7 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
                 );
               },
             ),
-            if (currentUser != null && todoListState.createdByUser?.id == currentUser.id)
+            if (currentUser != null && todoListState.createdByUser.id == currentUser.id)
               IconButton(
                 icon: const Icon(Icons.share),
                 onPressed: _shareTodoList,
@@ -238,22 +290,35 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
                 onReorder: _onReorder,
                 children: [
                   for (var item in items)
-                    ListTile(
+                    TodoItemTile(
                       key: Key(item.id.toString()),
-                      title: Text(
-                        item.description,
-                        style: TextStyle(
-                          decoration: item.checked ? TextDecoration.lineThrough : null,
-                          color: item.checked
-                              ? theme.textTheme.bodyMedium!.color!.withOpacity(0.5)
-                              : theme.textTheme.bodyMedium!.color,
-                        ),
-                      ),
-                      trailing: Checkbox(
-                        value: item.checked,
-                        onChanged: (_) => _onItemCheckedToggle(item.id),
-                        side: BorderSide(color: theme.colorScheme.primary),
-                      ),
+                      item: item,
+                      onItemCheckedToggle: () => _onItemCheckedToggle(item.id),
+                      onItemDelete: () async {
+                        final shouldDelete = await showDialog<bool>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Usuń element'),
+                              content: const Text('Czy na pewno chcesz usunąć ten element?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(false),
+                                  child: const Text('Nie'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(true),
+                                  child: const Text('Tak'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        if (shouldDelete == true) {
+                          await _deleteItem(item.id);
+                        }
+                      },
                     ),
                 ],
               ),
@@ -265,9 +330,17 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
                   Expanded(
                     child: TextField(
                       controller: _newItemController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Dodaj nowy element',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: theme.colorScheme.primary),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: theme.colorScheme.primary),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: theme.colorScheme.primary, width: 2.0),
+                        ),
                       ),
                     ),
                   ),
@@ -282,11 +355,5 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _newItemController.dispose();
-    super.dispose();
   }
 }
