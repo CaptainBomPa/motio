@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/todo_list.dart';
+import '../providers/todo_list_provider.dart';
 import '../screens/todo_list_detail_screen.dart';
 import '../providers/user_provider.dart';
 import '../services/todo_service.dart';
@@ -11,9 +12,10 @@ class TodoListTile extends ConsumerWidget {
 
   TodoListTile({super.key, required this.todoList});
 
-  Future<void> _deleteTodoList(BuildContext context) async {
+  Future<void> _deleteTodoList(BuildContext context, WidgetRef ref) async {
     try {
       await todoService.deleteTodoList(todoList.id);
+      ref.invalidate(todoListProvider);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Lista TODO została usunięta.')),
       );
@@ -69,7 +71,7 @@ class TodoListTile extends ConsumerWidget {
         );
       },
       onDismissed: (direction) async {
-        await _deleteTodoList(context);
+        await _deleteTodoList(context, ref);
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -80,7 +82,7 @@ class TodoListTile extends ConsumerWidget {
               MaterialPageRoute(
                 builder: (context) => TodoListDetailScreen(todoList: todoList),
               ),
-            );
+            ).then((_) => ref.invalidate(todoListProvider));
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.0),

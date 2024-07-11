@@ -8,9 +8,7 @@ class TodoService extends BaseService {
   static const String _todoListsUrl = "${HostApiData.baseCoreApiUrl}/todo-lists";
 
   Future<List<TodoList>> fetchAllTodoLists() async {
-    final response = await sendAuthenticatedRequest(
-        http.Request('GET', Uri.parse(_todoListsUrl))
-    );
+    final response = await sendAuthenticatedRequest(http.Request('GET', Uri.parse(_todoListsUrl)));
 
     if (response.statusCode == 200) {
       final decoded = utf8.decode(response.bodyBytes);
@@ -22,9 +20,7 @@ class TodoService extends BaseService {
   }
 
   Future<TodoList> getTodoListById(int id) async {
-    final response = await sendAuthenticatedRequest(
-        http.Request('GET', Uri.parse('$_todoListsUrl/$id'))
-    );
+    final response = await sendAuthenticatedRequest(http.Request('GET', Uri.parse('$_todoListsUrl/$id')));
 
     if (response.statusCode == 200) {
       final decoded = utf8.decode(response.bodyBytes);
@@ -35,10 +31,9 @@ class TodoService extends BaseService {
   }
 
   Future<TodoList> updateTodoList(int id, Map<String, dynamic> listData) async {
-    final response = await sendAuthenticatedRequest(
-        http.Request('PUT', Uri.parse('$_todoListsUrl/$id'))
-          ..body = jsonEncode(listData)
-    );
+    final response =
+    await sendAuthenticatedRequest(http.Request('PUT', Uri.parse('$_todoListsUrl/$id'))
+      ..body = jsonEncode(listData));
 
     if (response.statusCode == 200) {
       return TodoList.fromJson(jsonDecode(response.body));
@@ -48,12 +43,22 @@ class TodoService extends BaseService {
   }
 
   Future<void> deleteTodoList(int id) async {
-    final response = await sendAuthenticatedRequest(
-        http.Request('DELETE', Uri.parse('$_todoListsUrl/$id'))
-    );
+    final response = await sendAuthenticatedRequest(http.Request('DELETE', Uri.parse('$_todoListsUrl/$id')));
 
     if (response.statusCode != 204) {
       throw Exception('Failed to delete todo list');
+    }
+  }
+
+  Future<TodoList> createTodoList(Map<String, dynamic> listData) async {
+    final response = await sendAuthenticatedRequest(http.Request('POST', Uri.parse(_todoListsUrl))
+      ..body = jsonEncode(listData)
+      ..headers['Content-Type'] = 'application/json');
+
+    if (response.statusCode == 200) {
+      return TodoList.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to create todo list');
     }
   }
 }

@@ -36,7 +36,9 @@ public class SecurityConfig {
             "/register",
             "/login",
             "/login/admin",
-            "/refresh-token"
+            "/refresh-token",
+            "/ws",
+            "/ws/**"
     };
     private final MotioUserDetailsService motioUserDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
@@ -62,4 +64,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-

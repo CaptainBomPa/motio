@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:motio_client/models/user.dart';
+import '../models/todo_list.dart';
 import '../providers/todo_list_provider.dart';
+import '../services/todo_service.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/todo_list_tile.dart';
 
@@ -15,6 +18,8 @@ class _TodoListScreenState extends ConsumerState<TodoListScreen> with SingleTick
   late AnimationController _controller;
   late Animation<double> _animation;
   bool _isLoading = true;
+  final TextEditingController _newListController = TextEditingController();
+  final TodoService _todoService = TodoService();
 
   @override
   void initState() {
@@ -42,9 +47,64 @@ class _TodoListScreenState extends ConsumerState<TodoListScreen> with SingleTick
     await ref.refresh(todoListProvider.future);
   }
 
+  Future<void> _addNewTodoList(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Utwórz nową listę TODO'),
+          content: TextField(
+            controller: _newListController,
+            decoration: InputDecoration(
+              labelText: 'Nazwa listy',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Anuluj'),
+            ),
+            TextButton(
+              onPressed: () async {
+                final listName = _newListController.text.trim();
+                if (listName.isNotEmpty) {
+                  final newTodoList = TodoList(
+                      id: 0,
+                      listName: listName,
+                      items: [],
+                      accessibleUsers: [],
+                      createdByUser: User(id: 0,
+                          username: '',
+                          firstName: '',
+                          lastName: '',
+                          email: ''));
+                  try {
+                    await _todoService.createTodoList(newTodoList.toJson());
+                    ref.invalidate(todoListProvider);
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Lista TODO została utworzona.')),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Błąd podczas tworzenia listy TODO: $e')),
+                    );
+                  }
+                }
+              },
+              child: Text('Utwórz'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _controller.dispose();
+    _newListController.dispose();
     super.dispose();
   }
 
@@ -55,6 +115,12 @@ class _TodoListScreenState extends ConsumerState<TodoListScreen> with SingleTick
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lista TODO'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => _addNewTodoList(context),
+          ),
+        ],
       ),
       drawer: const AppDrawer(),
       body: _isLoading
