@@ -1,35 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/shopping_item.dart';
-import '../models/shopping_list.dart';
+import '../models/todo_item.dart';
+import '../models/todo_list.dart';
 import '../models/user.dart';
-import '../providers/shopping_list_detail_provider.dart';
+import '../providers/todo_list_detail_provider.dart';
 import '../providers/user_provider.dart';
 import '../services/user_service.dart';
 
-class ShoppingListDetailScreen extends ConsumerStatefulWidget {
-  final ShoppingList shoppingList;
+class TodoListDetailScreen extends ConsumerStatefulWidget {
+  final TodoList todoList;
 
-  const ShoppingListDetailScreen({super.key, required this.shoppingList});
+  const TodoListDetailScreen({super.key, required this.todoList});
 
   @override
-  _ShoppingListDetailScreenState createState() => _ShoppingListDetailScreenState();
+  _TodoListDetailScreenState createState() => _TodoListDetailScreenState();
 }
 
-class _ShoppingListDetailScreenState extends ConsumerState<ShoppingListDetailScreen> {
+class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
   bool _isEditing = false;
   bool _hasChanges = false;
-  late ShoppingListDetailNotifier _notifier;
-  late ShoppingList _originalShoppingList;
+  late TodoListDetailNotifier _notifier;
+  late TodoList _originalTodoList;
   final TextEditingController _newItemController = TextEditingController();
   final UserService _userService = UserService();
 
   @override
   void initState() {
     super.initState();
-    _notifier = ref.read(shoppingListDetailProvider(widget.shoppingList.id).notifier);
-    _originalShoppingList = widget.shoppingList.copyWith(
-      items: List.from(widget.shoppingList.items),
+    _notifier = ref.read(todoListDetailProvider(widget.todoList.id).notifier);
+    _originalTodoList = widget.todoList.copyWith(
+      items: List.from(widget.todoList.items),
     );
   }
 
@@ -73,11 +73,11 @@ class _ShoppingListDetailScreenState extends ConsumerState<ShoppingListDetailScr
       );
 
       if (shouldSave == true) {
-        await _notifier.saveShoppingList();
+        await _notifier.saveTodoList();
       } else {
         // Przywróć oryginalny stan
-        _notifier.state = _originalShoppingList.copyWith(
-          items: List.from(_originalShoppingList.items),
+        _notifier.state = _originalTodoList.copyWith(
+          items: List.from(_originalTodoList.items),
         );
       }
     }
@@ -87,7 +87,7 @@ class _ShoppingListDetailScreenState extends ConsumerState<ShoppingListDetailScr
   void _addNewItem() {
     final newItemDescription = _newItemController.text.trim();
     if (newItemDescription.isNotEmpty) {
-      final newItem = ShoppingItem(id: DateTime
+      final newItem = TodoItem(id: DateTime
           .now()
           .millisecondsSinceEpoch, checked: false, description: newItemDescription);
       _notifier.addItem(newItem);
@@ -98,18 +98,18 @@ class _ShoppingListDetailScreenState extends ConsumerState<ShoppingListDetailScr
     }
   }
 
-  Future<void> _shareShoppingList() async {
+  Future<void> _shareTodoList() async {
     final allUsers = await _userService.getAllUsers();
     final currentUser = ref.read(userProvider);
     final usersToShow = allUsers.where((user) => user.id != currentUser!.id).toList();
     final theme = Theme.of(context);
-    Set<User> accessibleUsers = Set.from(widget.shoppingList.accessibleUsers);
+    Set<User> accessibleUsers = Set.from(widget.todoList.accessibleUsers);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Udostępnij listę zakupową'),
+          title: Text('Udostępnij listę TODO'),
           content: SizedBox(
             width: double.maxFinite,
             child: StatefulBuilder(
@@ -177,17 +177,17 @@ class _ShoppingListDetailScreenState extends ConsumerState<ShoppingListDetailScr
             TextButton(
               onPressed: () async {
                 try {
-                  _notifier.state = widget.shoppingList.copyWith(
+                  _notifier.state = widget.todoList.copyWith(
                     accessibleUsers: List.from(accessibleUsers),
                   );
-                  await _notifier.saveShoppingList();
+                  await _notifier.saveTodoList();
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Lista zakupowa została udostępniona.')),
+                    SnackBar(content: Text('Lista TODO została udostępniona.')),
                   );
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Błąd podczas udostępniania listy zakupowej: $e')),
+                    SnackBar(content: Text('Błąd podczas udostępniania listy TODO: $e')),
                   );
                 }
               },
@@ -202,20 +202,20 @@ class _ShoppingListDetailScreenState extends ConsumerState<ShoppingListDetailScr
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final shoppingListState = ref.watch(shoppingListDetailProvider(widget.shoppingList.id));
+    final todoListState = ref.watch(todoListDetailProvider(widget.todoList.id));
     final currentUser = ref.watch(userProvider);
-    final items = [...shoppingListState.items]..sort((a, b) => a.checked == b.checked ? 0 : (a.checked ? 1 : -1));
+    final items = [...todoListState.items]..sort((a, b) => a.checked == b.checked ? 0 : (a.checked ? 1 : -1));
 
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(shoppingListState.listName),
+          title: Text(todoListState.listName),
           actions: [
             IconButton(
               icon: const Icon(Icons.save),
               onPressed: () async {
-                await _notifier.saveShoppingList();
+                await _notifier.saveTodoList();
                 setState(() {
                   _hasChanges = false;
                 });
@@ -224,10 +224,10 @@ class _ShoppingListDetailScreenState extends ConsumerState<ShoppingListDetailScr
                 );
               },
             ),
-            if (currentUser != null && shoppingListState.createdByUser?.id == currentUser.id)
+            if (currentUser != null && todoListState.createdByUser?.id == currentUser.id)
               IconButton(
                 icon: const Icon(Icons.share),
-                onPressed: _shareShoppingList,
+                onPressed: _shareTodoList,
               ),
           ],
         ),

@@ -1,20 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/shopping_list.dart';
-import '../models/shopping_item.dart';
+import '../models/todo_list.dart';
+import '../models/todo_item.dart';
 import '../models/user.dart';
-import '../services/shopping_service.dart';
+import '../services/todo_service.dart';
 import 'user_provider.dart';
 
-final shoppingListDetailProvider = StateNotifierProvider.family<ShoppingListDetailNotifier, ShoppingList, int>((ref, id) {
-  final shoppingService = ShoppingService();
-  return ShoppingListDetailNotifier(shoppingService, id);
+final todoListDetailProvider = StateNotifierProvider.family<TodoListDetailNotifier, TodoList, int>((ref, id) {
+  final todoService = TodoService();
+  return TodoListDetailNotifier(todoService, id);
 });
 
-class ShoppingListDetailNotifier extends StateNotifier<ShoppingList> {
-  final ShoppingService _shoppingService;
+class TodoListDetailNotifier extends StateNotifier<TodoList> {
+  final TodoService _todoService;
   final int _id;
 
-  ShoppingListDetailNotifier(this._shoppingService, this._id) : super(ShoppingList(id: _id,
+  TodoListDetailNotifier(this._todoService, this._id) : super(TodoList(id: _id,
       listName: '',
       items: [],
       createdByUser: User(id: 0,
@@ -23,19 +23,19 @@ class ShoppingListDetailNotifier extends StateNotifier<ShoppingList> {
           lastName: '',
           email: ''),
       accessibleUsers: [])) {
-    _loadShoppingList();
+    _loadTodoList();
   }
 
-  Future<void> _loadShoppingList() async {
-    final shoppingList = await _shoppingService.getShoppingListById(_id);
-    state = shoppingList;
+  Future<void> _loadTodoList() async {
+    final todoList = await _todoService.getTodoListById(_id);
+    state = todoList;
   }
 
-  void addItem(ShoppingItem item) {
+  void addItem(TodoItem item) {
     state = state.copyWith(items: [...state.items, item]);
   }
 
-  void updateItem(ShoppingItem item) {
+  void updateItem(TodoItem item) {
     state = state.copyWith(
       items: state.items.map((i) => i.id == item.id ? item : i).toList(),
     );
@@ -66,7 +66,7 @@ class ShoppingListDetailNotifier extends StateNotifier<ShoppingList> {
     state = state.copyWith(items: items);
   }
 
-  Future<void> saveShoppingList() async {
-    await _shoppingService.updateShoppingList(state.id, state.toJson());
+  Future<void> saveTodoList() async {
+    await _todoService.updateTodoList(state.id, state.toJson());
   }
 }
