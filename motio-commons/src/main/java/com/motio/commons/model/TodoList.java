@@ -16,9 +16,9 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "shopping_list")
+@Table(name = "todo_list")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class ShoppingList {
+public class TodoList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class ShoppingList {
     private String listName;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ShoppingItem> items = new LinkedList<>();
+    private List<TodoItem> items = new LinkedList<>();
 
     @ManyToOne
     @JoinColumn(name = "created_by_user_id", nullable = false)
@@ -36,8 +36,8 @@ public class ShoppingList {
 
     @ManyToMany
     @JoinTable(
-            name = "shopping_list_access",
-            joinColumns = @JoinColumn(name = "shopping_list_id"),
+            name = "todo_list_access",
+            joinColumns = @JoinColumn(name = "todo_list_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> accessibleUsers = new HashSet<>();

@@ -1,6 +1,6 @@
 package com.motio.core.config;
 
-import com.motio.core.service.sender.ShoppingListUpdateSender;
+import com.motio.core.service.sender.TodoListUpdateSender;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class TestConfig {
 
     @Bean
-    public ShoppingListUpdateSender shoppingListUpdateSender() {
-        return Mockito.mock(ShoppingListUpdateSender.class);
+    public TodoListUpdateSender todoListUpdateSender() {
+        return Mockito.mock(TodoListUpdateSender.class);
     }
 }

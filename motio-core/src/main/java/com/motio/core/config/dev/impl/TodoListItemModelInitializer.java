@@ -1,11 +1,11 @@
 package com.motio.core.config.dev.impl;
 
-import com.motio.commons.model.ShoppingItem;
-import com.motio.commons.model.ShoppingList;
+import com.motio.commons.model.TodoItem;
+import com.motio.commons.model.TodoList;
 import com.motio.commons.model.User;
 import com.motio.commons.service.UserService;
 import com.motio.core.config.dev.ModelInitializer;
-import com.motio.core.service.ShoppingListService;
+import com.motio.core.service.TodoListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +15,9 @@ import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
-public class ShoppingListItemModelInitializer implements ModelInitializer<ShoppingList> {
+public class TodoListItemModelInitializer implements ModelInitializer<TodoList> {
     private static final Random random = new Random();
-    private final ShoppingListService shoppingListService;
+    private final TodoListService todoListService;
     private final UserService userService;
 
     private final List<String> LIST_NAMES = List.of("Zakupy na dziś", "Na impreze", "Do pracy", "Na wyjazd", "Na wakacje");
@@ -33,22 +33,22 @@ public class ShoppingListItemModelInitializer implements ModelInitializer<Shoppi
     }
 
     @Override
-    public Collection<ShoppingList> initializeObjects() {
-        final List<ShoppingList> loadedLists = new LinkedList<>();
+    public Collection<TodoList> initializeObjects() {
+        final List<TodoList> loadedLists = new LinkedList<>();
         final List<User> users = userService.getAllUsers();
 
         IntStream.range(1, 15).forEach(i -> {
-            ShoppingList shoppingList = new ShoppingList();
-            shoppingList.setListName(LIST_NAMES.get(random.nextInt(LIST_NAMES.size())));
+            TodoList todoList = new TodoList();
+            todoList.setListName(LIST_NAMES.get(random.nextInt(LIST_NAMES.size())));
             User selectedUser = users.get(random.nextInt(users.size()));
             Set<User> sharedUsers = new HashSet<>(getRandomElements(users, users.size()));
-            shoppingList.setAccessibleUsers(sharedUsers);
+            todoList.setAccessibleUsers(sharedUsers);
 
-            List<ShoppingItem> shoppingItems = new LinkedList<>();
+            List<TodoItem> todoItems = new LinkedList<>();
             getRandomElements(ITEM_NAMES, random.nextInt(8))
-                    .forEach(name -> shoppingItems.add(ShoppingItem.builder().checked(false).description(name).build()));
-            shoppingList.setItems(shoppingItems);
-            loadedLists.add(shoppingListService.saveShoppingList(shoppingList, selectedUser.getUsername()));
+                    .forEach(name -> todoItems.add(TodoItem.builder().checked(false).description(name).build()));
+            todoList.setItems(todoItems);
+            loadedLists.add(todoListService.saveTodoList(todoList, selectedUser.getUsername()));
         });
 
         return loadedLists;

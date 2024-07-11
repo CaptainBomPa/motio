@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/shopping_list.dart';
-import '../screens/shopping_list_detail_screen.dart';
+import '../models/todo_list.dart';
+import '../screens/todo_list_detail_screen.dart';
 import '../providers/user_provider.dart';
-import '../services/shopping_service.dart';
+import '../services/todo_service.dart';
 
-class ShoppingListTile extends ConsumerWidget {
-  final ShoppingList shoppingList;
-  final ShoppingService shoppingService = ShoppingService();
+class TodoListTile extends ConsumerWidget {
+  final TodoList todoList;
+  final TodoService todoService = TodoService();
 
-  ShoppingListTile({super.key, required this.shoppingList});
+  TodoListTile({super.key, required this.todoList});
 
-  Future<void> _deleteShoppingList(BuildContext context) async {
+  Future<void> _deleteTodoList(BuildContext context) async {
     try {
-      await shoppingService.deleteShoppingList(shoppingList.id);
+      await todoService.deleteTodoList(todoList.id);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lista zakupowa została usunięta.')),
+        SnackBar(content: Text('Lista TODO została usunięta.')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Błąd podczas usuwania listy zakupowej: $e')),
+        SnackBar(content: Text('Błąd podczas usuwania listy TODO: $e')),
       );
     }
   }
@@ -28,17 +28,17 @@ class ShoppingListTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final checkedItemsCount = shoppingList.items
+    final checkedItemsCount = todoList.items
         .where((item) => item.checked)
         .length;
-    final uncheckedItemsCount = shoppingList.items.length - checkedItemsCount;
+    final uncheckedItemsCount = todoList.items.length - checkedItemsCount;
     final currentUser = ref.watch(userProvider);
 
-    final isSharedByAnotherUser = currentUser != null && shoppingList.createdByUser.id != currentUser.id;
+    final isSharedByAnotherUser = currentUser != null && todoList.createdByUser.id != currentUser.id;
 
     return Dismissible(
-      key: Key(shoppingList.id.toString()),
-      direction: currentUser != null && shoppingList.createdByUser.id == currentUser.id
+      key: Key(todoList.id.toString()),
+      direction: currentUser != null && todoList.createdByUser.id == currentUser.id
           ? DismissDirection.endToStart
           : DismissDirection.none,
       background: Container(
@@ -53,7 +53,7 @@ class ShoppingListTile extends ConsumerWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text("Potwierdź usunięcie"),
-              content: const Text("Czy na pewno chcesz usunąć tę listę zakupową?"),
+              content: const Text("Czy na pewno chcesz usunąć tę listę TODO?"),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
@@ -69,7 +69,7 @@ class ShoppingListTile extends ConsumerWidget {
         );
       },
       onDismissed: (direction) async {
-        await _deleteShoppingList(context);
+        await _deleteTodoList(context);
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -78,7 +78,7 @@ class ShoppingListTile extends ConsumerWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ShoppingListDetailScreen(shoppingList: shoppingList),
+                builder: (context) => TodoListDetailScreen(todoList: todoList),
               ),
             );
           },
@@ -96,7 +96,7 @@ class ShoppingListTile extends ConsumerWidget {
                     children: [
                       Center(
                         child: Text(
-                          shoppingList.listName,
+                          todoList.listName,
                           style: theme.textTheme.titleLarge?.copyWith(
                             color: isDarkMode ? Colors.white : Colors.black,
                             fontSize: 24,
@@ -125,7 +125,7 @@ class ShoppingListTile extends ConsumerWidget {
                         const Spacer(),
                         Center(
                           child: Text(
-                            'Udostępnione przez: ${shoppingList.createdByUser.firstName} ${shoppingList.createdByUser.lastName}',
+                            'Udostępnione przez: ${todoList.createdByUser.firstName} ${todoList.createdByUser.lastName}',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: isDarkMode ? Colors.white : Colors.black,
                             ),

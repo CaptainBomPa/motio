@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/shopping_list_provider.dart';
+import '../providers/todo_list_provider.dart';
 import '../widgets/app_drawer.dart';
-import '../widgets/shopping_list_tile.dart';
+import '../widgets/todo_list_tile.dart';
 
-class ShoppingListScreen extends ConsumerStatefulWidget {
-  const ShoppingListScreen({super.key});
+class TodoListScreen extends ConsumerStatefulWidget {
+  const TodoListScreen({super.key});
 
   @override
-  _ShoppingListScreenState createState() => _ShoppingListScreenState();
+  _TodoListScreenState createState() => _TodoListScreenState();
 }
 
-class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> with SingleTickerProviderStateMixin {
+class _TodoListScreenState extends ConsumerState<TodoListScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   bool _isLoading = true;
@@ -27,19 +27,19 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> with Si
       parent: _controller,
       curve: Curves.easeInOut,
     );
-    _loadShoppingLists();
+    _loadTodoLists();
   }
 
-  Future<void> _loadShoppingLists() async {
-    await ref.read(shoppingListProvider.future);
+  Future<void> _loadTodoLists() async {
+    await ref.read(todoListProvider.future);
     setState(() {
       _isLoading = false;
     });
     _controller.forward();
   }
 
-  Future<void> _refreshShoppingLists() async {
-    await ref.refresh(shoppingListProvider.future);
+  Future<void> _refreshTodoLists() async {
+    await ref.refresh(todoListProvider.future);
   }
 
   @override
@@ -50,33 +50,33 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> with Si
 
   @override
   Widget build(BuildContext context) {
-    final shoppingListAsyncValue = ref.watch(shoppingListProvider);
+    final todoListAsyncValue = ref.watch(todoListProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista zakupów'),
+        title: const Text('Lista TODO'),
       ),
       drawer: const AppDrawer(),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : shoppingListAsyncValue.when(
+          : todoListAsyncValue.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(child: Text('Wystąpił błąd: $error')),
-        data: (shoppingLists) {
+        data: (todoLists) {
           return RefreshIndicator(
-            onRefresh: _refreshShoppingLists,
+            onRefresh: _refreshTodoLists,
             child: FadeTransition(
               opacity: _animation,
               child: ListView.builder(
-                itemCount: shoppingLists.length,
+                itemCount: todoLists.length,
                 itemBuilder: (context, index) {
-                  final shoppingList = shoppingLists[index];
+                  final todoList = todoLists[index];
                   return SlideTransition(
                     position: Tween<Offset>(
                       begin: const Offset(0, -0.1),
                       end: Offset.zero,
                     ).animate(_animation),
-                    child: ShoppingListTile(shoppingList: shoppingList),
+                    child: TodoListTile(todoList: todoList),
                   );
                 },
               ),

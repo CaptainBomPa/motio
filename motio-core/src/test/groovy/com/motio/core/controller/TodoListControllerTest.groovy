@@ -1,12 +1,12 @@
 package com.motio.core.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.motio.commons.model.ShoppingItem
-import com.motio.commons.model.ShoppingList
+import com.motio.commons.model.TodoItem
+import com.motio.commons.model.TodoList
 import com.motio.commons.model.User
 import com.motio.commons.service.UserService
-import com.motio.core.repository.ShoppingListRepository
-import com.motio.core.service.ShoppingListService
+import com.motio.core.repository.TodoListRepository
+import com.motio.core.service.TodoListService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -24,15 +24,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ShoppingListControllerTest extends Specification {
+class TodoListControllerTest extends Specification {
     @Autowired
     MockMvc mockMvc
 
     @Autowired
-    ShoppingListService shoppingListService
+    TodoListService todoListService
 
     @Autowired
-    ShoppingListRepository shoppingListRepository
+    TodoListRepository todoListRepository
 
     @Autowired
     UserService userService
@@ -41,44 +41,44 @@ class ShoppingListControllerTest extends Specification {
     ObjectMapper objectMapper
 
     void setup() {
-        shoppingListRepository.findAll().each { shoppingListService.deleteShoppingList(it.id) }
+        todoListRepository.findAll().each { todoListService.deleteTodoList(it.id) }
         userService.getAllUsers().each { userService.deleteUser(it.id) }
     }
 
     void cleanup() {
-        shoppingListRepository.findAll().each { shoppingListService.deleteShoppingList(it.id) }
+        todoListRepository.findAll().each { todoListService.deleteTodoList(it.id) }
         userService.getAllUsers().each { userService.deleteUser(it.id) }
     }
 
-    def "test creating a shopping list"() {
+    def "test creating a todo list"() {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList = new ShoppingList(listName: "test_list")
+        def todoList = new TodoList(listName: "test_list")
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), "password123", [new SimpleGrantedAuthority("ROLE_USER")])
         SecurityContextHolder.getContext().setAuthentication(auth)
 
         expect:
-        mockMvc.perform(post("/shopping-lists")
+        mockMvc.perform(post("/todo-lists")
                 .with(authentication(auth))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(shoppingList)))
+                .content(objectMapper.writeValueAsString(todoList)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$.id').isNotEmpty())
                 .andExpect(jsonPath('$.createdByUser.username').value("user123"))
     }
 
-    def "test updating a shopping list"() {
+    def "test updating a todo list"() {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list"), user.getUsername())
-        def items = [new ShoppingItem(description: "Milk"), new ShoppingItem(description: "Bread")]
+        def todoList = todoListService.saveTodoList(new TodoList(listName: "test_list"), user.getUsername())
+        def items = [new TodoItem(description: "Milk"), new TodoItem(description: "Bread")]
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), "password123", [new SimpleGrantedAuthority("ROLE_USER")])
         SecurityContextHolder.getContext().setAuthentication(auth)
 
         expect:
-        mockMvc.perform(put("/shopping-lists/${shoppingList.getId()}/items")
+        mockMvc.perform(put("/todo-lists/${todoList.getId()}/items")
                 .with(authentication(auth))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(items)))
@@ -87,50 +87,50 @@ class ShoppingListControllerTest extends Specification {
                 .andExpect(jsonPath('$.items[1].description').value("Bread"))
     }
 
-    def "test deleting a shopping list"() {
+    def "test deleting a todo list"() {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list"), user.getUsername())
+        def todoList = todoListService.saveTodoList(new TodoList(listName: "test_list"), user.getUsername())
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), "password123", [new SimpleGrantedAuthority("ROLE_USER")])
         SecurityContextHolder.getContext().setAuthentication(auth)
 
         expect:
-        mockMvc.perform(delete("/shopping-lists/${shoppingList.getId()}")
+        mockMvc.perform(delete("/todo-lists/${todoList.getId()}")
                 .with(authentication(auth)))
                 .andExpect(status().isNoContent())
     }
 
-    def "test getting a shopping list by ID"() {
+    def "test getting a todo list by ID"() {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list"), user.getUsername())
+        def todoList = todoListService.saveTodoList(new TodoList(listName: "test_list"), user.getUsername())
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), "password123", [new SimpleGrantedAuthority("ROLE_USER")])
         SecurityContextHolder.getContext().setAuthentication(auth)
 
         expect:
-        mockMvc.perform(get("/shopping-lists/${shoppingList.getId()}")
+        mockMvc.perform(get("/todo-lists/${todoList.getId()}")
                 .with(authentication(auth)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$.id').value(shoppingList.getId()))
+                .andExpect(jsonPath('$.id').value(todoList.getId()))
                 .andExpect(jsonPath('$.createdByUser.username').value("user123"))
     }
 
-    def "test getting all shopping lists"() {
+    def "test getting all todo lists"() {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         userService.saveUser(user)
-        def shoppingList1 = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list"), user.getUsername())
-        def shoppingList2 = shoppingListService.saveShoppingList(new ShoppingList(listName: "test_list"), user.getUsername())
+        def todoList1 = todoListService.saveTodoList(new TodoList(listName: "test_list"), user.getUsername())
+        def todoList2 = todoListService.saveTodoList(new TodoList(listName: "test_list"), user.getUsername())
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), "password123", [new SimpleGrantedAuthority("ROLE_USER")])
         SecurityContextHolder.getContext().setAuthentication(auth)
 
         expect:
-        mockMvc.perform(get("/shopping-lists")
+        mockMvc.perform(get("/todo-lists")
                 .with(authentication(auth)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$[0].id').value(shoppingList1.getId()))
-                .andExpect(jsonPath('$[1].id').value(shoppingList2.getId()))
+                .andExpect(jsonPath('$[0].id').value(todoList1.getId()))
+                .andExpect(jsonPath('$[1].id').value(todoList2.getId()))
     }
 }

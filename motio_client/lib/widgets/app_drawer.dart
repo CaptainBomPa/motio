@@ -7,7 +7,7 @@ import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/recipe_categories_screen.dart';
 import '../screens/settings_screen.dart';
-import '../screens/shopping_list_screen.dart';
+import '../screens/todo_list_screen.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -74,12 +74,12 @@ class AppDrawer extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.shopping_bag_outlined, color: theme.colorScheme.primary),
-              title: Text('Lista zakupów', style: theme.textTheme.bodyLarge),
+              leading: Icon(Icons.task_outlined, color: theme.colorScheme.primary),
+              title: Text('Lista TODO', style: theme.textTheme.bodyLarge),
               onTap: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const ShoppingListScreen()),
+                  MaterialPageRoute(builder: (context) => const TodoListScreen()),
                 );
               },
             ),

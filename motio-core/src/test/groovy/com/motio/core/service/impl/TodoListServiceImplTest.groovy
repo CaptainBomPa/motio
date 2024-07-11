@@ -1,14 +1,15 @@
 package com.motio.core.service.impl
 
-import com.motio.commons.model.ShoppingItem
-import com.motio.commons.model.ShoppingList
+
+import com.motio.commons.model.TodoItem
+import com.motio.commons.model.TodoList
 import com.motio.commons.model.User
 import com.motio.commons.repository.UserRepository
 import com.motio.core.config.TestConfig
-import com.motio.core.repository.ShoppingItemRepository
-import com.motio.core.repository.ShoppingListRepository
-import com.motio.core.service.ShoppingListService
-import com.motio.core.service.sender.ShoppingListUpdateSender
+import com.motio.core.repository.TodoItemRepository
+import com.motio.core.repository.TodoListRepository
+import com.motio.core.service.TodoListService
+import com.motio.core.service.sender.TodoListUpdateSender
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
@@ -19,100 +20,100 @@ import spock.lang.Specification
 
 @DataJpaTest
 @Import(TestConfig)
-class ShoppingListServiceImplTest extends Specification {
+class TodoListServiceImplTest extends Specification {
 
     @Autowired
-    ShoppingListRepository shoppingListRepository
+    TodoListRepository todoListRepository
     @Autowired
-    ShoppingItemRepository shoppingItemRepository
+    TodoItemRepository todoItemRepository
     @Autowired
     UserRepository userRepository
     @Autowired
     TestEntityManager entityManager
     @Autowired
-    ShoppingListUpdateSender shoppingListUpdateSender
-    ShoppingListService shoppingListService
+    TodoListUpdateSender todoListUpdateSender
+    TodoListService todoListService
 
     void setup() {
-        shoppingListService = new ShoppingListServiceImpl(shoppingListRepository, shoppingItemRepository, userRepository, shoppingListUpdateSender)
+        todoListService = new TodoListServiceImpl(todoListRepository, todoItemRepository, userRepository, todoListUpdateSender)
     }
 
-    def "should save shopping list"() {
+    def "should save todo list"() {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(listName: "test_list")
+        def todoList = new TodoList(listName: "test_list")
 
         when:
-        ShoppingList savedShoppingList = shoppingListService.saveShoppingList(shoppingList, user.getUsername())
+        TodoList savedTodoList = todoListService.saveTodoList(todoList, user.getUsername())
 
         then:
-        savedShoppingList != null
-        savedShoppingList.getId() != null
-        savedShoppingList.getCreatedByUser() == user
+        savedTodoList != null
+        savedTodoList.getId() != null
+        savedTodoList.getCreatedByUser() == user
     }
 
-    def "should update shopping list"() {
+    def "should update todo list"() {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
-        entityManager.persistAndFlush(shoppingList)
-        def newItems = [new ShoppingItem(description: "Milk"), new ShoppingItem(description: "Bread")]
+        def todoList = new TodoList(listName: "test_list", createdByUser: user)
+        entityManager.persistAndFlush(todoList)
+        def newItems = [new TodoItem(description: "Milk"), new TodoItem(description: "Bread")]
 
         when:
-        ShoppingList updatedShoppingList = shoppingListService.updateItemsInShoppingList(shoppingList.getId(), newItems)
+        TodoList updatedTodoList = todoListService.updateItemsInTodoList(todoList.getId(), newItems)
 
         then:
-        updatedShoppingList.getItems().size() == 2
-        updatedShoppingList.getItems()*.getDescription().containsAll(["Milk", "Bread"])
+        updatedTodoList.getItems().size() == 2
+        updatedTodoList.getItems()*.getDescription().containsAll(["Milk", "Bread"])
     }
 
-    def "should delete shopping list"() {
+    def "should delete todo list"() {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
-        entityManager.persistAndFlush(shoppingList)
+        def todoList = new TodoList(listName: "test_list", createdByUser: user)
+        entityManager.persistAndFlush(todoList)
 
         when:
-        shoppingListService.deleteShoppingList(shoppingList.getId())
+        todoListService.deleteTodoList(todoList.getId())
 
         then:
-        shoppingListRepository.findById(shoppingList.getId()).isEmpty()
+        todoListRepository.findById(todoList.getId()).isEmpty()
     }
 
-    def "should get shopping list by ID"() {
+    def "should get todo list by ID"() {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList = new ShoppingList(listName: "test_list", createdByUser: user)
-        entityManager.persistAndFlush(shoppingList)
+        def todoList = new TodoList(listName: "test_list", createdByUser: user)
+        entityManager.persistAndFlush(todoList)
 
         when:
-        ShoppingList foundShoppingList = shoppingListService.getShoppingListById(shoppingList.getId())
+        TodoList foundTodoList = todoListService.getTodoListById(todoList.getId())
 
         then:
-        foundShoppingList != null
-        foundShoppingList.getId() == shoppingList.getId()
+        foundTodoList != null
+        foundTodoList.getId() == todoList.getId()
     }
 
-    def "should get all shopping lists"() {
+    def "should get all todo lists"() {
         given:
         def user = new User(username: "user123", firstName: "John", lastName: "Doe", password: "password123", email: "john.doe@example.com")
         entityManager.persistAndFlush(user)
-        def shoppingList1 = new ShoppingList(listName: "test_list", createdByUser: user)
-        def shoppingList2 = new ShoppingList(listName: "test_list", createdByUser: user)
-        entityManager.persistAndFlush(shoppingList1)
-        entityManager.persistAndFlush(shoppingList2)
+        def todoList1 = new TodoList(listName: "test_list", createdByUser: user)
+        def todoList2 = new TodoList(listName: "test_list", createdByUser: user)
+        entityManager.persistAndFlush(todoList1)
+        entityManager.persistAndFlush(todoList2)
 
         Authentication authentication = createAuthentication(user)
 
         when:
-        List<ShoppingList> shoppingLists = shoppingListService.getAllShoppingLists(authentication)
+        List<TodoList> todoLists = todoListService.getAllTodoLists(authentication)
 
         then:
-        shoppingLists.size() == 2
+        todoLists.size() == 2
     }
 
     private Authentication createAuthentication(User user) {

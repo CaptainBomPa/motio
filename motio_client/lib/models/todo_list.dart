@@ -1,14 +1,14 @@
-import 'shopping_item.dart';
+import 'todo_item.dart';
 import 'user.dart';
 
-class ShoppingList {
+class TodoList {
   final int id;
   final String listName;
-  final List<ShoppingItem> items;
+  final List<TodoItem> items;
   final User createdByUser;
   final List<User> accessibleUsers;
 
-  ShoppingList({
+  TodoList({
     required this.id,
     required this.listName,
     required this.items,
@@ -16,11 +16,11 @@ class ShoppingList {
     required this.accessibleUsers,
   });
 
-  factory ShoppingList.fromJson(Map<String, dynamic> json) {
-    return ShoppingList(
+  factory TodoList.fromJson(Map<String, dynamic> json) {
+    return TodoList(
       id: json['id'],
       listName: json['listName'],
-      items: (json['items'] as List).map((i) => ShoppingItem.fromJson(i)).toList(),
+      items: (json['items'] as List).map((i) => TodoItem.fromJson(i)).toList(),
       createdByUser: User.fromJson(json['createdByUser']),
       accessibleUsers: (json['accessibleUsers'] as List).map((u) => User.fromJson(u)).toList(),
     );
@@ -36,14 +36,14 @@ class ShoppingList {
     };
   }
 
-  ShoppingList copyWith({
+  TodoList copyWith({
     int? id,
     String? listName,
-    List<ShoppingItem>? items,
+    List<TodoItem>? items,
     User? createdByUser,
     List<User>? accessibleUsers,
   }) {
-    return ShoppingList(
+    return TodoList(
       id: id ?? this.id,
       listName: listName ?? this.listName,
       items: items ?? this.items,
