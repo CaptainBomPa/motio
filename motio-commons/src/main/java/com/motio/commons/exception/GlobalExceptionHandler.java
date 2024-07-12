@@ -44,4 +44,19 @@ public class GlobalExceptionHandler {
     private ResponseEntity<?> handleContainerNotFoundException(ContainerNotFoundException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(DebtAlreadyExistsException.class)
+    private ResponseEntity<?> handleDebtAlreadyExistsException(DebtAlreadyExistsException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DebtNotFoundException.class)
+    private ResponseEntity<?> handleDebtNotFoundException(DebtNotFoundException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TransactionNotFoundException.class)
+    private ResponseEntity<?> handleTransactionNotFoundException(TransactionNotFoundException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }
