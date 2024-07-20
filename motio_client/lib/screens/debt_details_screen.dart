@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/debt.dart';
+import '../models/transaction.dart';
 import '../providers/user_provider.dart';
 import '../services/debt_service.dart';
 import '../widgets/dialog/add_transaction_dialog.dart';
@@ -89,6 +90,7 @@ class _DebtDetailsScreenState extends ConsumerState<DebtDetailsScreen> {
                       Text(formattedDate, style: theme.textTheme.bodySmall),
                     ],
                   ),
+                  onLongPress: () => _showTransactionOptions(context, transaction),
                 );
               },
             ),
@@ -108,6 +110,143 @@ class _DebtDetailsScreenState extends ConsumerState<DebtDetailsScreen> {
           onTransactionAdded: () async {
             await _refreshDebtDetails();
           },
+        );
+      },
+    );
+  }
+
+  void _showTransactionOptions(BuildContext context, Transaction transaction) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Wrap(
+          children: [
+            ListTile(
+              leading: Icon(Icons.edit),
+              title: Text('Modyfikuj'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _showEditTransactionDialog(context, transaction);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.delete),
+              title: Text('Usuń'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _confirmDeleteTransaction(context, transaction);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showEditTransactionDialog(BuildContext context, Transaction transaction) {
+    final TextEditingController amountController = TextEditingController(text: transaction.amount.toString());
+    final theme = Theme.of(context);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edytuj transakcję'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: amountController,
+                decoration: InputDecoration(labelText: 'Kwota'),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Anuluj', style: theme.textTheme.bodyMedium),
+            ),
+            TextButton(
+              onPressed: () async {
+                final amount = double.tryParse(amountController.text);
+                if (amount == null || amount < 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Podaj poprawną, nieujemną kwotę.')),
+                  );
+                  return;
+                }
+
+                setState(() {
+                  _isLoading = true;
+                });
+
+                try {
+                  await _debtService.updateTransaction(
+                    id: transaction.id,
+                    title: transaction.title,
+                    fromUser: transaction.fromUser,
+                    toUser: transaction.toUser,
+                    amount: amount,
+                    debt: _debt,
+                  );
+                  await _refreshDebtDetails();
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Błąd podczas aktualizacji transakcji: $e')),
+                  );
+                } finally {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text('Zapisz', style: theme.textTheme.bodyMedium),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _confirmDeleteTransaction(BuildContext context, Transaction transaction) {
+    final theme = Theme.of(context);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Usuń transakcję'),
+          content: Text('Czy na pewno chcesz usunąć tę transakcję?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Anuluj', style: theme.textTheme.bodyMedium),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                setState(() {
+                  _isLoading = true;
+                });
+
+                try {
+                  await _debtService.deleteTransaction(transaction.id);
+                  await _refreshDebtDetails();
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Błąd podczas usuwania transakcji: $e')),
+                  );
+                } finally {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                }
+              },
+              child: Text('Usuń', style: theme.textTheme.bodyMedium),
+            ),
+          ],
         );
       },
     );

@@ -72,11 +72,11 @@ public class DebtServiceImpl implements DebtService {
 
         existingTransaction.setAmount(transaction.getAmount());
         existingTransaction.setTitle(transaction.getTitle());
-        existingTransaction.setTransactionDate(transaction.getTransactionDate());
+        existingTransaction.setTransactionDate(LocalDateTime.now());
         existingTransaction.setDebt(debt);
-        debtRepository.save(debt);
+        Debt updatedDebt = debtRepository.save(debt);
 
-        return sortTransactionHistories(debt).getTransactionHistories().stream()
+        return sortTransactionHistories(updatedDebt).getTransactionHistories().stream()
                 .filter(t -> t.getId().equals(transaction.getId()))
                 .findFirst()
                 .orElseThrow(() -> new TransactionNotFoundException(transaction.getId()));

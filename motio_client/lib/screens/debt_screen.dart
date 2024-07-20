@@ -5,6 +5,7 @@ import '../providers/debt_provider.dart';
 import '../services/debt_service.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/debt_list_tile.dart';
+import '../widgets/dialog/add_debt_dialog.dart'; // Import the AddDebtDialog
 import 'debt_details_screen.dart'; // Import the DebtDetailsScreen
 
 class DebtScreen extends ConsumerStatefulWidget {
@@ -66,6 +67,12 @@ class _DebtScreenState extends ConsumerState<DebtScreen> with SingleTickerProvid
     return Scaffold(
       appBar: AppBar(
         title: const Text('Money Splitter'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => _showAddDebtDialog(context),
+          ),
+        ],
       ),
       drawer: const AppDrawer(),
       body: _isLoading
@@ -105,6 +112,19 @@ class _DebtScreenState extends ConsumerState<DebtScreen> with SingleTickerProvid
           );
         },
       ),
+    );
+  }
+
+  void _showAddDebtDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddDebtDialog(
+          onDebtAdded: () async {
+            await _refreshDebts();
+          },
+        );
+      },
     );
   }
 }
