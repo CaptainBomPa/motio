@@ -37,8 +37,9 @@ public class DebtServiceImpl implements DebtService {
         if (debtExists) {
             throw new DebtAlreadyExistsException(user1Id, user2Id);
         }
-
-        debt.setBalance(BigDecimal.ZERO);
+        if (debt.getBalance() == null) {
+            debt.setBalance(BigDecimal.ZERO);
+        }
         return sortTransactionHistories(debtRepository.save(debt));
     }
 

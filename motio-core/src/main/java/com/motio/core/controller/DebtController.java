@@ -47,7 +47,6 @@ public class DebtController {
         return ResponseEntity.noContent().build();
     }
 
-
     @GetMapping
     @Operation(summary = "Get debts for user", description = "Retrieve all debts associated with the authenticated user", tags = {"Debt Management System"})
     public ResponseEntity<List<Debt>> getDebtsForUser(Authentication authentication) {
