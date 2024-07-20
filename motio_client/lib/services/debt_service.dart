@@ -1,7 +1,7 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:motio_client/models/user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/debt.dart';
 import '../models/transaction.dart';
@@ -12,16 +12,19 @@ class DebtService extends BaseService {
   static const String _debtsUrl = "${HostApiData.baseCoreApiUrl}/debts";
   static const String _transactionsUrl = "${HostApiData.baseCoreApiUrl}/debts/transaction";
 
-  Future<Debt> createDebt(Debt debt) async {
+  Future<void> createDebt(User user1, User user2) async {
     final response = await sendAuthenticatedRequest(
-      http.Request('POST', Uri.parse(_debtsUrl))
-        ..headers['Content-Type'] = 'application/json; charset=UTF-8'
-        ..body = jsonEncode(debt.toJson()),
+      http.Request(
+        'POST',
+        Uri.parse(_debtsUrl),
+      )
+        ..body = jsonEncode({
+          'user1': user1,
+          'user2': user2,
+        }),
     );
 
-    if (response.statusCode == 200) {
-      return Debt.fromJson(jsonDecode(response.body));
-    } else {
+    if (response.statusCode != 200) {
       throw Exception('Failed to create debt');
     }
   }
@@ -58,7 +61,7 @@ class DebtService extends BaseService {
     required User fromUser,
     required User toUser,
     required double amount,
-    required int debtId,
+    required Debt debt,
   }) async {
     final response = await sendAuthenticatedRequest(
       http.Request('PUT', Uri.parse(_transactionsUrl))
@@ -69,7 +72,7 @@ class DebtService extends BaseService {
           'fromUser': fromUser,
           'toUser': toUser,
           'amount': amount,
-          'debt': debtId,
+          'debt': debt,
         }),
     );
 
