@@ -7,7 +7,6 @@ import '../screens/debt_screen.dart'; // <-- Import the new screen
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/recipe_categories_screen.dart';
-import '../screens/settings_screen.dart';
 import '../screens/todo_list_screen.dart';
 
 class AppDrawer extends ConsumerWidget {
@@ -95,13 +94,10 @@ class AppDrawer extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.settings, color: theme.colorScheme.primary),
-              title: Text('Ustawienia', style: theme.textTheme.bodyLarge),
+              leading: Icon(Icons.calendar_month_outlined, color: theme.colorScheme.primary,),
+              title: Text('Kalendarz', style: theme.textTheme.bodyLarge,),
               onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
-                );
+                print("calendar tapped");
               },
             ),
             ListTile(

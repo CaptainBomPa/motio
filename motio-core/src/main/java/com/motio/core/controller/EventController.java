@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -43,6 +44,13 @@ public class EventController {
     @Operation(summary = "Get events for user", description = "Retrieve all events associated with the authenticated user", tags = {"Event Management System"})
     public ResponseEntity<List<Event>> getAllEventsForUsername(Authentication authentication) {
         List<Event> events = eventService.getAllEventsForUsername(authentication.getName());
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/user/date")
+    @Operation(summary = "Get events for user on specific date", description = "Retrieve all events associated with the authenticated user on a specific date", tags = {"Event Management System"})
+    public ResponseEntity<List<Event>> getEventsForUsernameOnDate(Authentication authentication, @RequestParam("date") LocalDate date) {
+        List<Event> events = eventService.getEventsForUsernameOnDate(authentication.getName(), date);
         return ResponseEntity.ok(events);
     }
 

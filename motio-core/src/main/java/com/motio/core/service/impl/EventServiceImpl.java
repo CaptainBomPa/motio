@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -47,7 +48,17 @@ public class EventServiceImpl implements EventService {
     public List<Event> getAllEventsForUsername(String username) {
         User user = userService.getUserByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
         return eventRepository.findAll().stream()
-                .filter(event -> event.getInvitedPeople().contains(user))
+                .filter(event -> event.getInvitedPeople().contains(user) || event.getCreatedByUser().equals(user))
+                .toList();
+    }
+
+//    getAllEventsForUsername(username).stream().filter(event -> (event.getAllDayDate() != null && event.getAllDayDate().equals(date)) || (event.getStartDateTime() != null && event.getStartDateTime().toLocalDate().equals(date))).toList()
+
+    @Override
+    public List<Event> getEventsForUsernameOnDate(String username, LocalDate date) {
+        return getAllEventsForUsername(username).stream()
+                .filter(event -> (event.getAllDayDate() != null && event.getAllDayDate().equals(date)) ||
+                        (event.getStartDateTime() != null && event.getStartDateTime().toLocalDate().equals(date)))
                 .toList();
     }
 
