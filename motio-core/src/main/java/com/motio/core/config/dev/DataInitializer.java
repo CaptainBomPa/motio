@@ -19,7 +19,7 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initData(UserModelInitializer userModelInitializer, MealCategoryModelInitializer mealCategoryModelInitializer,
                                MealModelInitializer mealModelInitializer, TodoListItemModelInitializer todoListModelInitializer,
-                               DebtModelInitializer debtModelInitializer) {
+                               DebtModelInitializer debtModelInitializer, EventModelInitializer eventModelInitializer) {
         if (initializeMockData) {
             return args -> {
                 Collection<User> users = userModelInitializer.initializeObjects();
@@ -32,6 +32,9 @@ public class DataInitializer {
 
                 debtModelInitializer.addContextObjects(users, User.class);
                 debtModelInitializer.initializeObjects();
+
+                eventModelInitializer.addContextObjects(users, User.class);
+                eventModelInitializer.initializeObjects();
             };
         }
         return args -> {
