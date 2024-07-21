@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motio_client/providers/user_provider.dart';
 import 'package:motio_client/services/auth_service.dart';
 
-import '../screens/debt_screen.dart'; // <-- Import the new screen
+import '../screens/debt_screen.dart';
+import '../screens/events_screen.dart'; // <-- Import the new screen
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/recipe_categories_screen.dart';
@@ -94,10 +95,19 @@ class AppDrawer extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.calendar_month_outlined, color: theme.colorScheme.primary,),
-              title: Text('Kalendarz', style: theme.textTheme.bodyLarge,),
+              leading: Icon(
+                Icons.calendar_month_outlined,
+                color: theme.colorScheme.primary,
+              ),
+              title: Text(
+                'Kalendarz',
+                style: theme.textTheme.bodyLarge,
+              ),
               onTap: () {
-                print("calendar tapped");
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EventsScreen()), // <-- Navigate to EventsScreen
+                );
               },
             ),
             ListTile(
