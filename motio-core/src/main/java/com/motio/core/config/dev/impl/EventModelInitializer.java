@@ -45,7 +45,7 @@ public class EventModelInitializer implements ModelInitializer<Event> {
 
         List<Event> loadedEvents = new LinkedList<>();
 
-        IntStream.range(1, 30).forEach(i -> {
+        IntStream.range(1, 200).forEach(i -> {
             Event event = new Event();
             event.setEventName(possibleEventNames.get(random.nextInt(possibleEventNames.size())));
             event.setDescription("Description for " + event.getEventName());
@@ -53,13 +53,13 @@ public class EventModelInitializer implements ModelInitializer<Event> {
             // Determine if it's an all-day event or a specific time event
             if (random.nextBoolean()) {
                 // All-day event
-                event.setAllDayDate(LocalDate.now().plusDays(random.nextInt(14) - 7));
+                event.setAllDayDate(LocalDate.now().plusDays(random.nextInt(60) - 30));
                 event.setStartDateTime(null);
                 event.setEndDateTime(null);
             } else {
                 // Specific time event
                 event.setAllDayDate(null);
-                ZonedDateTime startDateTime = ZonedDateTime.now().plusDays(random.nextInt(14) - 7)
+                ZonedDateTime startDateTime = ZonedDateTime.now().plusDays(random.nextInt(60) - 30)
                         .withHour(random.nextInt(18))
                         .withMinute(random.nextInt(60));
                 event.setStartDateTime(startDateTime);

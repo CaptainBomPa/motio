@@ -52,8 +52,6 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
-//    getAllEventsForUsername(username).stream().filter(event -> (event.getAllDayDate() != null && event.getAllDayDate().equals(date)) || (event.getStartDateTime() != null && event.getStartDateTime().toLocalDate().equals(date))).toList()
-
     @Override
     public List<Event> getEventsForUsernameOnDate(String username, LocalDate date) {
         return getAllEventsForUsername(username).stream()
