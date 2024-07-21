@@ -7,10 +7,12 @@ import 'dialog/event_dialog.dart';
 
 class EventItem extends ConsumerWidget {
   final Event event;
+  final VoidCallback refreshEvents;
 
   const EventItem({
     Key? key,
     required this.event,
+    required this.refreshEvents,
   }) : super(key: key);
 
   void _showOptions(BuildContext context, WidgetRef ref) {
@@ -29,7 +31,7 @@ class EventItem extends ConsumerWidget {
                   builder: (context) => EventDialog(event: event),
                 ).then((_) {
                   // Odświeżamy dane po zamknięciu dialogu
-                  ref.refresh(eventsForDateProvider(event.startDateTime ?? event.allDayDate!));
+                  refreshEvents();
                 });
               },
             ),
@@ -67,7 +69,7 @@ class EventItem extends ConsumerWidget {
                 await eventService.deleteEvent(event.id!);
                 Navigator.of(context).pop();
                 // Odświeżamy dane po usunięciu wydarzenia
-                ref.refresh(eventsForDateProvider(event.startDateTime ?? event.allDayDate!));
+                refreshEvents();
               },
               child: const Text('Usuń'),
             ),
