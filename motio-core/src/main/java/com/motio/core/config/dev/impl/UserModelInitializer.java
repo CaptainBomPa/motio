@@ -19,7 +19,9 @@ public class UserModelInitializer implements ModelInitializer<User> {
     private List<User> userList = List.of(
             new User(null, "gordon", "Gordon", "Ramsay", "securepassword123", "gordon.ramsay@example.com", Role.USER),
             new User(null, "user", "John", "Doe", "securepassword123", "john.doe@example.com", Role.USER),
-            new User(null, "bompa", "Filip", "Mróz", "securepassword123", "filip.mroz@example.com", Role.USER)
+            new User(null, "bompa", "Filip", "Mróz", "securepassword123", "filip.mroz@example.com", Role.USER),
+            new User(null, "random", "Random", "Man", "securepassword123", "random.man@example.com", Role.USER),
+            new User(null, "snow", "Jon", "Snow", "securepassword123", "jon.snow@example.com", Role.USER)
     );
 
     @Override
