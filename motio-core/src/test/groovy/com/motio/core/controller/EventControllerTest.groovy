@@ -14,9 +14,7 @@ import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
+import java.time.*
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -184,6 +182,40 @@ class EventControllerTest extends Specification {
         responseJson.path("invitedPeople")[0].path("username").asText() == "user1"
         responseJson.path("invitedPeople")[1].path("username").asText() == "user2"
         responseJson.path("createdByUser").path("username").asText() == "user1"
+    }
+
+    @WithMockUser(username = "user1")
+    def "test getting events for user on specific date"() {
+        given: "Two events for a user on specific dates"
+        def user1 = new User(username: "user1", firstName: "John", lastName: "Doe", password: "password", email: "john.doe@example.com")
+        def user2 = new User(username: "user2", firstName: "Jane", lastName: "Doe", password: "password", email: "jane.doe@example.com")
+        userRepository.save(user1)
+        userRepository.save(user2)
+        def date = LocalDate.now().atTime(LocalTime.of(12, 0)).atZone(ZoneId.systemDefault())
+        def event1 = new Event(eventName: "Meeting 1",
+                description: "Project discussion",
+                startDateTime: date,
+                endDateTime: date.plusHours(1),
+                invitedPeople: [user1, user2],
+                createdByUser: user1
+        )
+        def event2 = new Event(eventName: "Meeting 2",
+                description: "Project discussion",
+                startDateTime: date.plusDays(1),
+                endDateTime: date.plusDays(1).plusHours(1),
+                invitedPeople: [user1, user2],
+                createdByUser: user1
+        )
+        eventService.addEvent(event1)
+        eventService.addEvent(event2)
+
+        expect:
+        mockMvc.perform(get("/events/user/date")
+                .param("date", date.toLocalDate().toString())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath('$[0].eventName').value("Meeting 1"))
+                .andExpect(jsonPath('$[0].createdByUser.username').value("user1"))
     }
 
 }
