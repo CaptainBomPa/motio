@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/event_provider.dart';  // poprawiona nazwa pliku
+import '../providers/event_provider.dart';
 import 'event_item.dart';
 
-class EventTile extends ConsumerWidget {
+class EventTile extends ConsumerStatefulWidget {
   final DateTime date;
 
   const EventTile({
@@ -13,11 +13,16 @@ class EventTile extends ConsumerWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _EventTileState createState() => _EventTileState();
+}
+
+class _EventTileState extends ConsumerState<EventTile> {
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dayOfWeek = _getDayOfWeek(date.weekday);
-    final formattedDate = "${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}";
-    final eventsAsyncValue = ref.watch(eventsForDateProvider(date));
+    final dayOfWeek = _getDayOfWeek(widget.date.weekday);
+    final formattedDate = "${widget.date.day.toString().padLeft(2, '0')}.${widget.date.month.toString().padLeft(2, '0')}.${widget.date.year}";
+    final eventsAsyncValue = ref.watch(eventsForDateProvider(widget.date));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +72,7 @@ class EventTile extends ConsumerWidget {
                   runSpacing: 0.0,
                   children: events.map((event) => Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: EventItem(event: event),
+                    child: EventItem(event: event, refreshEvents: _refreshEvents),
                   )).toList(),
                 ),
               );
@@ -102,5 +107,9 @@ class EventTile extends ConsumerWidget {
       default:
         return '';
     }
+  }
+
+  void _refreshEvents() {
+    ref.refresh(eventsForDateProvider(widget.date));
   }
 }

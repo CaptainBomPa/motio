@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motio_client/widgets/app_drawer.dart';
 import 'package:motio_client/widgets/dialog/event_dialog.dart';
 import 'package:motio_client/widgets/event_tile.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-class EventsScreen extends StatelessWidget {
+import '../providers/event_provider.dart';  // dodajemy import providera
+
+class EventsScreen extends ConsumerWidget {
   const EventsScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Kalendarz Wydarzeń'),
@@ -19,7 +22,9 @@ class EventsScreen extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) => const EventDialog(),
-              );
+              ).then((_) {
+                ref.invalidate(eventsForDateProvider);
+              });
             },
           ),
         ],
