@@ -45,7 +45,7 @@ public class EventModelInitializer implements ModelInitializer<Event> {
 
         List<Event> loadedEvents = new LinkedList<>();
 
-        IntStream.range(1, 21).forEach(i -> {
+        IntStream.range(1, 30).forEach(i -> {
             Event event = new Event();
             event.setEventName(possibleEventNames.get(random.nextInt(possibleEventNames.size())));
             event.setDescription("Description for " + event.getEventName());
@@ -66,11 +66,17 @@ public class EventModelInitializer implements ModelInitializer<Event> {
                 event.setEndDateTime(startDateTime.plusHours(1 + random.nextInt(4)));
             }
 
+            // Select the creator of the event
+            User creator = users.get(random.nextInt(users.size()));
+            event.setCreatedByUser(creator);
+
             // Add invited people
-            int invitedCount = 1 + random.nextInt(users.size());
+            int invitedCount = random.nextInt(users.size());
             for (int j = 0; j < invitedCount; j++) {
                 User invitedUser = users.get(random.nextInt(users.size()));
-                event.getInvitedPeople().add(invitedUser);
+                if (!invitedUser.equals(creator)) {
+                    event.getInvitedPeople().add(invitedUser);
+                }
             }
 
             loadedEvents.add(eventService.addEvent(event));
