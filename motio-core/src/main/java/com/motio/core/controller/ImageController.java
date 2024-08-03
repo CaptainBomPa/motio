@@ -32,6 +32,9 @@ public class ImageController {
     public ResponseEntity<Resource> getMealImage(@PathVariable Long id) throws IOException {
         Meal meal = mealService.getMealById(id);
         Resource imageResource = imageService.loadImage(meal.getImagePath());
+        if (imageResource == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + imageResource.getFilename() + "\"")
                 .body(imageResource);
@@ -44,6 +47,9 @@ public class ImageController {
                 .orElseThrow(() -> new RuntimeException("Meal category not found"));
 
         Resource imageResource = imageService.loadImage(mealCategory.getImagePath());
+        if (imageResource == null) {
+            return ResponseEntity.notFound().build();
+        }
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + imageResource.getFilename() + "\"")
