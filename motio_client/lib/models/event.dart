@@ -9,6 +9,7 @@ class Event {
   final DateTime? allDayDate;
   final DateTime? startDateTime;
   final DateTime? endDateTime;
+  final int? reminderMinutesBefore;
 
   Event({
     required this.id,
@@ -19,6 +20,7 @@ class Event {
     this.allDayDate,
     this.startDateTime,
     this.endDateTime,
+    this.reminderMinutesBefore,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,7 @@ class Event {
       allDayDate: json['allDayDate'] != null ? DateTime.parse(json['allDayDate']) : null,
       startDateTime: json['startDateTime'] != null ? DateTime.parse(json['startDateTime']).toLocal() : null,
       endDateTime: json['endDateTime'] != null ? DateTime.parse(json['endDateTime']).toLocal() : null,
+      reminderMinutesBefore: json['reminderMinutesBefore'],
     );
   }
 
@@ -44,6 +47,7 @@ class Event {
       'allDayDate': allDayDate?.toIso8601String(),
       'startDateTime': startDateTime?.toUtc().toIso8601String(),
       'endDateTime': endDateTime?.toUtc().toIso8601String(),
+      'reminderMinutesBefore': reminderMinutesBefore,
     };
   }
 }

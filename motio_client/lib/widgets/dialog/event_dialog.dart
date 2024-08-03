@@ -20,12 +20,14 @@ class _EventDialogState extends ConsumerState<EventDialog> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
+  late TextEditingController _reminderController;
   DateTime? _allDayDate;
   DateTime? _startDateTime;
   DateTime? _endDateTime;
   List<User> _invitedPeople = [];
   List<User> _allUsers = [];
   bool _isAllDay = false;
+  bool _hasReminder = false;
   User? currentUser;
 
   @override
@@ -33,11 +35,14 @@ class _EventDialogState extends ConsumerState<EventDialog> {
     super.initState();
     _nameController = TextEditingController(text: widget.event?.eventName);
     _descriptionController = TextEditingController(text: widget.event?.description);
+    _reminderController = TextEditingController(
+        text: widget.event?.reminderMinutesBefore?.toString() ?? ''); // Nowe pole
     _allDayDate = widget.event?.allDayDate;
     _startDateTime = widget.event?.startDateTime;
     _endDateTime = widget.event?.endDateTime;
     _invitedPeople = widget.event?.invitedPeople.toList() ?? [];
     _isAllDay = _allDayDate != null;
+    _hasReminder = widget.event?.reminderMinutesBefore != null;
     _fetchUsers();
   }
 
@@ -71,6 +76,7 @@ class _EventDialogState extends ConsumerState<EventDialog> {
           endDateTime: _isAllDay ? null : _endDateTime?.toUtc(),
           invitedPeople: _invitedPeople.toList(),
           createdByUser: widget.event!.createdByUser,
+          reminderMinutesBefore: _hasReminder ? int.tryParse(_reminderController.text) : null, // Nowe pole
         );
         await eventService.updateEvent(event.id, event);
         dateToRefresh = event.allDayDate ?? event.startDateTime!;
@@ -84,6 +90,7 @@ class _EventDialogState extends ConsumerState<EventDialog> {
           endDateTime: _isAllDay ? null : _endDateTime?.toUtc(),
           invitedPeople: _invitedPeople.toList(),
           createdByUser: currentUser!,
+          reminderMinutesBefore: _hasReminder ? int.tryParse(_reminderController.text) : null, // Nowe pole
         );
         await eventService.addEvent(
           eventName: newEvent.eventName,
@@ -93,6 +100,7 @@ class _EventDialogState extends ConsumerState<EventDialog> {
           endDateTime: newEvent.endDateTime,
           invitedPeople: newEvent.invitedPeople,
           createdByUser: newEvent.createdByUser,
+          reminderMinutesBefore: newEvent.reminderMinutesBefore, // Nowe pole
         );
         dateToRefresh = newEvent.allDayDate ?? newEvent.startDateTime!;
       }
@@ -152,6 +160,9 @@ class _EventDialogState extends ConsumerState<EventDialog> {
                   onChanged: (value) {
                     setState(() {
                       _isAllDay = value;
+                      if (_isAllDay) {
+                        _hasReminder = false; // Wyłączenie przypomnienia dla całodniowych wydarzeń
+                      }
                     });
                   },
                   activeTrackColor: theme.colorScheme.primary.withOpacity(0.4),
@@ -256,6 +267,37 @@ class _EventDialogState extends ConsumerState<EventDialog> {
                     },
                   ),
                 ],
+                const SizedBox(height: 8.0),
+                CheckboxListTile(
+                  title: Text(
+                    'Przypomnienie',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  value: _hasReminder,
+                  onChanged: _isAllDay
+                      ? null // Blokowanie przypomnienia dla całodniowych wydarzeń
+                      : (value) {
+                    setState(() {
+                      _hasReminder = value ?? false;
+                      if (!_hasReminder) {
+                        _reminderController.clear();
+                      }
+                    });
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+                if (!_isAllDay && _hasReminder)
+                  TextFormField(
+                    controller: _reminderController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'Minuty przed wydarzeniem'),
+                    validator: (value) {
+                      if (_hasReminder && (value == null || value.isEmpty)) {
+                        return 'Podaj liczbę minut';
+                      }
+                      return null;
+                    },
+                  ),
                 const SizedBox(height: 8.0),
                 Wrap(
                   spacing: 8.0,

@@ -52,7 +52,8 @@ class EventControllerTest extends Specification {
         def user2 = new User(username: "user2", firstName: "Jane", lastName: "Doe", password: "password", email: "jane.doe@example.com")
         userRepository.save(user1)
         userRepository.save(user2)
-        def event = new Event(eventName: "Meeting", description: "Project discussion", startDateTime: ZonedDateTime.now(), endDateTime: ZonedDateTime.now().plusHours(1), invitedPeople: [user1, user2], createdByUser: user1)
+        def event = new Event(eventName: "Meeting", description: "Project discussion", startDateTime: ZonedDateTime.now(),
+                endDateTime: ZonedDateTime.now().plusHours(1), invitedPeople: [user1, user2], createdByUser: user1, reminderMinutesBefore: 30)
 
         expect:
         mockMvc.perform(post("/events")
@@ -66,6 +67,7 @@ class EventControllerTest extends Specification {
                 .andExpect(jsonPath('$.invitedPeople[0].username').value("user1"))
                 .andExpect(jsonPath('$.invitedPeople[1].username').value("user2"))
                 .andExpect(jsonPath('$.createdByUser.username').value("user1"))
+                .andExpect(jsonPath('$.reminderMinutesBefore').value(30))  // Nowe pole
     }
 
     @WithMockUser(username = "user1")
@@ -75,10 +77,12 @@ class EventControllerTest extends Specification {
         def user2 = new User(username: "user2", firstName: "Jane", lastName: "Doe", password: "password", email: "jane.doe@example.com")
         userRepository.save(user1)
         userRepository.save(user2)
-        def event = new Event(eventName: "Meeting", description: "Project discussion", startDateTime: ZonedDateTime.now(), endDateTime: ZonedDateTime.now().plusHours(1), invitedPeople: [user1, user2], createdByUser: user1)
+        def event = new Event(eventName: "Meeting", description: "Project discussion", startDateTime: ZonedDateTime.now(),
+                endDateTime: ZonedDateTime.now().plusHours(1), invitedPeople: [user1, user2], createdByUser: user1, reminderMinutesBefore: 30)
         event = eventService.addEvent(event)
         event.eventName = "Updated Meeting"
         event.description = "Updated project discussion"
+        event.reminderMinutesBefore = 15
 
         expect:
         mockMvc.perform(put("/events/${event.getId()}")
@@ -88,6 +92,7 @@ class EventControllerTest extends Specification {
                 .andExpect(jsonPath('$.eventName').value("Updated Meeting"))
                 .andExpect(jsonPath('$.description').value("Updated project discussion"))
                 .andExpect(jsonPath('$.createdByUser.username').value("user1"))
+                .andExpect(jsonPath('$.reminderMinutesBefore').value(15))  // Nowe pole
     }
 
     @WithMockUser(username = "user1")
