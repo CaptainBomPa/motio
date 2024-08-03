@@ -33,7 +33,8 @@ class EventServiceImplTest extends Specification {
         def user2 = new User(username: "user2", firstName: "Jane", lastName: "Doe", password: "password", email: "jane.doe@example.com")
         entityManager.persistAndFlush(user1)
         entityManager.persistAndFlush(user2)
-        def event = new Event(eventName: "Meeting", description: "Project discussion", startDateTime: ZonedDateTime.now(), endDateTime: ZonedDateTime.now().plusHours(1), invitedPeople: [user1, user2], createdByUser: user1)
+        def event = new Event(eventName: "Meeting", description: "Project discussion", startDateTime: ZonedDateTime.now(),
+                endDateTime: ZonedDateTime.now().plusHours(1), invitedPeople: [user1, user2], createdByUser: user1, reminderMinutesBefore: 30)
 
         when:
         Event createdEvent = eventService.addEvent(event)
@@ -47,6 +48,7 @@ class EventServiceImplTest extends Specification {
         createdEvent.getEndDateTime() != null
         createdEvent.getInvitedPeople().size() == 2
         createdEvent.getCreatedByUser() == user1
+        createdEvent.getReminderMinutesBefore() == 30
     }
 
     def "should update event"() {
@@ -55,10 +57,12 @@ class EventServiceImplTest extends Specification {
         def user2 = new User(username: "user2", firstName: "Jane", lastName: "Doe", password: "password", email: "jane.doe@example.com")
         entityManager.persistAndFlush(user1)
         entityManager.persistAndFlush(user2)
-        def event = new Event(eventName: "Meeting", description: "Project discussion", startDateTime: ZonedDateTime.now(), endDateTime: ZonedDateTime.now().plusHours(1), invitedPeople: [user1, user2], createdByUser: user1)
+        def event = new Event(eventName: "Meeting", description: "Project discussion", startDateTime: ZonedDateTime.now(),
+                endDateTime: ZonedDateTime.now().plusHours(1), invitedPeople: [user1, user2], createdByUser: user1, reminderMinutesBefore: 30)
         entityManager.persistAndFlush(event)
 
-        def updatedEvent = new Event(id: event.getId(), eventName: "Updated Meeting", description: "Updated project discussion", startDateTime: ZonedDateTime.now(), endDateTime: ZonedDateTime.now().plusHours(2), invitedPeople: [user1, user2], createdByUser: user1)
+        def updatedEvent = new Event(id: event.getId(), eventName: "Updated Meeting", description: "Updated project discussion",
+                startDateTime: ZonedDateTime.now(), endDateTime: ZonedDateTime.now().plusHours(2), invitedPeople: [user1, user2], createdByUser: user1, reminderMinutesBefore: 15)
 
         when:
         Event result = eventService.updateEvent(event.getId(), updatedEvent)
@@ -71,6 +75,7 @@ class EventServiceImplTest extends Specification {
         result.getEndDateTime() != null
         result.getInvitedPeople().size() == 2
         result.getCreatedByUser() == user1
+        result.getReminderMinutesBefore() == 15
     }
 
     def "should get all events"() {

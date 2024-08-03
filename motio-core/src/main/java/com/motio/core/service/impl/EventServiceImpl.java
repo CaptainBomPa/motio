@@ -36,6 +36,7 @@ public class EventServiceImpl implements EventService {
         existingEvent.setStartDateTime(event.getStartDateTime());
         existingEvent.setEndDateTime(event.getEndDateTime());
         existingEvent.setInvitedPeople(event.getInvitedPeople());
+        existingEvent.setReminderMinutesBefore(event.getReminderMinutesBefore());
         return eventRepository.save(existingEvent);
     }
 

@@ -1,14 +1,23 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/event.dart';
 import '../models/user.dart';
 import '../util/host_api_data.dart';
 import 'base_service.dart';
+import 'notification_service.dart';
 
 class EventService extends BaseService {
   static const String _eventsUrl = "${HostApiData.baseCoreApiUrl}/events";
+  final NotificationService _notificationService;
+
+  EventService()
+      : _notificationService = NotificationService() {
+    // Zainicjalizuj NotificationService raz przy tworzeniu EventService
+    _notificationService.initialize();
+  }
 
   Future<Event> addEvent({
     required String eventName,
@@ -18,6 +27,7 @@ class EventService extends BaseService {
     final DateTime? allDayDate,
     final DateTime? startDateTime,
     final DateTime? endDateTime,
+    final int? reminderMinutesBefore,
   }) async {
     final response = await sendAuthenticatedRequest(
       http.Request('POST', Uri.parse(_eventsUrl))
@@ -28,7 +38,8 @@ class EventService extends BaseService {
           'invitedPeople': invitedPeople.map((user) => user.toJson()).toList(),
           'allDayDate': allDayDate?.toIso8601String(),
           'startDateTime': startDateTime?.toIso8601String(),
-          'endDateTime': endDateTime?.toIso8601String()
+          'endDateTime': endDateTime?.toIso8601String(),
+          'reminderMinutesBefore': reminderMinutesBefore,
         }),
     );
 
@@ -61,7 +72,26 @@ class EventService extends BaseService {
 
     if (response.statusCode == 200) {
       final List<dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));
-      return body.map((dynamic item) => Event.fromJson(item)).toList();
+      final events = body.map((dynamic item) => Event.fromJson(item)).toList();
+
+      events.forEach((event) {
+        if (event.eventName == 'test3') {
+          print(event.startDateTime);
+          print(event.endDateTime);
+        }
+      });
+
+      // Zapisz wydarzenia w pamięci
+      await _saveEventsToLocal(events);
+
+      // Zaplanuj powiadomienia dla wydarzeń
+      for (var event in events) {
+        if (event.reminderMinutesBefore != null) {
+          await _notificationService.scheduleEventNotification(event);
+        }
+      }
+
+      return events;
     } else {
       throw Exception('Failed to load events for user on date');
     }
@@ -80,4 +110,31 @@ class EventService extends BaseService {
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
+
+  Future<void> _saveEventsToLocal(List<Event> events) async {
+    final prefs = await SharedPreferences.getInstance();
+    final today = DateTime.now();
+    final oneMonthLater = today.add(Duration(days: 30));
+
+    final eventsToSave = events.where((event) {
+      final eventDate = event.allDayDate ?? event.startDateTime!;
+      return eventDate.isAfter(today) && eventDate.isBefore(oneMonthLater);
+    }).toList();
+
+    final eventsJson = jsonEncode(eventsToSave.map((e) => e.toJson()).toList());
+    await prefs.setString('events', eventsJson);
+  }
+
+  Future<List<Event>> getLocalEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    final eventsJson = prefs.getString('events');
+
+    if (eventsJson != null) {
+      final List<dynamic> eventList = jsonDecode(eventsJson);
+      return eventList.map((dynamic item) => Event.fromJson(item)).toList();
+    } else {
+      return [];
+    }
+  }
 }
+

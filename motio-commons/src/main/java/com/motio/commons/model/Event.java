@@ -52,6 +52,9 @@ public class Event {
     @Column
     private ZonedDateTime endDateTime;
 
+    @Column
+    private Integer reminderMinutesBefore;
+
     @PrePersist
     @PreUpdate
     private void prePersistAndUpdate() {
