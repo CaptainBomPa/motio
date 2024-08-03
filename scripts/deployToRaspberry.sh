@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Sprawdzenie istnienia pliku .env i załadowanie zmiennych środowiskowych
 if [ -f "./scripts/.env" ]; then
   export $(cat ./scripts/.env | grep -v '#' | awk '/=/ {print $1}')
 else
@@ -15,8 +16,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Budowanie obrazów Docker dla motio-core, motio-auth, motio-admin i motio_web_admin..."
+echo "Budowanie obrazów Docker dla motio-core, motio-auth, motio-admin, motio_web_admin i postgres-backup..."
 
+# Budowanie i zapisywanie obrazów Docker
 cd motio-core
 docker build -t motio-core .
 docker save -o motio-core.tar motio-core
@@ -37,21 +39,34 @@ docker build -t motio-web-admin .
 docker save -o motio-web-admin.tar motio-web-admin
 cd ..
 
+# Budowanie i zapisywanie obrazu dla postgres-backup
+cd docker/full_deploy
+docker build -t motio-postgres-backup .
+docker save -o motio-postgres-backup.tar motio-postgres-backup
+cd ../..
+
 echo "Kopiowanie obrazów Docker i pliku docker-compose.yml na Raspberry Pi..."
 
+# Tworzenie katalogu docelowego na Raspberry Pi
 ssh ${RPI_USER}@${RPI_HOST} "mkdir -p ${RPI_DEST_DIR}"
 
+# Przesyłanie obrazów Docker na Raspberry Pi
 scp motio-core/motio-core.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp motio-auth/motio-auth.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp motio-admin/motio-admin.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp motio_web_admin/motio-web-admin.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
+scp docker/full_deploy/motio-postgres-backup.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
+
+# Przesyłanie pliku docker-compose.yml i .env na Raspberry Pi
 scp docker/full_deploy/docker-compose.yml ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp docker/full_deploy/.env ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 
 echo "Wczytywanie obrazów Docker na Raspberry Pi..."
+# Ładowanie obrazów Docker na Raspberry Pi
 ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-core.tar"
 ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-auth.tar"
 ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-admin.tar"
 ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-web-admin.tar"
+ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-postgres-backup.tar"
 
 echo "Proces wdrażania zakończony pomyślnie."

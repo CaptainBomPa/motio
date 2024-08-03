@@ -12,6 +12,7 @@ services:
       POSTGRES_PASSWORD: motio_password
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+    restart: always
 
   motio-core:
     image: motio-core
@@ -24,7 +25,7 @@ services:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-    restart: on-failure
+    restart: always
 
   motio-auth:
     image: motio-auth
@@ -37,7 +38,7 @@ services:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-    restart: on-failure
+    restart: always
 
   motio-admin:
     image: motio-admin
@@ -52,7 +53,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    restart: on-failure
+    restart: always
 
   motio-web-admin:
     image: motio-web-admin
@@ -63,4 +64,17 @@ services:
       REACT_APP_CORE_API_URL: ${REACT_APP_CORE_API_URL}
       REACT_APP_AUTH_API_URL: ${REACT_APP_AUTH_API_URL}
       REACT_APP_ADMIN_API_URL: ${REACT_APP_ADMIN_API_URL}
-    restart: on-failure
+    restart: always
+
+  motio-postgres-backup:
+    image: motio-postgres-backup
+    container_name: motio-postgres-backup
+    volumes:
+      - ./backups:/backups
+    environment:
+      POSTGRES_DB: motio
+      POSTGRES_USER: motio_admin
+      POSTGRES_PASSWORD: motio_password
+    depends_on:
+      - postgres
+    restart: always

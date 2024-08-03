@@ -2,8 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Box, Button, CircularProgress, Typography} from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import StopIcon from '@mui/icons-material/Stop';
+import ReplayIcon from '@mui/icons-material/Replay';
 import axios from '../axios';
 import DockerLogo from '../docker-logo.png';
 import config from '../config';
@@ -47,21 +46,12 @@ const StatusBox = ({serviceName, apiUrl, containerId}) => {
         return () => clearInterval(intervalId);
     }, [apiUrl, containerId]);
 
-    const handleStart = async () => {
-        try {
-            await axios.get(`${config.adminApiUrl}/docker/start/${containerId}`);
-            setStatus('loading');
-        } catch (error) {
-            console.error('Failed to start container:', error);
-        }
-    };
-
-    const handleStop = async () => {
+    const handleRestart = async () => {
         try {
             await axios.get(`${config.adminApiUrl}/docker/stop/${containerId}`);
             setStatus('loading');
         } catch (error) {
-            console.error('Failed to stop container:', error);
+            console.error('Failed to restart container:', error);
         }
     };
 
@@ -108,22 +98,12 @@ const StatusBox = ({serviceName, apiUrl, containerId}) => {
             <Box display="flex" justifyContent="center" mt={2}>
                 <Button
                     variant="contained"
-                    color="success"
-                    startIcon={<PlayArrowIcon/>}
-                    onClick={handleStart}
-                    disabled={status === 'ok'}
-                    sx={{marginRight: 1}}
+                    color="primary"
+                    startIcon={<ReplayIcon/>}
+                    onClick={handleRestart}
+                    disabled={!isDockerManaged || status === 'loading'}
                 >
-                    Start
-                </Button>
-                <Button
-                    variant="contained"
-                    color="error"
-                    startIcon={<StopIcon/>}
-                    onClick={handleStop}
-                    disabled={status === 'error' || !isDockerManaged}
-                >
-                    Stop
+                    Restart
                 </Button>
             </Box>
         </Box>
