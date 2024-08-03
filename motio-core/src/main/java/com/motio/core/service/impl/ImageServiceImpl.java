@@ -14,6 +14,9 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Resource loadImage(String imagePath) throws IOException {
+        if (imagePath == null) {
+            return null;
+        }
         Path path = Paths.get(imagePath);
         Resource resource = new UrlResource(path.toUri());
 
