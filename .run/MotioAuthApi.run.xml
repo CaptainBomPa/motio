@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="MotioAuthApi" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
-        <module name="motio.motio-auth.main"/>
-        <option name="SPRING_BOOT_MAIN_CLASS" value="com.motio.auth.MotioAuthApi"/>
-        <method v="2">
-            <option name="Make" enabled="true"/>
-        </method>
-    </configuration>
+  <configuration default="false" name="MotioAuthApi" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <module name="com.motio.motio.motio-auth.main"/>
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.motio.auth.MotioAuthApi"/>
+    <method v="2">
+      <option name="Make" enabled="true"/>
+    </method>
+  </configuration>
 </component>
