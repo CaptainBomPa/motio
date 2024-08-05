@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Sprawdzenie, czy Docker daemon jest uruchomiony
+if ! docker info > /dev/null 2>&1; then
+  echo "Błąd: Docker daemon nie jest uruchomiony. Upewnij się, że Docker jest włączony i spróbuj ponownie."
+  exit 1
+fi
+
 # Sprawdzenie istnienia pliku .env i załadowanie zmiennych środowiskowych
 if [ -f "./scripts/.env" ]; then
   export $(cat ./scripts/.env | grep -v '#' | awk '/=/ {print $1}')
