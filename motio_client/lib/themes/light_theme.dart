@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 ThemeData lightTheme = ThemeData(
   fontFamily: 'Roboto',
   colorScheme: ColorScheme.fromSwatch(
-      primarySwatch: Colors.deepPurple,
-      backgroundColor: Colors.white
+    primarySwatch: Colors.deepPurple,
+    backgroundColor: Colors.white,
   ).copyWith(
-    // primary: Colors.white,
-      secondary: Colors.deepPurpleAccent,
-      surface: Colors.white
+    secondary: Colors.deepPurpleAccent,
+    surface: Colors.white,
   ),
+  dividerColor: Color.fromARGB(255, 182, 28, 255),
   brightness: Brightness.light,
   scaffoldBackgroundColor: Colors.white,
   appBarTheme: const AppBarTheme(
@@ -36,14 +36,15 @@ ThemeData lightTheme = ThemeData(
   iconTheme: const IconThemeData(color: Colors.deepPurple),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.deepPurpleAccent,
+      backgroundColor: Color.fromARGB(255, 182, 28, 255),
       foregroundColor: Colors.white,
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: Colors.grey[200],
-    labelStyle: const TextStyle(color: Colors.black),
+    fillColor: Colors.grey[200], // Jasno szare tło
+    labelStyle: const TextStyle(color: Colors.black), // Czarny tekst
+    hintStyle: const TextStyle(color: Colors.black54), // Hint text in gray
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide.none,

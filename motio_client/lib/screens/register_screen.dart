@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 
@@ -93,12 +94,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _usernameController,
                 decoration: InputDecoration(
                   labelText: 'Nazwa użytkownika (min 5 znaków)',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -106,12 +101,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _firstNameController,
                 decoration: InputDecoration(
                   labelText: 'Imię (opcjonalne)',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -119,12 +108,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _lastNameController,
                 decoration: InputDecoration(
                   labelText: 'Nazwisko (opcjonalne)',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -132,12 +115,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Adres email',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -145,12 +122,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Hasło (min 8 znaków)',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
                 obscureText: true,
               ),
@@ -159,12 +130,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _confirmPasswordController,
                 decoration: InputDecoration(
                   labelText: 'Potwierdź hasło',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
                 obscureText: true,
               ),
