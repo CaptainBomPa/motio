@@ -33,9 +33,10 @@ const SystemInfoPage = () => {
         return <Typography color="error">Error: {error.message}</Typography>;
     }
 
-    const totalMemoryBytes = systemInfo.totalPhysicalMemorySize || systemInfo.jvmTotalMemory;
-    const availableMemoryBytes = systemInfo.availableMemory || systemInfo.jvmFreeMemory;
-    const usedMemoryBytes = totalMemoryBytes - availableMemoryBytes;
+    // Zaktualizowane pobieranie wartości pamięci
+    const totalMemoryBytes = systemInfo.totalMemory;
+    const usedMemoryBytes = systemInfo.usedMemory;
+    const availableMemoryBytes = totalMemoryBytes - usedMemoryBytes;
     const memoryUsage = (usedMemoryBytes / totalMemoryBytes) * 100;
 
     const bytesToMegabytes = (bytes) => (bytes / (1024 * 1024)).toFixed(2);
@@ -50,8 +51,8 @@ const SystemInfoPage = () => {
             <Box marginBottom="20px">
                 <Typography variant="h6">Memory Usage</Typography>
                 <Typography variant="body1">Total Memory: {bytesToMegabytes(totalMemoryBytes)} MB</Typography>
-                <Typography variant="body1">Available Memory: {bytesToMegabytes(availableMemoryBytes)} MB</Typography>
                 <Typography variant="body1">Used Memory: {bytesToMegabytes(usedMemoryBytes)} MB</Typography>
+                <Typography variant="body1">Available Memory: {bytesToMegabytes(availableMemoryBytes)} MB</Typography>
                 <LinearProgress variant="determinate" value={memoryUsage}/>
                 <Typography variant="body2" color="textSecondary">{memoryUsage.toFixed(2)}% used</Typography>
             </Box>

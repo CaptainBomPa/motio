@@ -6,11 +6,11 @@ BACKUP_FILE="$BACKUP_DIR/motio_backup_$(date +%Y-%m-%d_%H-%M-%S).sql"
 
 mkdir -p "$BACKUP_DIR"
 
-echo "*:*:*:motio_admin:motio_password" > ~/.pgpass
+echo "10.0.1.214:5432:motio:motio_admin:motio_password" > ~/.pgpass
 
 chmod 600 ~/.pgpass
 
-pg_dump -h localhost -U "motio_admin" -d "motio" -F c -b -v -f "$BACKUP_FILE"
+pg_dump -h 10.0.1.214 -U "motio_admin" -d "motio" -F c -b -v -f "$BACKUP_FILE"
 
 find "$BACKUP_DIR" -type f -mtime +$DAYS_TO_KEEP -name '*.sql' -exec rm -f {} \;
 
