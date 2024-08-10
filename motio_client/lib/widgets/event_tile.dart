@@ -33,7 +33,7 @@ class _EventTileState extends ConsumerState<EventTile> {
           decoration: BoxDecoration(
             border: Border(
               top: BorderSide(color: theme.dividerColor),
-              bottom: BorderSide(color: theme.dividerColor),
+              // bottom: BorderSide(color: theme.dividerColor),
             ),
           ),
           child: Text(

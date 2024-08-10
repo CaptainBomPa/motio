@@ -6,11 +6,11 @@ ThemeData darkTheme = ThemeData(
     primarySwatch: Colors.deepPurple,
     backgroundColor: const Color(0xFF121212),
   ).copyWith(
-    // primary: Colors.white,
     secondary: Colors.deepPurple[300],
     brightness: Brightness.dark,
     surface: const Color(0xFF121212),
   ),
+  dividerColor: Colors.deepPurple[300],
   brightness: Brightness.dark,
   scaffoldBackgroundColor: const Color(0xFF121212),
   appBarTheme: AppBarTheme(
@@ -37,14 +37,15 @@ ThemeData darkTheme = ThemeData(
   iconTheme: IconThemeData(color: Colors.deepPurple[300]),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.deepPurple[300],
+      backgroundColor: Color.fromARGB(255, 182, 28, 255),
       foregroundColor: Colors.white,
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: Colors.grey[800],
-    labelStyle: const TextStyle(color: Colors.white),
+    fillColor: Colors.grey[800], // Ciemnoszare tło
+    labelStyle: const TextStyle(color: Colors.white), // Biały tekst
+    hintStyle: const TextStyle(color: Colors.white70), // Hint text in light gray
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide.none,

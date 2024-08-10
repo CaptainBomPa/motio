@@ -92,15 +92,15 @@ class EventItem extends ConsumerWidget {
         decoration: BoxDecoration(
           gradient: event.startDateTime != null && event.endDateTime != null
               ? const LinearGradient(
-            colors: [Colors.purple, Colors.lightBlue],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )
+                  colors: [Colors.purple, Colors.lightBlue],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
               : const LinearGradient(
-            colors: [Colors.pinkAccent, Colors.lightBlueAccent],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+                  colors: [Colors.pinkAccent, Colors.lightBlueAccent],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Column(
@@ -108,29 +108,40 @@ class EventItem extends ConsumerWidget {
           children: [
             Text(
               event.eventName,
-              style: theme.textTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.bodySmall!.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             if (event.description != null && event.description!.isNotEmpty)
               Text(
                 event.description!,
-                style: theme.textTheme.bodySmall,
+                style: theme.textTheme.bodySmall!.copyWith(
+                  color: Colors.white,
+                ),
               ),
             if (event.startDateTime != null && event.endDateTime != null) ...[
               const SizedBox(height: 4.0),
               Text(
                 'Od: ${_formatDateTime(event.startDateTime!)}',
-                style: theme.textTheme.bodySmall,
+                style: theme.textTheme.bodySmall!.copyWith(
+                  color: Colors.white,
+                ),
               ),
               Text(
                 'Do: ${_formatDateTime(event.endDateTime!)}',
-                style: theme.textTheme.bodySmall,
+                style: theme.textTheme.bodySmall!.copyWith(
+                  color: Colors.white,
+                ),
               ),
             ],
             if (invitedPeople.isNotEmpty) ...[
               const SizedBox(height: 4.0),
               Text(
                 invitedPeople,
-                style: theme.textTheme.bodySmall,
+                style: theme.textTheme.bodySmall!.copyWith(
+                  color: Colors.white,
+                ),
               ),
             ],
           ],
