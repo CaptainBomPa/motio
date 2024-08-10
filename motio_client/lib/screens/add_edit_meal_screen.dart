@@ -130,7 +130,8 @@ class _AddEditMealScreenState extends ConsumerState<AddEditMealScreen> with Tick
 
   @override
   Widget build(BuildContext context) {
-    final categories = ref.watch(mealCategoryProvider).asData?.value ?? [];
+    final categories = ref.watch(mealCategoryProvider);
+
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 

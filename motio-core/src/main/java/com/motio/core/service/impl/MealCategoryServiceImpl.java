@@ -57,7 +57,7 @@ public class MealCategoryServiceImpl implements MealCategoryService {
 
     @Override
     public String saveImage(MultipartFile file, String categoryName) throws IOException, ImageProcessingException, MetadataException {
-        Path path = Paths.get(BASE_DIRECTORY, categoryName);
+        Path path = Paths.get(BASE_DIRECTORY, categoryName.replaceAll("\\s+", "_"));
         return ImageSaveUtil.saveImage(file, path.toString());
     }
 }

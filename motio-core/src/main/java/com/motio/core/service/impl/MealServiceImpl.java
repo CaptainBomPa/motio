@@ -84,7 +84,7 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public String saveImage(MultipartFile file, String username, String mealName) throws IOException, ImageProcessingException, MetadataException {
-        Path path = Paths.get(IMAGES_DIRECTORY, username, mealName);
+        Path path = Paths.get(IMAGES_DIRECTORY, username, mealName.replaceAll("\\s+", "_"));
         return ImageSaveUtil.saveImage(file, path.toString());
     }
 }
