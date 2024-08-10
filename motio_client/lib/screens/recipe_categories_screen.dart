@@ -17,7 +17,6 @@ class RecipeCategoriesScreen extends ConsumerStatefulWidget {
 class _RecipeCategoriesScreenState extends ConsumerState<RecipeCategoriesScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  List<MealCategory> _mealCategories = [];
   bool _isLoading = true;
 
   @override
@@ -31,15 +30,6 @@ class _RecipeCategoriesScreenState extends ConsumerState<RecipeCategoriesScreen>
       parent: _controller,
       curve: Curves.easeInOut,
     );
-    _loadCategories();
-  }
-
-  Future<void> _loadCategories() async {
-    final categories = await ref.read(mealCategoryProvider.future);
-    setState(() {
-      _mealCategories = categories;
-      _isLoading = false;
-    });
     _controller.forward();
   }
 
@@ -51,6 +41,8 @@ class _RecipeCategoriesScreenState extends ConsumerState<RecipeCategoriesScreen>
 
   @override
   Widget build(BuildContext context) {
+    final mealCategories = ref.watch(mealCategoryProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Przepisy'),
@@ -67,14 +59,14 @@ class _RecipeCategoriesScreenState extends ConsumerState<RecipeCategoriesScreen>
         ],
       ),
       drawer: const AppDrawer(),
-      body: _isLoading
+      body: mealCategories.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : FadeTransition(
         opacity: _animation,
         child: ListView.builder(
-          itemCount: _mealCategories.length,
+          itemCount: mealCategories.length,
           itemBuilder: (context, index) {
-            final category = _mealCategories[index];
+            final category = mealCategories[index];
             return SlideTransition(
               position: Tween<Offset>(
                 begin: const Offset(0, -0.1),

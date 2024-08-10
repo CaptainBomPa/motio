@@ -41,7 +41,8 @@ class MealService extends BaseService {
     );
 
     if (response.statusCode == 200) {
-      return Meal.fromJson(jsonDecode(response.body));
+      final decoded = utf8.decode(response.bodyBytes);
+      return Meal.fromJson(jsonDecode(decoded));
     } else {
       throw Exception('Failed to load meal');
     }

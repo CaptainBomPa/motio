@@ -15,7 +15,7 @@ class MealCategoryNotifier extends StateNotifier<List<MealCategory>> {
       final categories = await _mealCategoryService.fetchMealCategories();
       state = categories;
     } catch (e) {
-      // Handle error
+      // Obsłuż błąd
     }
   }
 }
@@ -24,7 +24,8 @@ final mealCategoryServiceProvider = Provider<MealCategoryService>((ref) {
   return MealCategoryService();
 });
 
-final mealCategoryProvider = FutureProvider<List<MealCategory>>((ref) async {
+final mealCategoryProvider = StateNotifierProvider<MealCategoryNotifier, List<MealCategory>>((ref) {
   final service = ref.read(mealCategoryServiceProvider);
-  return await service.fetchMealCategories();
+  return MealCategoryNotifier(service);
 });
+
