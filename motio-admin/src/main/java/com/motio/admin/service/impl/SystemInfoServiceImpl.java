@@ -4,36 +4,17 @@ import com.motio.admin.service.SystemInfoService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 @Service
 public class SystemInfoServiceImpl implements SystemInfoService {
 
     @Override
     public Map<String, Object> getSystemInfo() {
-        Map<String, Object> systemInfo = new HashMap<>();
-
-        if (isRunningInDocker()) {
-            systemInfo.putAll(getHostSystemInfo());
-        } else {
-            systemInfo.putAll(getLocalSystemInfo());
-        }
-
-        return systemInfo;
-    }
-
-    private boolean isRunningInDocker() {
-        try (Stream<String> stream = Files.lines(Paths.get("/proc/1/cgroup"))) {
-            return stream.anyMatch(line -> line.contains("/docker"));
-        } catch (IOException e) {
-            return false;
-        }
+        return getHostSystemInfo();
     }
 
     private Map<String, Object> getHostSystemInfo() {
@@ -43,7 +24,7 @@ public class SystemInfoServiceImpl implements SystemInfoService {
             // Pobierz informacje o pamięci
             Map<String, Long> memInfo = getMemInfo();
             systemInfo.put("totalMemory", memInfo.get("MemTotal"));
-            systemInfo.put("availableMemory", memInfo.get("MemAvailable"));
+            systemInfo.put("usedMemory", memInfo.get("MemUsed"));
 
             // Pobierz informacje o procesorach
             long availableProcessors = Files.lines(Paths.get("/proc/cpuinfo"))
@@ -61,43 +42,38 @@ public class SystemInfoServiceImpl implements SystemInfoService {
         return systemInfo;
     }
 
-    private Map<String, Object> getLocalSystemInfo() {
-        Map<String, Object> systemInfo = new HashMap<>();
-
-        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-
-        // Pobierz podstawowe informacje o systemie
-        systemInfo.put("availableProcessors", osBean.getAvailableProcessors());
-        systemInfo.put("systemLoadAverage", osBean.getSystemLoadAverage());
-
-        // Rzutowanie na com.sun.management.OperatingSystemMXBean, aby uzyskać dodatkowe informacje
-        if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
-            com.sun.management.OperatingSystemMXBean sunOsBean = (com.sun.management.OperatingSystemMXBean) osBean;
-            systemInfo.put("totalPhysicalMemorySize", sunOsBean.getTotalPhysicalMemorySize());
-            systemInfo.put("availablePhysicalMemorySize", sunOsBean.getFreePhysicalMemorySize());
-            systemInfo.put("usedPhysicalMemorySize", sunOsBean.getTotalPhysicalMemorySize() - sunOsBean.getFreePhysicalMemorySize());
-        }
-
-        // Pobierz informacje o pamięci JVM
-        Runtime runtime = Runtime.getRuntime();
-        systemInfo.put("jvmTotalMemory", runtime.totalMemory());
-        systemInfo.put("jvmFreeMemory", runtime.freeMemory());
-        systemInfo.put("jvmMaxMemory", runtime.maxMemory());
-
-        return systemInfo;
-    }
-
     private Map<String, Long> getMemInfo() throws IOException {
         Map<String, Long> memInfo = new HashMap<>();
 
-        Files.lines(Paths.get("/proc/meminfo")).forEach(line -> {
+        // Inicjalizacja wartości
+        long memTotal = 0;
+        long memFree = 0;
+        long buffers = 0;
+        long cached = 0;
+
+        for (String line : Files.readAllLines(Paths.get("/proc/meminfo"))) {
             String[] parts = line.split("\\s+");
-            if (parts[0].startsWith("MemTotal:")) {
-                memInfo.put("MemTotal", Long.parseLong(parts[1]) * 1024); // Konwersja z kB na bajty
-            } else if (parts[0].startsWith("MemAvailable:")) {
-                memInfo.put("MemAvailable", Long.parseLong(parts[1]) * 1024); // Konwersja z kB na bajty
+            switch (parts[0]) {
+                case "MemTotal:":
+                    memTotal = Long.parseLong(parts[1]) * 1024; // Konwersja z kB na bajty
+                    break;
+                case "MemFree:":
+                    memFree = Long.parseLong(parts[1]) * 1024; // Konwersja z kB na bajty
+                    break;
+                case "Buffers:":
+                    buffers = Long.parseLong(parts[1]) * 1024; // Konwersja z kB na bajty
+                    break;
+                case "Cached:":
+                    cached = Long.parseLong(parts[1]) * 1024; // Konwersja z kB na bajty
+                    break;
             }
-        });
+        }
+
+        // Oblicz używaną pamięć (bez cache i buforów)
+        long memUsed = memTotal - memFree - buffers - cached;
+
+        memInfo.put("MemTotal", memTotal);
+        memInfo.put("MemUsed", memUsed);
 
         return memInfo;
     }
