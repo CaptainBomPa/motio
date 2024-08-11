@@ -38,3 +38,6 @@ out/
 /img/
 /docker/full_deploy/postgres_data/
 /docker/database_only/postgres_data/
+
+motio-notification/src/main/resources/motio-notifications-firebase-adminsdk-utdec-2bbc548440.json
+/motio_client/lib/firebase_options.dart

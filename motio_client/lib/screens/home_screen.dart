@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:motio_client/services/message_service.dart';
 
 import '../providers/user_provider.dart';
 import '../widgets/app_drawer.dart';
@@ -11,6 +12,9 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final messagingService = MessagingService();
+    messagingService.setupFirebase();
+    messagingService.listenToPublic();
     final user = ref.watch(userProvider);
 
     return Scaffold(

@@ -9,6 +9,7 @@ const StatusPage = () => {
             <StatusBox serviceName="motio-auth" apiUrl={`${config.authApiUrl}/health/status`} containerId="motio-auth"/>
             <StatusBox serviceName="motio-core" apiUrl={`${config.coreApiUrl}/health/status`} containerId="motio-core"/>
             <StatusBox serviceName="motio-admin" apiUrl={`${config.adminApiUrl}/health/status`} containerId="motio-admin"/>
+            <StatusBox serviceName="motio-notification" apiUrl={`${config.notificationApiUrl}/health/status`} containerId="motio-notification"/>
         </Box>
     );
 };

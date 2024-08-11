@@ -24,6 +24,19 @@ class UserService extends BaseService {
     }
   }
 
+  Future<void> updateNotificationToken(String notificationToken) async {
+    final response = await sendAuthenticatedRequest(
+      http.Request('POST', Uri.parse('$_userUrl/notification-token'),)
+        ..body = jsonEncode({
+          'notificationToken': notificationToken
+        }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create debt');
+    }
+  }
+
   Future<List<User>> getAllUsers() async {
     final response = await sendAuthenticatedRequest(
         http.Request(

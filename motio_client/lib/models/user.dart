@@ -5,7 +5,13 @@ class User {
   final String lastName;
   final String email;
 
-  User({required this.id, required this.username, required this.firstName, required this.lastName, required this.email});
+  User({
+    required this.id,
+    required this.username,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+  });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -26,4 +32,14 @@ class User {
       'email': email,
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is User && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }

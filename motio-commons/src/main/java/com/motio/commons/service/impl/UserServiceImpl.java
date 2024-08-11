@@ -66,4 +66,11 @@ public class UserServiceImpl implements UserService {
     public User getUserByAuthentication(Authentication authentication) {
         return getUserByUsername(authentication.getName()).orElseThrow(UserNotFoundException::new);
     }
+
+    @Override
+    public void updateNotificationToken(String username, String token) {
+        final User user = getUserByUsername(username).orElseThrow(UserNotFoundException::new);
+        user.setNotificationToken(token);
+        userRepository.save(user);
+    }
 }

@@ -30,23 +30,30 @@ class _AddDebtDialogState extends ConsumerState<AddDebtDialog> {
     final currentUser = ref.watch(userProvider);
 
     return AlertDialog(
-      title: Text('Stwórz nowy dług'),
+      title: const Text('Stwórz nowy dług'),
       content: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : FutureBuilder<List<User>>(
         future: _getAvailableUsers(currentUser!),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Błąd: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('Brak dostępnych użytkowników'));
+            return const Center(child: Text('Brak dostępnych użytkowników'));
           } else {
             final users = snapshot.data!;
+
+            // Upewnij się, że _selectedUser jest jednym z dostępnych użytkowników
+            if (_selectedUser != null &&
+                !users.any((user) => user.id == _selectedUser!.id)) {
+              _selectedUser = null; // Reset, jeśli nie ma zgodności
+            }
+
             return DropdownButton<User>(
               value: _selectedUser,
-              hint: Text('Wybierz użytkownika'),
+              hint: const Text('Wybierz użytkownika'),
               onChanged: (User? newValue) {
                 setState(() {
                   _selectedUser = newValue;
@@ -90,7 +97,7 @@ class _AddDebtDialogState extends ConsumerState<AddDebtDialog> {
             }
           },
           child: _isLoading
-              ? CircularProgressIndicator()
+              ? const CircularProgressIndicator()
               : Text('Stwórz', style: theme.textTheme.bodyMedium),
         ),
       ],

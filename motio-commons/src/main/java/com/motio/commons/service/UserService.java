@@ -22,4 +22,6 @@ public interface UserService {
     Optional<User> getUserByEmail(String email);
 
     List<User> getAllUsers();
+
+    void updateNotificationToken(String username, String token);
 }

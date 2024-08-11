@@ -40,6 +40,11 @@ docker build -t motio-admin .
 docker save -o motio-admin.tar motio-admin
 cd ..
 
+cd motio-notification
+docker build -t motio-notification .
+docker save -o motio-notification.tar motio-notification
+cd ..
+
 cd motio_web_admin
 docker build -t motio-web-admin .
 docker save -o motio-web-admin.tar motio-web-admin
@@ -60,6 +65,7 @@ ssh ${RPI_USER}@${RPI_HOST} "mkdir -p ${RPI_DEST_DIR}"
 scp motio-core/motio-core.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp motio-auth/motio-auth.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp motio-admin/motio-admin.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
+scp motio-notification/motio-notification.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp motio_web_admin/motio-web-admin.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 scp docker/full_deploy/motio-postgres-backup.tar ${RPI_USER}@${RPI_HOST}:${RPI_DEST_DIR}
 
@@ -72,6 +78,7 @@ echo "Wczytywanie obrazów Docker na Raspberry Pi..."
 ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-core.tar"
 ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-auth.tar"
 ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-admin.tar"
+ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-notification.tar"
 ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-web-admin.tar"
 ssh ${RPI_USER}@${RPI_HOST} "cd ${RPI_DEST_DIR} && docker load -i motio-postgres-backup.tar"
 
