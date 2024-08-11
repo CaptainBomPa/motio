@@ -3,4 +3,4 @@ include 'motio-core'
 include 'motio-commons'
 include 'motio-auth'
 include 'motio-admin'
-
+include 'motio-notification'

@@ -50,6 +50,7 @@ class _EventDialogState extends ConsumerState<EventDialog> {
     final userService = ref.read(userServiceProvider);
     final users = await userService.getAllUsers();
     final current = await userService.getUserInfo();
+    users.remove(current);
     setState(() {
       _allUsers = users;
       currentUser = current!;

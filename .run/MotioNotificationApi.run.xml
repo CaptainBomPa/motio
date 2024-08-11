@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="MotioNotificationApi" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+        <module name="motio.motio-notification.main"/>
+        <option name="SHORTEN_COMMAND_LINE" value="ARGS_FILE"/>
+        <option name="SPRING_BOOT_MAIN_CLASS" value="com.motio.notification.MotioNotificationApplication"/>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>

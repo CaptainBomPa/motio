@@ -38,7 +38,9 @@ public class SecurityConfig {
             "/login/admin",
             "/refresh-token",
             "/ws",
-            "/ws/**"
+            "/ws/**",
+            "/single",
+            "/broadcast"
     };
     private final MotioUserDetailsService motioUserDetailsService;
     private final JwtRequestFilter jwtRequestFilter;

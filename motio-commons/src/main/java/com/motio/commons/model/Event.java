@@ -35,7 +35,7 @@ public class Event {
     @JoinColumn(name = "created_by_user_id", nullable = false)
     private User createdByUser;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "event_users",
             joinColumns = @JoinColumn(name = "event_id"),
