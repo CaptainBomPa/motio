@@ -25,9 +25,6 @@ import java.util.Objects;
 @Table(name = "users")
 public class User implements UserDetails {
 
-    @Column
-    private String notificationToken;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,6 +54,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
+
+    @Column
+    private String notificationToken;
 
     public User(String username, String firstName, String lastName, String password, String email) {
         this.username = username;
