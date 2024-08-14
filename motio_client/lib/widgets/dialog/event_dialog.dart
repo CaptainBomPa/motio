@@ -67,6 +67,8 @@ class _EventDialogState extends ConsumerState<EventDialog> {
       final eventService = ref.read(eventServiceProvider);
       DateTime dateToRefresh;
 
+      _allDayDate = _allDayDate?.copyWith(hour: 12, isUtc: true);
+
       if (widget.event != null) {
         final event = Event(
           id: widget.event!.id,
