@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/meal_category.dart';
 import '../providers/meal_category_provider.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/category_tile.dart';
 import 'add_edit_meal_screen.dart';
 
-class RecipeCategoriesScreen extends ConsumerStatefulWidget {
-  const RecipeCategoriesScreen({Key? key}) : super(key: key);
+class MealCategoriesScreen extends ConsumerStatefulWidget {
+  const MealCategoriesScreen({super.key});
 
   @override
-  _RecipeCategoriesScreenState createState() => _RecipeCategoriesScreenState();
+  ConsumerState<MealCategoriesScreen> createState() => _MealCategoriesScreenState();
 }
 
-class _RecipeCategoriesScreenState extends ConsumerState<RecipeCategoriesScreen> with SingleTickerProviderStateMixin {
+class _MealCategoriesScreenState extends ConsumerState<MealCategoriesScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _animateScreen();
+  }
+
+  void _animateScreen() {
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -62,21 +64,21 @@ class _RecipeCategoriesScreenState extends ConsumerState<RecipeCategoriesScreen>
       body: mealCategories.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : FadeTransition(
-        opacity: _animation,
-        child: ListView.builder(
-          itemCount: mealCategories.length,
-          itemBuilder: (context, index) {
-            final category = mealCategories[index];
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, -0.1),
-                end: Offset.zero,
-              ).animate(_animation),
-              child: CategoryTile(category: category),
-            );
-          },
-        ),
-      ),
+              opacity: _animation,
+              child: ListView.builder(
+                itemCount: mealCategories.length,
+                itemBuilder: (context, index) {
+                  final category = mealCategories[index];
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, -0.1),
+                      end: Offset.zero,
+                    ).animate(_animation),
+                    child: CategoryTile(category: category),
+                  );
+                },
+              ),
+            ),
     );
   }
 }

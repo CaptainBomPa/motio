@@ -70,7 +70,7 @@ class AppDrawer extends ConsumerWidget {
               onTap: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const RecipeCategoriesScreen()),
+                  MaterialPageRoute(builder: (context) => const MealCategoriesScreen()),
                 );
               },
             ),
