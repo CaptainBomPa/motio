@@ -23,26 +23,36 @@ class _InitialScreenState extends ConsumerState<InitialScreen> {
 
   Future<void> _checkLoginStatus() async {
     final refreshToken = await _authService.getRefreshToken();
+    if (!mounted) return;
+
     if (refreshToken == null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+      moveToLoginPage();
     } else {
       final jwtResponse = await _authService.checkAndRefreshTokens();
+      if (!mounted) return;
       if (jwtResponse != null) {
         await ref.read(userProvider.notifier).fetchUser();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+        moveToHomeScreen();
       } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sesja wygasła. Proszę zalogować się ponownie.')),
-        );
+        sessionOutdated();
       }
     }
+  }
+
+  void sessionOutdated() {
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginScreen()));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sesja wygasła. Proszę zalogować się ponownie.')));
+  }
+
+  void moveToHomeScreen() {
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+  }
+
+  void moveToLoginPage() {
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginScreen()));
   }
 
   @override

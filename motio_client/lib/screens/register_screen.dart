@@ -24,6 +24,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _validateForm() {
     setState(() {
       _isRegisterButtonEnabled = _usernameController.text.length >= 5 &&
+          _usernameController.text.isNotEmpty &&
+          _firstNameController.text.isNotEmpty &&
+          _lastNameController.text.isNotEmpty &&
           _emailController.text.contains('@') &&
           _passwordController.text.length >= 8 &&
           _passwordController.text == _confirmPasswordController.text;
@@ -39,22 +42,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final success = await _authService.registerUser(username, firstName, lastName, email, password);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pomyślnie zarejestrowano! Teraz możesz się zalogować')),
-      );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pomyślnie zarejestrowano! Teraz możesz się zalogować')));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginScreen()));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Rejestracja nie powiodła się. Skontaktuj się z administratorem')),
-      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Rejestracja nie powiodła się. Skontaktuj się z administratorem')));
     }
   }
 
   @override
   void initState() {
     super.initState();
+    _usernameController.addListener(_validateForm);
+    _firstNameController.addListener(_validateForm);
+    _lastNameController.addListener(_validateForm);
     _usernameController.addListener(_validateForm);
     _emailController.addListener(_validateForm);
     _passwordController.addListener(_validateForm);
@@ -75,9 +77,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rejestracja'),
-      ),
+      appBar: AppBar(title: const Text('Rejestracja')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -92,45 +92,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 20),
               TextField(
                 controller: _usernameController,
-                decoration: InputDecoration(
-                  labelText: 'Nazwa użytkownika (min 5 znaków)',
-                ),
+                decoration: const InputDecoration(labelText: 'Nazwa użytkownika (min 5 znaków)'),
               ),
               const SizedBox(height: 20),
               TextField(
                 controller: _firstNameController,
-                decoration: InputDecoration(
-                  labelText: 'Imię (opcjonalne)',
-                ),
+                decoration: const InputDecoration(labelText: 'Imię'),
               ),
               const SizedBox(height: 20),
               TextField(
                 controller: _lastNameController,
-                decoration: InputDecoration(
-                  labelText: 'Nazwisko (opcjonalne)',
-                ),
+                decoration: const InputDecoration(labelText: 'Nazwisko'),
               ),
               const SizedBox(height: 20),
               TextField(
                 controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Adres email',
-                ),
+                decoration: const InputDecoration(labelText: 'Adres email'),
               ),
               const SizedBox(height: 20),
               TextField(
                 controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Hasło (min 8 znaków)',
-                ),
+                decoration: const InputDecoration(labelText: 'Hasło (min 8 znaków)'),
                 obscureText: true,
               ),
               const SizedBox(height: 20),
               TextField(
                 controller: _confirmPasswordController,
-                decoration: InputDecoration(
-                  labelText: 'Potwierdź hasło',
-                ),
+                decoration: const InputDecoration(labelText: 'Powtórz hasło'),
                 obscureText: true,
               ),
               const SizedBox(height: 20),

@@ -8,17 +8,11 @@ import '../util/host_api_data.dart';
 import 'base_service.dart';
 
 class AuthService extends BaseService {
-  static const String _authUrl = "${HostApiData.baseAuthApiUrl}";
+  static const String _authUrl = HostApiData.baseAuthApiUrl;
 
   Future<JwtResponse?> loginUser(String username, String password) async {
     final response = await sendAuthenticatedRequest(
-      http.Request(
-        'POST',
-        Uri.parse('$_authUrl/login'),
-      )
-        ..headers.addAll({
-          'Content-Type': 'application/json; charset=UTF-8',
-        })
+      http.Request('POST', Uri.parse('$_authUrl/login'))
         ..body = jsonEncode(<String, String>{
           'username': username,
           'password': password,
@@ -36,13 +30,7 @@ class AuthService extends BaseService {
 
   Future<bool> registerUser(String username, String firstName, String lastName, String email, String password) async {
     final response = await sendAuthenticatedRequest(
-      http.Request(
-        'POST',
-        Uri.parse('$_authUrl/register'),
-      )
-        ..headers.addAll({
-          'Content-Type': 'application/json; charset=UTF-8',
-        })
+      http.Request('POST', Uri.parse('$_authUrl/register'))
         ..body = jsonEncode(<String, String>{
           'username': username,
           'firstName': firstName,
@@ -51,7 +39,6 @@ class AuthService extends BaseService {
           'password': password,
         }),
     );
-
     return response.statusCode == 200;
   }
 
