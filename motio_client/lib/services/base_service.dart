@@ -7,7 +7,6 @@ import '../models/jwt_response.dart';
 import '../util/host_api_data.dart';
 
 abstract class BaseService {
-  static const String _baseUrl = HostApiData.baseCoreApiUrl;
   static const String _authUrl = HostApiData.baseAuthApiUrl;
 
   Future<void> saveTokens(JwtResponse jwtResponse) async {
@@ -75,11 +74,8 @@ abstract class BaseService {
 
   Future<http.StreamedResponse> sendAuthenticatedMultipartRequest(http.MultipartRequest request, {bool retry = true}) async {
     final headers = await getAuthHeaders();
-
     request.headers.addAll(headers);
-
     final response = await request.send();
-
     if (response.statusCode == 403 && retry) {
       final newTokens = await refreshToken();
       if (newTokens != null) {
@@ -92,11 +88,6 @@ abstract class BaseService {
     }
 
     return response;
-  }
-
-  Future<http.Response> _retryRequest(http.Request request) async {
-    final response = await request.send();
-    return await http.Response.fromStream(response);
   }
 
   Future<Map<String, String>> getAuthHeaders() async {

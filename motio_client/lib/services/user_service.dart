@@ -10,12 +10,10 @@ class UserService extends BaseService {
   static const String _userUrl = "${HostApiData.baseCoreApiUrl}/users";
 
   Future<User?> getUserInfo({bool retry = true}) async {
-    final response = await sendAuthenticatedRequest(
-        http.Request(
-          'GET',
-          Uri.parse('$_userUrl/me'),
-        )
-    );
+    final response = await sendAuthenticatedRequest(http.Request(
+      'GET',
+      Uri.parse('$_userUrl/me'),
+    ));
 
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
@@ -26,10 +24,10 @@ class UserService extends BaseService {
 
   Future<void> updateNotificationToken(String notificationToken) async {
     final response = await sendAuthenticatedRequest(
-      http.Request('POST', Uri.parse('$_userUrl/notification-token'),)
-        ..body = jsonEncode({
-          'notificationToken': notificationToken
-        }),
+      http.Request('POST', Uri.parse('$_userUrl/notification-token'))
+        ..body = jsonEncode(
+          {'notificationToken': notificationToken},
+        ),
     );
 
     if (response.statusCode != 200) {
@@ -38,12 +36,10 @@ class UserService extends BaseService {
   }
 
   Future<List<User>> getAllUsers() async {
-    final response = await sendAuthenticatedRequest(
-        http.Request(
-          'GET',
-          Uri.parse('$_userUrl'),
-        )
-    );
+    final response = await sendAuthenticatedRequest(http.Request(
+      'GET',
+      Uri.parse(_userUrl),
+    ));
 
     if (response.statusCode == 200) {
       final List<dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));

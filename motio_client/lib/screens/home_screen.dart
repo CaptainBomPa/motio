@@ -10,12 +10,16 @@ import '../widgets/user_greeting.dart';
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void _setupNotifications() {
     final messagingService = MessagingService();
     messagingService.setupFirebase();
     messagingService.listenToPublic();
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
+    _setupNotifications();
 
     return Scaffold(
       appBar: AppBar(

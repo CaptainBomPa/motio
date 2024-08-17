@@ -27,25 +27,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       if (response != null) {
         await ref.read(userProvider.notifier).fetchUser();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+        if (!mounted) return;
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomeScreen()));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nie udało się zalogować. Sprawdź poprawność danych.')),
-        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nie udało się zalogować. Sprawdź poprawność danych')));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Proszę podaj dane do logowania.')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Podaj dane do logowania')));
     }
   }
 
   void _navigateToRegister() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const RegisterScreen()),
-    );
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const RegisterScreen()));
   }
 
   @override
