@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:motio_client/services/user_service.dart';
+
 import 'local_notification_service.dart';
 
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
@@ -18,6 +21,24 @@ class MessagingService {
 
     FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
 
+    if (Platform.isIOS) {
+      NotificationSettings settings =
+          await _firebaseMessaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      print('User granted permission: ${settings.authorizationStatus}');
+
+      String? apnsToken = await _firebaseMessaging.getAPNSToken();
+      if (apnsToken != null) {
+        print('APNS token: $apnsToken');
+      } else {
+        print('APNS token not yet available.');
+      }
+    }
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Received a message: ${message.notification?.title}');
       _localNotificationService.showNotification(message);
@@ -27,15 +48,23 @@ class MessagingService {
       print('Message clicked: ${message.notification?.title}');
     });
 
-    _firebaseMessaging.getToken().then((String? token) {
-      assert(token != null);
+    String? token = await _firebaseMessaging.getToken();
+    if (token != null) {
       print("Push Messaging token: $token");
       UserService userService = UserService();
-      userService.updateNotificationToken(token!);
-    });
+      userService.updateNotificationToken(token);
+      listenToPublic();
+    } else {
+      print("Unable to get FCM token.");
+    }
   }
 
   void listenToPublic() {
-    _firebaseMessaging.subscribeToTopic("all_users");
+    _firebaseMessaging.subscribeToTopic("all_users").then((_) {
+      print("Subscribed to topic all_users");
+    }).catchError((error) {
+      print("Failed to subscribe to topic: $error");
+    });
   }
 }
+
