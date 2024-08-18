@@ -31,7 +31,7 @@ public class TodoListNotificationSenderImpl implements TodoListNotificationSende
         StringBuilder bodyBuilder = new StringBuilder();
         bodyBuilder.append("Użytkownik");
         bodyBuilder.append(" ");
-        bodyBuilder.append(newSharedUser.getFirstName() + " " + newSharedUser.getLastName());
+        bodyBuilder.append(todoList.getCreatedByUser().getFirstName() + " " + todoList.getCreatedByUser().getLastName());
         bodyBuilder.append(" ");
         bodyBuilder.append("dodał Cię do Todo Listy o nazwie");
         bodyBuilder.append(" ");
