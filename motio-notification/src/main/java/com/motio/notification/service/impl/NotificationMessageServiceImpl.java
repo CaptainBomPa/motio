@@ -37,7 +37,7 @@ public class NotificationMessageServiceImpl implements NotificationMessageServic
         return notificationMessageRepository.findAll().stream()
                 .filter(notificationMessage -> notificationMessage.getMessageType() == MessageType.BROADCAST ||
                         (notificationMessage.getReceiver() != null && notificationMessage.getReceiver().getUsername().equals(username)))
-                .sorted(Comparator.comparing(NotificationMessage::getSendDateTime))
+                .sorted(Comparator.comparing(NotificationMessage::getSendDateTime).reversed())
                 .limit(50)
                 .toList();
     }

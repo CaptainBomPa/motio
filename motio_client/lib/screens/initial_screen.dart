@@ -46,9 +46,7 @@ class _InitialScreenState extends ConsumerState<InitialScreen> {
 
   void moveToHomeScreen() {
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
-    );
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
 
   void moveToLoginPage() {
