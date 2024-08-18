@@ -44,7 +44,6 @@ class _DebtScreenState extends ConsumerState<DebtScreen> with SingleTickerProvid
   }
 
   Future<void> _refreshDebts() async {
-    print('onRefresh');
     setState(() {
       _isLoading = true;
     });

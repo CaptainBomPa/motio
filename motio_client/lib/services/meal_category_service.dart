@@ -19,29 +19,22 @@ class MealCategoryService extends BaseService {
   Future<List<MealCategory>> fetchMealCategories() async {
     final prefs = await SharedPreferences.getInstance();
     final savedCategories = prefs.getString(_categoriesKey);
-    print('test');
 
     // Jeśli mamy zapisane kategorie, próbujemy odświeżyć
     if (savedCategories != null) {
       final List<dynamic> savedList = jsonDecode(savedCategories);
       final localCategories = savedList.map((e) => MealCategory.fromJson(e)).toList();
-      print('pobieranie z api');
       // Pobierz kategorie z API
       final apiCategories = await _fetchCategoriesFromApi();
-      print('pobrano');
       // Jeśli kategorie się różnią, aktualizujemy
       if (!_areCategoriesEqual(localCategories, apiCategories)) {
-        print('non eq');
         await _saveCategories(apiCategories);
         await _saveImages(apiCategories);
         return apiCategories;
       } else {
-        print('are eq');
         return localCategories;
       }
     } else {
-      print('nie zapisane');
-      // Jeśli nie mamy zapisanych kategorii, pobierz je z API
       return await _fetchAndUpdateCategories();
     }
   }

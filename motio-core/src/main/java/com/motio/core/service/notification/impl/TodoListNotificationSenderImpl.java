@@ -26,6 +26,10 @@ public class TodoListNotificationSenderImpl implements TodoListNotificationSende
     public void sendAddNewSharedUsers(TodoList todoList, User newSharedUser) {
         NotificationMessage notificationMessage = new NotificationMessage();
         notificationMessage.setMessageType(MessageType.SINGLE_RECEIVER);
+        if (newSharedUser.getNotificationToken() == null || newSharedUser.getNotificationToken().isEmpty()) {
+            log.info("Ignoring sending notifications for user: {}", newSharedUser.getUsername());
+            return;
+        }
         notificationMessage.setReceiver(newSharedUser);
         notificationMessage.setTitle("Zostałeś dodany do listy \"" + todoList.getListName() + "\"");
         StringBuilder bodyBuilder = new StringBuilder();

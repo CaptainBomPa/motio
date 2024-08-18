@@ -47,7 +47,7 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
         _imageFile = updatedImageFile;
       });
     } catch (e) {
-      print('Failed to load meal details: $e');
+
     } finally {
       setState(() {
         _isLoading = false;

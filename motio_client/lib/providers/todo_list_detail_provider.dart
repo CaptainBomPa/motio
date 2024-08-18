@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/todo_list.dart';
+
 import '../models/todo_item.dart';
+import '../models/todo_list.dart';
 import '../models/user.dart';
 import '../services/todo_service.dart';
-import 'user_provider.dart';
 
 final todoListDetailProvider = StateNotifierProvider.family<TodoListDetailNotifier, TodoList, int>((ref, id) {
   final todoService = TodoService();
@@ -14,15 +14,13 @@ class TodoListDetailNotifier extends StateNotifier<TodoList> {
   final TodoService _todoService;
   final int _id;
 
-  TodoListDetailNotifier(this._todoService, this._id) : super(TodoList(id: _id,
-      listName: '',
-      items: [],
-      createdByUser: User(id: 0,
-          username: '',
-          firstName: '',
-          lastName: '',
-          email: ''),
-      accessibleUsers: [])) {
+  TodoListDetailNotifier(this._todoService, this._id)
+      : super(TodoList(
+            id: _id,
+            listName: '',
+            items: [],
+            createdByUser: User(id: 0, username: '', firstName: '', lastName: '', email: ''),
+            accessibleUsers: [])) {
     _loadTodoList();
   }
 
@@ -67,6 +65,6 @@ class TodoListDetailNotifier extends StateNotifier<TodoList> {
   }
 
   Future<void> saveTodoList() async {
-    await _todoService.updateTodoList(state.id, state.toJson());
+    await _todoService.updateTodoList(state.id!, state.toJson());
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../models/todo_list.dart';
 import '../providers/todo_list_provider.dart';
-import '../screens/todo_list_detail_screen.dart';
 import '../providers/user_provider.dart';
+import '../screens/todo_list_detail_screen.dart';
 import '../services/todo_service.dart';
 
 class TodoListTile extends ConsumerWidget {
@@ -16,13 +17,10 @@ class TodoListTile extends ConsumerWidget {
     try {
       await todoService.deleteTodoList(todoList.id);
       ref.invalidate(todoListProvider);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lista TODO została usunięta.')),
-      );
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lista TODO została usunięta.')));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Błąd podczas usuwania listy TODO: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Błąd podczas usuwania listy TODO: $e')));
     }
   }
 
@@ -30,13 +28,14 @@ class TodoListTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final checkedItemsCount = todoList.items
-        .where((item) => item.checked)
-        .length;
+    final checkedItemsCount = todoList.items.where((item) => item.checked).length;
     final uncheckedItemsCount = todoList.items.length - checkedItemsCount;
     final currentUser = ref.watch(userProvider);
 
     final isSharedByAnotherUser = currentUser != null && todoList.createdByUser.id != currentUser.id;
+
+    final imageIndex = (todoList.id % 10) + 1;
+    final imagePath = 'assets/todo/todo-$imageIndex.png';
 
     return Dismissible(
       key: Key(todoList.id.toString()),
@@ -89,7 +88,17 @@ class TodoListTile extends ConsumerWidget {
             child: Stack(
               children: [
                 Container(
-                  color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(imagePath),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(0.5),
+                        BlendMode.darken,
+                      ),
+                    ),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                   height: 120,
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   alignment: Alignment.centerLeft,
@@ -97,12 +106,26 @@ class TodoListTile extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Center(
-                        child: Text(
-                          todoList.listName,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                            fontSize: 24,
-                          ),
+                        child: Stack(
+                          children: [
+                            Text(
+                              todoList.listName,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontSize: 24,
+                                foreground: Paint()
+                                  ..style = PaintingStyle.stroke
+                                  ..strokeWidth = 3
+                                  ..color = isDarkMode ? Colors.black : Colors.white,
+                              ),
+                            ),
+                            Text(
+                              todoList.listName,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                color: isDarkMode ? Colors.white : Colors.black,
+                                fontSize: 24,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -111,14 +134,54 @@ class TodoListTile extends ConsumerWidget {
                         children: [
                           Column(
                             children: [
-                              Icon(Icons.check_circle, color: Colors.green),
-                              Text('$checkedItemsCount'),
+                              const Icon(Icons.check_circle, color: Colors.green),
+                              Stack(
+                                children: [
+                                  Text(
+                                    '$checkedItemsCount',
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      fontSize: 16,
+                                      foreground: Paint()
+                                        ..style = PaintingStyle.stroke
+                                        ..strokeWidth = 3
+                                        ..color = isDarkMode ? Colors.black : Colors.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    '$checkedItemsCount',
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      color: isDarkMode ? Colors.white : Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                           Column(
                             children: [
-                              Icon(Icons.cancel, color: Colors.red),
-                              Text('$uncheckedItemsCount'),
+                              const Icon(Icons.cancel, color: Colors.red),
+                              Stack(
+                                children: [
+                                  Text(
+                                    '$uncheckedItemsCount',
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      fontSize: 16,
+                                      foreground: Paint()
+                                        ..style = PaintingStyle.stroke
+                                        ..strokeWidth = 3
+                                        ..color = isDarkMode ? Colors.black : Colors.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    '$uncheckedItemsCount',
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      color: isDarkMode ? Colors.white : Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ],
@@ -126,11 +189,24 @@ class TodoListTile extends ConsumerWidget {
                       if (isSharedByAnotherUser) ...[
                         const Spacer(),
                         Center(
-                          child: Text(
-                            'Udostępnione przez: ${todoList.createdByUser.firstName} ${todoList.createdByUser.lastName}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
+                          child: Stack(
+                            children: [
+                              Text(
+                                'Udostępnione przez: ${todoList.createdByUser.firstName} ${todoList.createdByUser.lastName}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  foreground: Paint()
+                                    ..style = PaintingStyle.stroke
+                                    ..strokeWidth = 1.5
+                                    ..color = isDarkMode ? Colors.black : Colors.white,
+                                ),
+                              ),
+                              Text(
+                                'Udostępnione przez: ${todoList.createdByUser.firstName} ${todoList.createdByUser.lastName}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: isDarkMode ? Colors.white : Colors.black,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],

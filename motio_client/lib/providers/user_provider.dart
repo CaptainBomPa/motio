@@ -17,7 +17,7 @@ class UserNotifier extends StateNotifier<User?> {
       }
       state = user;
     } catch (e) {
-      print('Error fetching user info: $e');
+
     }
   }
 

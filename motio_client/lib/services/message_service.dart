@@ -32,38 +32,30 @@ class MessagingService {
       print('User granted permission: ${settings.authorizationStatus}');
 
       String? apnsToken = await _firebaseMessaging.getAPNSToken();
-      if (apnsToken != null) {
-        print('APNS token: $apnsToken');
-      } else {
-        print('APNS token not yet available.');
-      }
     }
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Received a message: ${message.notification?.title}');
       _localNotificationService.showNotification(message);
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('Message clicked: ${message.notification?.title}');
     });
 
     String? token = await _firebaseMessaging.getToken();
     if (token != null) {
-      print("Push Messaging token: $token");
       UserService userService = UserService();
       userService.updateNotificationToken(token);
       listenToPublic();
     } else {
-      print("Unable to get FCM token.");
+
     }
   }
 
   void listenToPublic() {
     _firebaseMessaging.subscribeToTopic("all_users").then((_) {
-      print("Subscribed to topic all_users");
+
     }).catchError((error) {
-      print("Failed to subscribe to topic: $error");
+
     });
   }
 }
