@@ -14,5 +14,5 @@ class HostApiData {
   static const String baseCoreApiUrl = 'https://core.$_host/v1.0/api/core';
   static const String baseCoreApiWsUrl = 'ws://core.$_host/v1.0/api/core';
   static const String baseAuthApiUrl = 'https://auth.$_host/v1.0/api/auth';
-  static const String baseNotificationApiUrl = 'https://notification.$_host/v1.0/api/notification';
+  static const String baseNotificationApiUrl = 'http://notification.$_host/v1.0/api/notification';
 }
