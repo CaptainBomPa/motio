@@ -11,4 +11,6 @@ public interface NotificationMessageService {
     void addBroadcastNotificationMessage(NotificationMessage notificationMessage);
 
     List<NotificationMessage> getNotificationMessages(String username);
+
+    void deleteNotificationMessage(Long notificationMessageId);
 }

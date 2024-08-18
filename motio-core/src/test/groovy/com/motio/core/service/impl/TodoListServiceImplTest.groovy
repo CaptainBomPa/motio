@@ -9,6 +9,7 @@ import com.motio.core.config.TestConfig
 import com.motio.core.repository.TodoItemRepository
 import com.motio.core.repository.TodoListRepository
 import com.motio.core.service.TodoListService
+import com.motio.core.service.notification.TodoListNotificationSender
 import com.motio.core.service.sender.TodoListUpdateSender
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -32,10 +33,13 @@ class TodoListServiceImplTest extends Specification {
     TestEntityManager entityManager
     @Autowired
     TodoListUpdateSender todoListUpdateSender
+    @Autowired
+    TodoListNotificationSender todoListNotificationSender
+
     TodoListService todoListService
 
     void setup() {
-        todoListService = new TodoListServiceImpl(todoListRepository, todoItemRepository, userRepository, todoListUpdateSender)
+        todoListService = new TodoListServiceImpl(todoListRepository, todoItemRepository, userRepository, todoListUpdateSender, todoListNotificationSender)
     }
 
     def "should save todo list"() {

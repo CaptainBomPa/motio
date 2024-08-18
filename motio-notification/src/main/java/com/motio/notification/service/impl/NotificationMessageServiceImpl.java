@@ -1,5 +1,6 @@
 package com.motio.notification.service.impl;
 
+import com.motio.commons.exception.throwable.GenericObjectNotFoundException;
 import com.motio.commons.model.MessageType;
 import com.motio.commons.model.NotificationMessage;
 import com.motio.notification.NotificationService;
@@ -39,5 +40,12 @@ public class NotificationMessageServiceImpl implements NotificationMessageServic
                 .sorted(Comparator.comparing(NotificationMessage::getSendDateTime))
                 .limit(50)
                 .toList();
+    }
+
+    @Override
+    public void deleteNotificationMessage(Long notificationMessageId) {
+        NotificationMessage messageToDelete = notificationMessageRepository.findById(notificationMessageId)
+                .orElseThrow(() -> new GenericObjectNotFoundException(NotificationMessage.class));
+        notificationMessageRepository.deleteById(messageToDelete.getId());
     }
 }

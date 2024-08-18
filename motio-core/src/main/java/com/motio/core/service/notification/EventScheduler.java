@@ -1,9 +1,10 @@
-package com.motio.core.service;
+package com.motio.core.service.notification;
 
 import com.motio.commons.model.Event;
 import com.motio.commons.model.MessageType;
 import com.motio.commons.model.NotificationMessage;
 import com.motio.commons.model.User;
+import com.motio.core.service.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -41,4 +41,14 @@ public class TodoList {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> accessibleUsers = new HashSet<>();
+
+    public TodoList createCopy() {
+        TodoList todoList = new TodoList();
+        todoList.setId(getId());
+        todoList.setListName(getListName());
+        todoList.setCreatedByUser(getCreatedByUser());
+        todoList.setAccessibleUsers(new HashSet<>(getAccessibleUsers()));
+        todoList.setItems(new LinkedList<>(getItems()));
+        return todoList;
+    }
 }
