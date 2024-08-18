@@ -67,7 +67,7 @@ class _AddEditMealScreenState extends ConsumerState<AddEditMealScreen> with Tick
         });
       }
     } catch (e) {
-      print('Failed to load image: $e');
+
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motio_client/util/host_api_data.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
+
 import '../models/todo_item.dart';
 import '../models/todo_list.dart';
 import '../models/user.dart';
@@ -18,17 +19,16 @@ class TodoListDetailScreen extends ConsumerStatefulWidget {
   const TodoListDetailScreen({super.key, required this.todoList});
 
   @override
-  _TodoListDetailScreenState createState() => _TodoListDetailScreenState();
+  ConsumerState<TodoListDetailScreen> createState() => _TodoListDetailScreenState();
 }
 
 class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
-  bool _isEditing = false;
-  bool _hasChanges = false;
-  late TodoListDetailNotifier _notifier;
-  late TodoList _originalTodoList;
   final TextEditingController _newItemController = TextEditingController();
   final UserService _userService = UserService();
+  late TodoListDetailNotifier _notifier;
+  late TodoList _originalTodoList;
   late StompClient _stompClient;
+  bool _hasChanges = false;
 
   @override
   void initState() {
@@ -45,7 +45,6 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
       config: StompConfig(
         url: "${HostApiData.baseCoreApiWsUrl}/ws/websocket",
         onConnect: _onStompConnect,
-        onWebSocketError: (dynamic error) => print(error.toString()),
       ),
     );
     _stompClient.activate();
@@ -96,9 +95,9 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
     });
   }
 
-  Future<bool> _onWillPop() async {
+  void _onWillPop(bool value) {
     if (_hasChanges) {
-      final shouldSave = await showDialog<bool>(
+      final shouldSave = showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -119,22 +118,19 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
       );
 
       if (shouldSave == true) {
-        await _notifier.saveTodoList();
+        _notifier.saveTodoList();
       } else {
         _notifier.state = _originalTodoList.copyWith(
           items: List.from(_originalTodoList.items),
         );
       }
     }
-    return true;
   }
 
   void _addNewItem() {
     final newItemDescription = _newItemController.text.trim();
     if (newItemDescription.isNotEmpty) {
-      final newItem = TodoItem(id: DateTime
-          .now()
-          .millisecondsSinceEpoch, checked: false, description: newItemDescription);
+      final newItem = TodoItem(id: DateTime.now().millisecondsSinceEpoch, checked: false, description: newItemDescription);
       _notifier.addItem(newItem);
       _newItemController.clear();
       setState(() {
@@ -154,7 +150,7 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Udostępnij listę TODO'),
+          title: const Text('Udostępnij listę TODO'),
           content: SizedBox(
             width: double.maxFinite,
             child: StatefulBuilder(
@@ -171,10 +167,7 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
                     ),
                     Container(
                       constraints: BoxConstraints(
-                        maxHeight: MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.5,
+                        maxHeight: MediaQuery.of(context).size.height * 0.5,
                       ),
                       child: ListView.builder(
                         shrinkWrap: true,
@@ -217,26 +210,27 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Anuluj'),
+              child: const Text('Anuluj'),
             ),
             TextButton(
               onPressed: () async {
                 try {
+                  final items = _notifier.state.items;
                   _notifier.state = widget.todoList.copyWith(
                     accessibleUsers: List.from(accessibleUsers),
+                    items: items,
                   );
                   await _notifier.saveTodoList();
+                  if (!context.mounted) return;
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Lista TODO została udostępniona.')),
-                  );
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lista TODO została udostępniona.')));
+                  _hasChanges = false;
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Błąd podczas udostępniania listy TODO: $e')),
-                  );
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(const SnackBar(content: Text('Błąd podczas udostępniania listy TODO')));
                 }
               },
-              child: Text('Zapisz'),
+              child: const Text('Zapisz'),
             ),
           ],
         );
@@ -258,8 +252,8 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
     final currentUser = ref.watch(userProvider);
     final items = [...todoListState.items]..sort((a, b) => a.checked == b.checked ? 0 : (a.checked ? 1 : -1));
 
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      onPopInvoked: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
           title: Text(todoListState.listName),
@@ -271,9 +265,8 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
                 setState(() {
                   _hasChanges = false;
                 });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Zmiany zostały zapisane.')),
-                );
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Zmiany zostały zapisane.')));
               },
             ),
             if (currentUser != null && todoListState.createdByUser.id == currentUser.id)
