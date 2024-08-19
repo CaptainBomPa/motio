@@ -61,11 +61,22 @@ class _NewTodoListDialogState extends ConsumerState<NewTodoListDialog> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Anuluj'),
+            child: Text(
+              'Anuluj',
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).textTheme.headlineLarge!.color,
+                  ),
+            ),
           ),
           TextButton(
             onPressed: () => _createTodoList(context),
-            child: const Text('Utwórz'),
+            child: Text(
+              'Utwórz',
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).textTheme.headlineLarge!.color,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
           ),
         ],
       ),

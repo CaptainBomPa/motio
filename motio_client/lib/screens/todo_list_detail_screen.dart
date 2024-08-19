@@ -95,9 +95,9 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
     });
   }
 
-  void _onWillPop(bool value) {
+  Future<bool> _onWillPop() async {
     if (_hasChanges) {
-      final shouldSave = showDialog<bool>(
+      final shouldSave = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -118,13 +118,14 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
       );
 
       if (shouldSave == true) {
-        _notifier.saveTodoList();
+        await _notifier.saveTodoList();
       } else {
         _notifier.state = _originalTodoList.copyWith(
           items: List.from(_originalTodoList.items),
         );
       }
     }
+    return true;
   }
 
   void _addNewItem() {
@@ -252,8 +253,8 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
     final currentUser = ref.watch(userProvider);
     final items = [...todoListState.items]..sort((a, b) => a.checked == b.checked ? 0 : (a.checked ? 1 : -1));
 
-    return PopScope(
-      onPopInvoked: _onWillPop,
+    return WillPopScope(
+      onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
           title: Text(todoListState.listName),

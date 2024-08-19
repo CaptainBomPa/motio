@@ -33,6 +33,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final otherUser = widget.currentUser.id == widget.debt.user1.id ? widget.debt.user2 : widget.debt.user1;
+    final isDarkMode = theme.brightness == Brightness.dark;
 
     return AlertDialog(
       title: Text('Dodaj nową transakcję'),
@@ -56,7 +57,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
             },
           ),
           const SizedBox(height: 10),
-          Text('Kto jest dłużny', style: theme.textTheme.bodyMedium),
+          Text('Kto jest dłużny', style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.secondary)),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -69,8 +70,11 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                     });
                   }
                 },
+                activeColor: theme.colorScheme.primary,
+                checkColor: theme.colorScheme.onPrimary,
+                side: BorderSide(color: theme.colorScheme.primary),
               ),
-              Text('Ja', style: theme.textTheme.bodyMedium),
+              Text('Ja', style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.secondary)),
               Checkbox(
                 value: !isCurrentUserOwes,
                 onChanged: (value) {
@@ -80,8 +84,12 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                     });
                   }
                 },
+                activeColor: theme.colorScheme.primary,
+                checkColor: theme.colorScheme.onPrimary,
+                side: BorderSide(color: theme.colorScheme.primary),
               ),
-              Text('${otherUser.firstName} ${otherUser.lastName}', style: theme.textTheme.bodyMedium),
+              Text('${otherUser.firstName} ${otherUser.lastName}',
+                  style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.secondary)),
             ],
           ),
         ],
@@ -89,11 +97,17 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('Anuluj', style: theme.textTheme.bodyMedium),
+          child: Text('Anuluj', style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.secondary)),
         ),
         TextButton(
           onPressed: _addTransaction,
-          child: _isAddingTransaction ? CircularProgressIndicator() : Text('Dodaj', style: theme.textTheme.bodyMedium),
+          child: _isAddingTransaction
+              ? CircularProgressIndicator()
+              : Text('Dodaj',
+                  style: theme.textTheme.bodyMedium!.copyWith(
+                    color: theme.colorScheme.secondary,
+                    fontWeight: FontWeight.bold,
+                  )),
         ),
       ],
     );

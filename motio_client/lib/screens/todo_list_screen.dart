@@ -68,7 +68,7 @@ class _TodoListScreenState extends ConsumerState<TodoListScreen> with SingleTick
     final todoListAsyncValue = ref.watch(todoListProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista TODO'),
+        title: const Text('TODO'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
