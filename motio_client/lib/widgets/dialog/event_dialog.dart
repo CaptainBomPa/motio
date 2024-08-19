@@ -35,8 +35,7 @@ class _EventDialogState extends ConsumerState<EventDialog> {
     super.initState();
     _nameController = TextEditingController(text: widget.event?.eventName);
     _descriptionController = TextEditingController(text: widget.event?.description);
-    _reminderController = TextEditingController(
-        text: widget.event?.reminderMinutesBefore?.toString() ?? ''); // Nowe pole
+    _reminderController = TextEditingController(text: widget.event?.reminderMinutesBefore?.toString() ?? ''); // Nowe pole
     _allDayDate = widget.event?.allDayDate;
     _startDateTime = widget.event?.startDateTime;
     _endDateTime = widget.event?.endDateTime;
@@ -280,13 +279,13 @@ class _EventDialogState extends ConsumerState<EventDialog> {
                   onChanged: _isAllDay
                       ? null // Blokowanie przypomnienia dla całodniowych wydarzeń
                       : (value) {
-                    setState(() {
-                      _hasReminder = value ?? false;
-                      if (!_hasReminder) {
-                        _reminderController.clear();
-                      }
-                    });
-                  },
+                          setState(() {
+                            _hasReminder = value ?? false;
+                            if (!_hasReminder) {
+                              _reminderController.clear();
+                            }
+                          });
+                        },
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
                 if (!_isAllDay && _hasReminder)
@@ -333,11 +332,22 @@ class _EventDialogState extends ConsumerState<EventDialog> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Anuluj'),
+                      child: Text(
+                        'Anuluj',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
                     ),
                     ElevatedButton(
                       onPressed: _isFormValid ? _saveEvent : null,
-                      child: const Text('Zapisz'),
+                      child: Text(
+                        'Zapisz',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),

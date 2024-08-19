@@ -42,14 +42,18 @@ ThemeData lightTheme = ThemeData(
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: Colors.grey[200], // Jasno szare tło
-    labelStyle: const TextStyle(color: Colors.black), // Czarny tekst
-    hintStyle: const TextStyle(color: Colors.black54), // Hint text in gray
+    fillColor: Colors.grey[200],
+    labelStyle: const TextStyle(color: Colors.deepPurple),
+    hintStyle: const TextStyle(color: Colors.black54),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide.none,
     ),
     focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Colors.deepPurple),
+    ),
+    enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: const BorderSide(color: Colors.deepPurple),
     ),

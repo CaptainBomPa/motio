@@ -44,13 +44,17 @@ ThemeData darkTheme = ThemeData(
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: Colors.grey[800], // Ciemnoszare tło
-    labelStyle: const TextStyle(color: Colors.white), // Biały tekst
+    labelStyle: TextStyle(color: Colors.deepPurple[300]!), // Biały tekst
     hintStyle: const TextStyle(color: Colors.white70), // Hint text in light gray
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide.none,
     ),
     focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.deepPurple[300]!),
+    ),
+    enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide(color: Colors.deepPurple[300]!),
     ),
