@@ -1,0 +1,8 @@
+<svg id="visual" viewBox="0 0 900 600" width="900" height="600" xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <path d="M0 67L900 73L900 0L0 0Z" fill="#6600ff"></path>
+    <path d="M0 133L900 145L900 71L0 65Z" fill="#6d12ff"></path>
+    <path d="M0 211L900 247L900 143L0 131Z" fill="#741dff"></path>
+    <path d="M0 379L900 379L900 245L0 209Z" fill="#7a26ff"></path>
+    <path d="M0 427L900 451L900 377L0 377Z" fill="#802fff"></path>
+    <path d="M0 601L900 601L900 449L0 425Z" fill="#8636ff"></path>
+</svg>

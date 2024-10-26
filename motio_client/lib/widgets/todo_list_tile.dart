@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 
 import '../models/todo_list.dart';
 import '../providers/todo_list_provider.dart';
@@ -43,10 +44,24 @@ class TodoListTile extends ConsumerWidget {
           ? DismissDirection.endToStart
           : DismissDirection.none,
       background: Container(
-        color: Colors.red,
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: const Icon(Icons.delete, color: Colors.white),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.transparent,
+              Colors.red,
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
+        child: Lottie.asset(
+          'assets/animations/delete_animation.json',
+          width: 100,
+          height: 100,
+          fit: BoxFit.cover,
+        ),
       ),
       confirmDismiss: (direction) async {
         return await showDialog(
@@ -62,7 +77,7 @@ class TodoListTile extends ConsumerWidget {
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text("Tak"),
+                  child: const Text("Tak", style: TextStyle(fontWeight: FontWeight.bold),),
                 ),
               ],
             );
@@ -73,7 +88,7 @@ class TodoListTile extends ConsumerWidget {
         await _deleteTodoList(context, ref);
       },
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(3.0),
         child: GestureDetector(
           onTap: () {
             Navigator.push(
@@ -87,130 +102,142 @@ class TodoListTile extends ConsumerWidget {
             borderRadius: BorderRadius.circular(8.0),
             child: Stack(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(imagePath),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.5),
-                        BlendMode.darken,
-                      ),
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  height: 120,
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  alignment: Alignment.centerLeft,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Stack(
-                          children: [
-                            Text(
-                              todoList.listName,
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontSize: 24,
-                                foreground: Paint()
-                                  ..style = PaintingStyle.stroke
-                                  ..strokeWidth = 3
-                                  ..color = isDarkMode ? Colors.black : Colors.white,
-                              ),
-                            ),
-                            Text(
-                              todoList.listName,
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                color: isDarkMode ? Colors.white : Colors.black,
-                                fontSize: 24,
-                              ),
-                            ),
-                          ],
+                Hero(
+                  tag: 'todo-${todoList.id}',
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(imagePath),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.5),
+                          BlendMode.darken,
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Column(
-                            children: [
-                              const Icon(Icons.check_circle, color: Colors.green),
-                              Stack(
-                                children: [
-                                  Text(
-                                    '$checkedItemsCount',
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      fontSize: 16,
-                                      foreground: Paint()
-                                        ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 3
-                                        ..color = isDarkMode ? Colors.black : Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    '$checkedItemsCount',
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      color: isDarkMode ? Colors.white : Colors.black,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              const Icon(Icons.cancel, color: Colors.red),
-                              Stack(
-                                children: [
-                                  Text(
-                                    '$uncheckedItemsCount',
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      fontSize: 16,
-                                      foreground: Paint()
-                                        ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 3
-                                        ..color = isDarkMode ? Colors.black : Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    '$uncheckedItemsCount',
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      color: isDarkMode ? Colors.white : Colors.black,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      if (isSharedByAnotherUser) ...[
-                        const Spacer(),
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(color: theme.colorScheme.primary, width: 3.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.deepPurple[300]!,
+                          blurRadius: 4,
+                          offset: const Offset(6, 8),
+                        ),
+                      ],
+                    ),
+                    height: 126,
+                    margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Center(
                           child: Stack(
                             children: [
                               Text(
-                                'Udostępnione przez: ${todoList.createdByUser.firstName} ${todoList.createdByUser.lastName}',
-                                style: theme.textTheme.bodySmall?.copyWith(
+                                todoList.listName,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontSize: 24,
                                   foreground: Paint()
                                     ..style = PaintingStyle.stroke
-                                    ..strokeWidth = 1.5
+                                    ..strokeWidth = 3
                                     ..color = isDarkMode ? Colors.black : Colors.white,
                                 ),
                               ),
                               Text(
-                                'Udostępnione przez: ${todoList.createdByUser.firstName} ${todoList.createdByUser.lastName}',
-                                style: theme.textTheme.bodySmall?.copyWith(
+                                todoList.listName,
+                                style: theme.textTheme.titleLarge?.copyWith(
                                   color: isDarkMode ? Colors.white : Colors.black,
+                                  fontSize: 24,
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              children: [
+                                const Icon(Icons.check_circle, color: Colors.green),
+                                Stack(
+                                  children: [
+                                    Text(
+                                      '$checkedItemsCount',
+                                      style: theme.textTheme.bodyLarge?.copyWith(
+                                        fontSize: 16,
+                                        foreground: Paint()
+                                          ..style = PaintingStyle.stroke
+                                          ..strokeWidth = 3
+                                          ..color = isDarkMode ? Colors.black : Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      '$checkedItemsCount',
+                                      style: theme.textTheme.bodyLarge?.copyWith(
+                                        color: isDarkMode ? Colors.white : Colors.black,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                const Icon(Icons.cancel, color: Colors.red),
+                                Stack(
+                                  children: [
+                                    Text(
+                                      '$uncheckedItemsCount',
+                                      style: theme.textTheme.bodyLarge?.copyWith(
+                                        fontSize: 16,
+                                        foreground: Paint()
+                                          ..style = PaintingStyle.stroke
+                                          ..strokeWidth = 3
+                                          ..color = isDarkMode ? Colors.black : Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      '$uncheckedItemsCount',
+                                      style: theme.textTheme.bodyLarge?.copyWith(
+                                        color: isDarkMode ? Colors.white : Colors.black,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        if (isSharedByAnotherUser) ...[
+                          const Spacer(),
+                          Center(
+                            child: Stack(
+                              children: [
+                                Text(
+                                  'Udostępnione przez: ${todoList.createdByUser.firstName} ${todoList.createdByUser.lastName}',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    foreground: Paint()
+                                      ..style = PaintingStyle.stroke
+                                      ..strokeWidth = 1.5
+                                      ..color = isDarkMode ? Colors.black : Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  'Udostępnione przez: ${todoList.createdByUser.firstName} ${todoList.createdByUser.lastName}',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: isDarkMode ? Colors.white : Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ],

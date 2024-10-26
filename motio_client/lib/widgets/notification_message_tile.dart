@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 import '../models/notification_message.dart';
 import '../services/notification_service.dart';
@@ -9,7 +11,7 @@ class NotificationMessageTile extends StatelessWidget {
   final NotificationService notificationService;
   final Function onDismissed;
 
-  NotificationMessageTile({
+  const NotificationMessageTile({
     super.key,
     required this.notificationMessage,
     required this.notificationService,
@@ -20,13 +22,17 @@ class NotificationMessageTile extends StatelessWidget {
     try {
       await notificationService.deleteNotification(notificationMessage.id);
       onDismissed();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Powiadomienie zostało usunięte.')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Powiadomienie zostało usunięte.')),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Błąd podczas usuwania powiadomienia: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Błąd podczas usuwania powiadomienia.')),
+        );
+      }
     }
   }
 
@@ -39,10 +45,24 @@ class NotificationMessageTile extends StatelessWidget {
       key: Key(notificationMessage.id.toString()),
       direction: DismissDirection.endToStart,
       background: Container(
-        color: Colors.red,
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: const Icon(Icons.delete, color: Colors.white),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.transparent,
+              Colors.red,
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
+        child: Lottie.asset(
+          'assets/animations/delete_animation.json',
+          width: 100,
+          height: 100,
+          fit: BoxFit.cover,
+        ),
       ),
       confirmDismiss: (direction) async {
         return await showDialog(
@@ -69,12 +89,30 @@ class NotificationMessageTile extends StatelessWidget {
         await _deleteNotification(context);
       },
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(1.0),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(20.0),
           child: Container(
-            color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            margin: const EdgeInsets.only(left: 12.0, right: 12.0, top: 6.0, bottom: 6.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+            decoration: BoxDecoration(
+              color: Colors.grey[50]?.withOpacity(0.9),
+              border: Border.all(
+                color: theme.primaryColor,
+              ),
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.deepPurple[300]!,
+                  blurRadius: 4,
+                  offset: const Offset(6, 8),
+                ),
+              ],
+              image: const DecorationImage(
+                image: Svg('assets/main/notification_background.svg'),
+                fit: BoxFit.cover,
+              ),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -82,14 +120,14 @@ class NotificationMessageTile extends StatelessWidget {
                   notificationMessage.title,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 8.0),
                 Text(
                   notificationMessage.body,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isDarkMode ? Colors.white70 : Colors.black87,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 8.0),
@@ -98,7 +136,7 @@ class NotificationMessageTile extends StatelessWidget {
                   child: Text(
                     DateFormat('yyyy-MM-dd HH:mm').format(notificationMessage.sendDateTime),
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: isDarkMode ? Colors.white54 : Colors.black54,
+                      color: Colors.white,
                     ),
                   ),
                 ),

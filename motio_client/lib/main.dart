@@ -25,7 +25,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
+      // as of now we keep only light mode. Maybe in feature we will extend
       home: const InitialScreen(),
     );
   }

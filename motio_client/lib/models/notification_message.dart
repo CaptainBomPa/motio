@@ -2,7 +2,7 @@ import 'package:motio_client/models/user.dart';
 
 class NotificationMessage {
   final int id;
-  final String firebaseGeneratedId;
+  final String? firebaseGeneratedId;
   final String messageType;
   final User? receiver;
   final String title;
@@ -11,7 +11,7 @@ class NotificationMessage {
 
   NotificationMessage({
     required this.id,
-    required this.firebaseGeneratedId,
+    this.firebaseGeneratedId,
     required this.messageType,
     this.receiver,
     required this.title,

@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Health Check", description = "Health check of API")
 public class HealthCheckController {
 
+    /**
+     * This controller is intended to run on each service.
+     * It might be later expanded to serve more status information
+     * As of now, it returns only HTTP OK
+     */
     @GetMapping("/status")
     @Operation(summary = "Status of the service", description = "Return HTTP OK if service is available", tags = {"Health"})
     public ResponseEntity<Void> status() {

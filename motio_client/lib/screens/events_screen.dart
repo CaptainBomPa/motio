@@ -1,36 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:motio_client/widgets/app_drawer.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:motio_client/widgets/dialog/event_dialog.dart';
 import 'package:motio_client/widgets/event_tile.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import '../providers/event_provider.dart';
+import '../providers/user_provider.dart';
 
-import '../providers/event_provider.dart';  // dodajemy import providera
-
-class EventsScreen extends ConsumerWidget {
+class EventsScreen extends ConsumerStatefulWidget {
   const EventsScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _EventsScreenState createState() => _EventsScreenState();
+}
+
+class _EventsScreenState extends ConsumerState<EventsScreen> {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kalendarz Wydarzeń'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const EventDialog(),
-              ).then((_) {
-                ref.invalidate(eventsForDateProvider);
-              });
-            },
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: Svg('assets/main/home_body.svg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.15), BlendMode.darken),
           ),
-        ],
+        ),
+        child: const EventList(),
       ),
-      drawer: const AppDrawer(),
-      body: const EventList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const EventDialog(),
+          ).then((_) {
+            ref.invalidate(eventsForDateProvider);
+          });
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

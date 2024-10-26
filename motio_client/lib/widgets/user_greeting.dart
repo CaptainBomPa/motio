@@ -14,10 +14,10 @@ class UserGreeting extends StatelessWidget {
       user != null
           ? 'Cześć, ${user!.firstName.isNotEmpty ? user!.firstName : user!.username}! 👋'
           : 'Ładowanie...',
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: theme.textTheme.bodyLarge?.color,
+        color: Colors.white,
       ),
     );
   }

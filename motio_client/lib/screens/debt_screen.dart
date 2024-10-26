@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
 import '../providers/debt_provider.dart';
 import '../services/debt_service.dart';
-import '../widgets/app_drawer.dart';
 import '../widgets/debt_list_tile.dart';
-import '../widgets/dialog/add_debt_dialog.dart'; // Import the AddDebtDialog
-import 'debt_details_screen.dart'; // Import the DebtDetailsScreen
+import '../widgets/dialog/add_debt_dialog.dart';
+import 'debt_details_screen.dart';
 
 class DebtScreen extends ConsumerStatefulWidget {
   const DebtScreen({super.key});
@@ -64,52 +64,55 @@ class _DebtScreenState extends ConsumerState<DebtScreen> with SingleTickerProvid
     final debtListAsyncValue = ref.watch(debtsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Money Splitter'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _showAddDebtDialog(context),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: Svg('assets/main/home_body.svg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
           ),
-        ],
-      ),
-      drawer: const AppDrawer(),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : debtListAsyncValue.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(child: Text('Wystąpił błąd: $error')),
-        data: (debts) {
-          return RefreshIndicator(
-            onRefresh: _refreshDebts,
-            child: FadeTransition(
-              opacity: _animation,
-              child: ListView.builder(
-                itemCount: debts.length,
-                itemBuilder: (context, index) {
-                  final debt = debts[index];
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, -0.1),
-                      end: Offset.zero,
-                    ).animate(_animation),
-                    child: GestureDetector(
-                      onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DebtDetailsScreen(debt: debt),
-                          ),
-                        );
-                      },
-                      child: DebtListTile(debt: debt, onBack: _refreshDebts,),
-                    ),
-                  );
-                },
+        ),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : debtListAsyncValue.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stackTrace) => Center(child: Text('Wystąpił błąd: $error')),
+          data: (debts) {
+            return RefreshIndicator(
+              onRefresh: _refreshDebts,
+              child: FadeTransition(
+                opacity: _animation,
+                child: ListView.builder(
+                  itemCount: debts.length,
+                  itemBuilder: (context, index) {
+                    final debt = debts[index];
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, -0.1),
+                        end: Offset.zero,
+                      ).animate(_animation),
+                      child: GestureDetector(
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DebtDetailsScreen(debt: debt),
+                            ),
+                          );
+                        },
+                        child: DebtListTile(debt: debt, onBack: _refreshDebts),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddDebtDialog(context),
+        child: const Icon(Icons.add),
       ),
     );
   }

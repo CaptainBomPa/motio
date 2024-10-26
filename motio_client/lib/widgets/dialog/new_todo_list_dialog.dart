@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:motio_client/models/user.dart';
 
 import '../../models/todo_list.dart';
@@ -47,38 +48,87 @@ class _NewTodoListDialogState extends ConsumerState<NewTodoListDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: AlertDialog(
-        title: const Text('Utwórz nową listę TODO'),
-        content: TextField(
-          controller: _newListController,
-          decoration: const InputDecoration(
-            labelText: 'Nazwa listy',
-            border: OutlineInputBorder(),
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: Theme
+            .of(context)
+            .primaryColor, width: 4),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: const Svg('assets/main/dialog_background.svg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.6), BlendMode.lighten),
           ),
+          borderRadius: BorderRadius.circular(8),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'Anuluj',
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Theme.of(context).textTheme.headlineLarge!.color,
-                  ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Utwórz nową listę TODO',
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
-          ),
-          TextButton(
-            onPressed: () => _createTodoList(context),
-            child: Text(
-              'Utwórz',
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Theme.of(context).textTheme.headlineLarge!.color,
-                    fontWeight: FontWeight.bold,
-                  ),
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _newListController,
+              decoration: InputDecoration(
+                fillColor: Colors.white.withOpacity(0.7),
+                filled: true,
+                labelText: 'Nazwa listy',
+                border: const OutlineInputBorder(),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 16.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    'Anuluj',
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(
+                      color: Theme
+                          .of(context)
+                          .textTheme
+                          .headlineLarge!
+                          .color,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => _createTodoList(context),
+                  child: Text(
+                    'Utwórz',
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(
+                      color: Theme
+                          .of(context)
+                          .textTheme
+                          .headlineLarge!
+                          .color,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

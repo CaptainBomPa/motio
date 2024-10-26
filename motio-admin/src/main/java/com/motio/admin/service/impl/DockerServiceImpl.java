@@ -72,7 +72,7 @@ public class DockerServiceImpl implements DockerService {
     }
 
     private String getContainerIdByImage(String imageName) {
-        List<Container> containers = dockerClient.listContainersCmd().exec();
+        List<Container> containers = dockerClient.listContainersCmd().withShowAll(true).exec();
         for (Container container : containers) {
             if (container.getImage().equals(imageName)) {
                 return container.getId();

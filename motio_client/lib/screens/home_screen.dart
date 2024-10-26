@@ -1,14 +1,24 @@
+// HomeScreen implementation with PageView
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motio_client/services/message_service.dart';
-
 import '../providers/user_provider.dart';
-import '../widgets/app_drawer.dart';
 import '../widgets/home_screen_body.dart';
-import '../widgets/user_greeting.dart';
+import '../widgets/carousel_app_bar.dart';
+import '../screens/debt_screen.dart';
+import '../screens/events_screen.dart';
+import '../screens/recipe_categories_screen.dart';
+import '../screens/todo_list_screen.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final PageController _pageController = PageController();
 
   void _setupNotifications() {
     final messagingService = MessagingService();
@@ -17,17 +27,28 @@ class HomeScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
+  void initState() {
+    super.initState();
     _setupNotifications();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: UserGreeting(user: user),
-        iconTheme: const IconThemeData(color: Colors.deepPurple),
+      appBar: CarouselAppBar(user: user, pageController: _pageController),
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: const [
+          HomeScreenBody(),
+          TodoListScreen(),
+          DebtScreen(),
+          EventsScreen(),
+          MealCategoriesScreen(),
+        ],
       ),
-      drawer: const AppDrawer(),
-      body: const HomeScreenBody(),
     );
   }
 }

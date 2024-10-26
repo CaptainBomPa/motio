@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import '../providers/todo_list_provider.dart';
-import '../widgets/app_drawer.dart';
 import '../widgets/dialog/new_todo_list_dialog.dart';
 import '../widgets/todo_list_tile.dart';
 
@@ -67,43 +66,46 @@ class _TodoListScreenState extends ConsumerState<TodoListScreen> with SingleTick
   Widget build(BuildContext context) {
     final todoListAsyncValue = ref.watch(todoListProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('TODO'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _addNewTodoList(context),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: Svg('assets/main/home_body.svg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
           ),
-        ],
+        ),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : todoListAsyncValue.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stackTrace) => Center(child: Text('Wystąpił błąd: $error')),
+          data: (todoLists) {
+            return RefreshIndicator(
+              onRefresh: _refreshTodoLists,
+              child: FadeTransition(
+                opacity: _animation,
+                child: ListView.builder(
+                  itemCount: todoLists.length,
+                  itemBuilder: (context, index) {
+                    final todoList = todoLists[index];
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, -0.1),
+                        end: Offset.zero,
+                      ).animate(_animation),
+                      child: TodoListTile(todoList: todoList),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
       ),
-      drawer: const AppDrawer(),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : todoListAsyncValue.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stackTrace) => Center(child: Text('Wystąpił błąd: $error')),
-              data: (todoLists) {
-                return RefreshIndicator(
-                  onRefresh: _refreshTodoLists,
-                  child: FadeTransition(
-                    opacity: _animation,
-                    child: ListView.builder(
-                      itemCount: todoLists.length,
-                      itemBuilder: (context, index) {
-                        final todoList = todoLists[index];
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0, -0.1),
-                            end: Offset.zero,
-                          ).animate(_animation),
-                          child: TodoListTile(todoList: todoList),
-                        );
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _addNewTodoList(context),
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

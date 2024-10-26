@@ -7,11 +7,11 @@ class TodoItemTile extends StatelessWidget {
   final VoidCallback onItemDelete;
 
   const TodoItemTile({
-    Key? key,
+    super.key,
     required this.item,
     required this.onItemCheckedToggle,
     required this.onItemDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,8 @@ class TodoItemTile extends StatelessWidget {
         item.description,
         style: TextStyle(
           decoration: item.checked ? TextDecoration.lineThrough : null,
-          color: item.checked ? theme.textTheme.bodyMedium!.color!.withOpacity(0.5) : theme.textTheme.bodyMedium!.color,
+          fontWeight: item.checked ? null : FontWeight.bold,
+          color: theme.primaryColor,
         ),
       ),
       trailing: Row(
@@ -40,6 +41,8 @@ class TodoItemTile extends StatelessWidget {
               color: theme.colorScheme.primary,
             ),
             onPressed: onItemDelete,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
           ),
         ],
       ),

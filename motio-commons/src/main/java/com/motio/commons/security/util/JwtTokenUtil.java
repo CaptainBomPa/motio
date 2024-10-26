@@ -18,7 +18,7 @@ import java.util.function.Function;
 public class JwtTokenUtil {
     static final String SECRET_KEY_BASE64 = "E0lOFQaxFpT5g9rA7CfVDPFH7/kVC2YEbJP+gSgQs0JA3NdV2SNHtgSbN5ZgOWMBJ6LCwbwnhW144ZNZFJBlXg==";
     private static final long JWT_TOKEN_VALIDITY = 2 * 60 * 1000;
-    private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000;
+    private static final long REFRESH_TOKEN_VALIDITY = 31L * 24L * 60L * 60L * 1000L;
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY_BASE64));
 
     public String getUsernameFromToken(String token) {

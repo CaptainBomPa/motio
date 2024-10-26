@@ -35,14 +35,4 @@ public class Debt {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal balance;
-
-    public BigDecimal getBalanceForUser(User user) {
-        if (user.equals(user1)) {
-            return balance;
-        } else if (user.equals(user2)) {
-            return balance.negate();
-        } else {
-            throw new IllegalArgumentException("User not part of this debt record");
-        }
-    }
 }

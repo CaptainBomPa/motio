@@ -49,7 +49,12 @@ public class Transaction {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Transaction that)) return false;
-        return getTitle().equals(that.getTitle()) && getFromUser().equals(that.getFromUser()) && getToUser().equals(that.getToUser()) && getAmount().equals(that.getAmount()) && getTransactionDate().equals(that.getTransactionDate()) && getDebt().equals(that.getDebt());
+        return getTitle().equals(that.getTitle()) &&
+                getFromUser().equals(that.getFromUser()) &&
+                getToUser().equals(that.getToUser()) &&
+                getAmount().equals(that.getAmount()) &&
+                getTransactionDate().equals(that.getTransactionDate()) &&
+                getDebt().equals(that.getDebt());
     }
 
     @Override
