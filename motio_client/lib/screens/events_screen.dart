@@ -60,15 +60,22 @@ class _EventListState extends State<EventList> {
   @override
   void initState() {
     super.initState();
-    _dates = List.generate(21, (index) => DateTime.now().subtract(Duration(days: 10 - index))); // Load 10 days before and 10 days after today
+    _dates = List.generate(
+        21, (index) => DateTime.now().subtract(Duration(days: 10 - index))); // Load 10 days before and 10 days after today
     _itemPositionsListener.itemPositions.addListener(_onScroll);
   }
 
   void _onScroll() {
     final positions = _itemPositionsListener.itemPositions.value;
     if (positions.isNotEmpty) {
-      final firstVisibleIndex = positions.where((position) => position.itemLeadingEdge < 1).reduce((min, position) => min.itemLeadingEdge < position.itemLeadingEdge ? min : position).index;
-      final lastVisibleIndex = positions.where((position) => position.itemTrailingEdge > 0).reduce((max, position) => max.itemTrailingEdge > position.itemTrailingEdge ? max : position).index;
+      final firstVisibleIndex = positions
+          .where((position) => position.itemLeadingEdge < 1)
+          .reduce((min, position) => min.itemLeadingEdge < position.itemLeadingEdge ? min : position)
+          .index;
+      final lastVisibleIndex = positions
+          .where((position) => position.itemTrailingEdge > 0)
+          .reduce((max, position) => max.itemTrailingEdge > position.itemTrailingEdge ? max : position)
+          .index;
 
       if (firstVisibleIndex == 0) {
         _loadMoreDaysBefore();

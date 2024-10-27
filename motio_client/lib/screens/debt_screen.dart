@@ -12,7 +12,7 @@ class DebtScreen extends ConsumerStatefulWidget {
   const DebtScreen({super.key});
 
   @override
-  _DebtScreenState createState() => _DebtScreenState();
+  ConsumerState<DebtScreen> createState() => _DebtScreenState();
 }
 
 class _DebtScreenState extends ConsumerState<DebtScreen> with SingleTickerProviderStateMixin {

@@ -11,6 +11,7 @@ import '../models/user.dart';
 import '../providers/todo_list_detail_provider.dart';
 import '../providers/user_provider.dart';
 import '../services/user_service.dart';
+import '../util/host_api_data.dart';
 import '../widgets/todo_item_tile.dart';
 
 class TodoListDetailScreen extends ConsumerStatefulWidget {
@@ -43,7 +44,7 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
   void _initializeWebSocket() {
     _stompClient = StompClient(
       config: StompConfig(
-        url: "\${HostApiData.baseCoreApiWsUrl}/ws/websocket",
+        url: "${HostApiData.baseCoreApiWsUrl}/ws/websocket",
         onConnect: _onStompConnect,
       ),
     );

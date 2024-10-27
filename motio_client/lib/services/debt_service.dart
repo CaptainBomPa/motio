@@ -114,7 +114,8 @@ class DebtService extends BaseService {
     );
 
     if (response.statusCode == 200) {
-      return Debt.fromJson(jsonDecode(response.body));
+      final decoded = utf8.decode(response.bodyBytes);
+      return Debt.fromJson(jsonDecode(decoded));
     } else {
       throw Exception('Failed to load debt');
     }
