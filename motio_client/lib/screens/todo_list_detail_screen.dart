@@ -360,7 +360,7 @@ class _TodoListDetailScreenState extends ConsumerState<TodoListDetailScreen> {
                       ),
                     ),
                   ),
-                  padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 4.0),
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 28.0, bottom: 12.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -13,7 +13,7 @@ import '../widgets/todo_list_tile.dart';
 import 'add_edit_meal_screen.dart';
 import '../widgets/event_tile.dart';
 import '../providers/event_provider.dart';
-import '../widgets/dialog/event_dialog.dart';
+import 'events/add_update_event_screen.dart';
 
 class MealCategoriesScreen extends ConsumerStatefulWidget {
   const MealCategoriesScreen({super.key});

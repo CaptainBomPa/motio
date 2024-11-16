@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
 import '../models/event.dart';
 import '../providers/event_provider.dart';
-import 'dialog/event_dialog.dart';
+import '../screens/events/add_update_event_screen.dart';
 
 class EventItem extends ConsumerWidget {
   final Event event;
@@ -26,11 +29,11 @@ class EventItem extends ConsumerWidget {
               title: const Text('Modyfikuj'),
               onTap: () {
                 Navigator.of(context).pop();
-                showDialog(
-                  context: context,
-                  builder: (context) => EventDialog(event: event),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AddUpdateEventScreen(event: event),
+                  ),
                 ).then((_) {
-                  // Odświeżamy dane po zamknięciu dialogu
                   refreshEvents();
                 });
               },
@@ -53,31 +56,105 @@ class EventItem extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Potwierdź usunięcie'),
-          content: const Text('Czy na pewno chcesz usunąć to wydarzenie?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Anuluj'),
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: Theme
+                .of(context)
+                .primaryColor, width: 4),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: const Svg('assets/main/dialog_background.svg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.6), BlendMode.lighten),
+              ),
+              borderRadius: BorderRadius.circular(8),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                final eventService = ref.read(eventServiceProvider);
-                await eventService.deleteEvent(event.id!);
-                Navigator.of(context).pop();
-                // Odświeżamy dane po usunięciu wydarzenia
-                refreshEvents();
-              },
-              child: const Text('Usuń'),
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Usuń wydarzenie',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .headlineSmall!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16.0),
+                Text(
+                  'Czy na pewno chcesz usunąć to wydarzenie?',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium,
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Anuluj',
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(
+                          color: Theme
+                              .of(context)
+                              .textTheme
+                              .headlineLarge!
+                              .color,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+
+                        try {
+                          final eventService = ref.read(eventServiceProvider);
+                          await eventService.deleteEvent(event.id!);
+                          refreshEvents();
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Błąd podczas usuwania wydarzenia: \$e')),
+                          );
+                        }
+                      },
+                      child: Text(
+                        'Usuń',
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(
+                          color: Theme
+                              .of(context)
+                              .textTheme
+                              .headlineLarge!
+                              .color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -90,17 +167,12 @@ class EventItem extends ConsumerWidget {
         margin: const EdgeInsets.symmetric(vertical: 8.0),
         padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
-          gradient: event.startDateTime != null && event.endDateTime != null
-              ? const LinearGradient(
-                  colors: [Colors.purple, Colors.lightBlue],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : const LinearGradient(
-                  colors: [Colors.pinkAccent, Colors.lightBlueAccent],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+          image: DecorationImage(
+            image: event.startDateTime != null && event.endDateTime != null
+                ? Svg('assets/main/event/time_event.svg')
+                : Svg('assets/main/event/day_event.svg'),
+            fit: BoxFit.cover,
+          ),
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Column(
@@ -111,6 +183,13 @@ class EventItem extends ConsumerWidget {
               style: theme.textTheme.bodySmall!.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                shadows: [
+                  const Shadow(
+                    color: Colors.black,
+                    offset: Offset(0, 0),
+                    blurRadius: 4,
+                  ),
+                ],
               ),
             ),
             if (event.description != null && event.description!.isNotEmpty)
@@ -118,29 +197,71 @@ class EventItem extends ConsumerWidget {
                 event.description!,
                 style: theme.textTheme.bodySmall!.copyWith(
                   color: Colors.white,
+                  shadows: [
+                    const Shadow(
+                      color: Colors.black,
+                      offset: Offset(0, 0),
+                      blurRadius: 4,
+                    ),
+                  ],
                 ),
               ),
+            const SizedBox(height: 4.0),
+            Text(
+              'Założyciel: ${event.createdByUser.firstName} ${event.createdByUser.lastName}',
+              style: theme.textTheme.bodySmall!.copyWith(
+                color: Colors.white,
+                shadows: [
+                  const Shadow(
+                    color: Colors.black,
+                    offset: Offset(0, 0),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+            ),
             if (event.startDateTime != null && event.endDateTime != null) ...[
               const SizedBox(height: 4.0),
               Text(
                 'Od: ${_formatDateTime(event.startDateTime!)}',
                 style: theme.textTheme.bodySmall!.copyWith(
                   color: Colors.white,
+                  shadows: [
+                    const Shadow(
+                      color: Colors.black,
+                      offset: Offset(0, 0),
+                      blurRadius: 4,
+                    ),
+                  ],
                 ),
               ),
               Text(
                 'Do: ${_formatDateTime(event.endDateTime!)}',
                 style: theme.textTheme.bodySmall!.copyWith(
                   color: Colors.white,
+                  shadows: [
+                    const Shadow(
+                      color: Colors.black,
+                      offset: Offset(0, 0),
+                      blurRadius: 4,
+                    ),
+                  ],
                 ),
               ),
             ],
             if (invitedPeople.isNotEmpty) ...[
               const SizedBox(height: 4.0),
               Text(
-                invitedPeople,
+                'Zaproszeni: $invitedPeople',
                 style: theme.textTheme.bodySmall!.copyWith(
                   color: Colors.white,
+                  shadows: [
+                    const Shadow(
+                      color: Colors.black,
+                      offset: Offset(0, 0),
+                      blurRadius: 4,
+                    ),
+                  ],
                 ),
               ),
             ],

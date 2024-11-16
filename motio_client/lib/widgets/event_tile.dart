@@ -21,7 +21,8 @@ class _EventTileState extends ConsumerState<EventTile> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dayOfWeek = _getDayOfWeek(widget.date.weekday);
-    final formattedDate = "${widget.date.day.toString().padLeft(2, '0')}.${widget.date.month.toString().padLeft(2, '0')}.${widget.date.year}";
+    final formattedDate =
+        "${widget.date.day.toString().padLeft(2, '0')}.${widget.date.month.toString().padLeft(2, '0')}.${widget.date.year}";
     final eventsAsyncValue = ref.watch(eventsForDateProvider(widget.date));
 
     return Column(
@@ -31,15 +32,15 @@ class _EventTileState extends ConsumerState<EventTile> {
           width: double.infinity,
           padding: const EdgeInsets.all(3.0),
           decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(color: theme.dividerColor),
-              // bottom: BorderSide(color: theme.dividerColor),
+            color: Colors.white.withOpacity(0.8),
+            border: const Border(
+              top: BorderSide(color: Colors.black),
             ),
           ),
           child: Text(
             '$dayOfWeek, $formattedDate',
             style: theme.textTheme.bodyMedium!.copyWith(
-              color: theme.colorScheme.primary,
+              color: Colors.black,
               fontSize: 14,
             ),
           ),
@@ -49,7 +50,19 @@ class _EventTileState extends ConsumerState<EventTile> {
             if (events.isEmpty) {
               return const Padding(
                 padding: EdgeInsets.all(10.0),
-                child: Text('Brak wydarzeń na ten dzień'),
+                child: Text(
+                  'Brak wydarzeń na ten dzień',
+                  style: TextStyle(
+                    color: Colors.black,
+                    shadows: [
+                      const Shadow(
+                        color: Colors.white,
+                        offset: Offset(0, 0),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                ),
               );
             } else {
               // Sortowanie wydarzeń
@@ -70,15 +83,24 @@ class _EventTileState extends ConsumerState<EventTile> {
                 child: Wrap(
                   spacing: 2.0,
                   runSpacing: 0.0,
-                  children: events.map((event) => Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: EventItem(event: event, refreshEvents: _refreshEvents),
-                  )).toList(),
+                  children: events
+                      .map((event) =>
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: EventItem(event: event, refreshEvents: _refreshEvents),
+                      ))
+                      .toList(),
                 ),
               );
             }
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () =>
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: const CircularProgressIndicator(),
+                ),
+              ),
           error: (err, stack) => Padding(
             padding: const EdgeInsets.all(10.0),
             child: Text('Błąd wczytywania wydarzeń: $err'),

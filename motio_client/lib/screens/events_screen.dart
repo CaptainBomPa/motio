@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
-import 'package:motio_client/widgets/dialog/event_dialog.dart';
-import 'package:motio_client/widgets/event_tile.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import '../providers/event_provider.dart';
-import '../providers/user_provider.dart';
+
+import 'events/event_list.dart';
 
 class EventsScreen extends ConsumerStatefulWidget {
   const EventsScreen({Key? key}) : super(key: key);
@@ -14,111 +11,135 @@ class EventsScreen extends ConsumerStatefulWidget {
   _EventsScreenState createState() => _EventsScreenState();
 }
 
-class _EventsScreenState extends ConsumerState<EventsScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: Svg('assets/main/home_body.svg'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.15), BlendMode.darken),
-          ),
-        ),
-        child: const EventList(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => const EventDialog(),
-          ).then((_) {
-            ref.invalidate(eventsForDateProvider);
-          });
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-class EventList extends StatefulWidget {
-  const EventList({Key? key}) : super(key: key);
-
-  @override
-  _EventListState createState() => _EventListState();
-}
-
-class _EventListState extends State<EventList> {
-  final ItemScrollController _scrollController = ItemScrollController();
-  final ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
-  late List<DateTime> _dates;
-  int _daysBeforeToday = 10;
-  int _daysAfterToday = 10;
+class _EventsScreenState extends ConsumerState<EventsScreen> with SingleTickerProviderStateMixin {
+  final PageController _pageController = PageController();
+  int _currentIndex = 0;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _dates = List.generate(
-        21, (index) => DateTime.now().subtract(Duration(days: 10 - index))); // Load 10 days before and 10 days after today
-    _itemPositionsListener.itemPositions.addListener(_onScroll);
-  }
-
-  void _onScroll() {
-    final positions = _itemPositionsListener.itemPositions.value;
-    if (positions.isNotEmpty) {
-      final firstVisibleIndex = positions
-          .where((position) => position.itemLeadingEdge < 1)
-          .reduce((min, position) => min.itemLeadingEdge < position.itemLeadingEdge ? min : position)
-          .index;
-      final lastVisibleIndex = positions
-          .where((position) => position.itemTrailingEdge > 0)
-          .reduce((max, position) => max.itemTrailingEdge > position.itemTrailingEdge ? max : position)
-          .index;
-
-      if (firstVisibleIndex == 0) {
-        _loadMoreDaysBefore();
-      } else if (lastVisibleIndex == _dates.length - 1) {
-        _loadMoreDaysAfter();
-      }
-    }
-  }
-
-  void _loadMoreDaysBefore() {
-    setState(() {
-      _daysBeforeToday += 10; // Load 10 more days before today
-      final newDates = List.generate(10, (index) => DateTime.now().subtract(Duration(days: _daysBeforeToday - index))).toList();
-      _dates.insertAll(0, newDates);
-      _scrollController.jumpTo(index: 10); // Adjust scroll position
-    });
-  }
-
-  void _loadMoreDaysAfter() {
-    setState(() {
-      final newDates = List.generate(10, (index) => DateTime.now().add(Duration(days: _daysAfterToday + index)));
-      _daysAfterToday += 10; // Load 10 more days after today
-      _dates.addAll(newDates);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ScrollablePositionedList.builder(
-      itemScrollController: _scrollController,
-      itemPositionsListener: _itemPositionsListener,
-      initialScrollIndex: 10,
-      itemCount: _dates.length,
-      itemBuilder: (context, index) {
-        final date = _dates[index];
-        return EventTile(date: date);
-      },
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
     );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+
+    _animationController.forward();
   }
 
   @override
   void dispose() {
-    _itemPositionsListener.itemPositions.removeListener(_onScroll);
+    _animationController.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(40.0),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: AppBar(
+            flexibleSpace: Container(
+              margin: const EdgeInsets.only(bottom: 1.0),
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: Svg('assets/main/app_bar.svg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(-20),
+              child: Row(
+                children: [
+                  _buildCarouselItem(context, 'Najbliższe', 0),
+                  _buildCarouselItem(context, 'Kalendarz', 1),
+                  _buildCarouselItem(context, 'Lista', 2),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          Center(
+            child: Text(
+              'W trakcie implementacji',
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium,
+            ),
+          ),
+          Center(
+            child: Text(
+              'W trakcie implementacji',
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium,
+            ),
+          ),
+          const EventList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCarouselItem(BuildContext context, String title, int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentIndex = index;
+        });
+        _pageController.jumpToPage(index);
+      },
+      child: Container(
+        width: MediaQuery
+            .of(context)
+            .size
+            .width / 3,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Colors.white, width: _currentIndex == index ? 5 : 3),
+          ),
+        ),
+        child: Text(
+          title,
+          style: Theme
+              .of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(
+            color: Colors.white,
+            fontWeight: _currentIndex == index ? FontWeight.bold : FontWeight.normal,
+            fontSize: Theme
+                .of(context)
+                .textTheme
+                .bodyMedium
+                ?.fontSize != null
+                ? Theme
+                .of(context)
+                .textTheme
+                .bodyMedium!
+                .fontSize! + (_currentIndex == index ? 5 : 4)
+                : 16,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 }

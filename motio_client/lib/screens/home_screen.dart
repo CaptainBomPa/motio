@@ -6,7 +6,7 @@ import '../providers/user_provider.dart';
 import '../widgets/home_screen_body.dart';
 import '../widgets/carousel_app_bar.dart';
 import '../screens/debt_screen.dart';
-import '../screens/events_screen.dart';
+import 'events_screen.dart';
 import '../screens/recipe_categories_screen.dart';
 import '../screens/todo_list_screen.dart';
 
