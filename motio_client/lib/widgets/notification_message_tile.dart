@@ -68,19 +68,61 @@ class NotificationMessageTile extends StatelessWidget {
         return await showDialog(
           context: context,
           builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Potwierdź usunięcie"),
-              content: const Text("Czy na pewno chcesz usunąć to powiadomienie?"),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text("Nie"),
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                side: BorderSide(color: theme.primaryColor, width: 4),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: const Svg('assets/main/dialog_background.svg'),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.6), BlendMode.lighten),
+                  ),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text("Tak"),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Potwierdź usunięcie',
+                      style: theme.textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Text(
+                      'Czy na pewno chcesz usunąć to powiadomienie?',
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: Text(
+                            'Nie',
+                            style: theme.textTheme.bodyMedium!.copyWith(
+                              color: theme.textTheme.headlineLarge!.color,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: Text(
+                            'Tak',
+                            style: theme.textTheme.bodyMedium!.copyWith(
+                              color: theme.textTheme.headlineLarge!.color,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             );
           },
         );
