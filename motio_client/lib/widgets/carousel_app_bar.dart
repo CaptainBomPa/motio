@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
+import 'package:motio_client/screens/login_screen.dart';
+import 'package:motio_client/services/auth_service.dart';
 import '../models/user.dart';
 
 class CarouselAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -19,19 +21,31 @@ class CarouselAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _CarouselAppBarState extends State<CarouselAppBar> {
   int _currentIndex = 0;
+  final AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AppBar(
       title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset(
-            'assets/icon/icon.png',
-            height: 30,
+          Row(
+            children: [
+              Image.asset(
+                'assets/icon/icon.png',
+                height: 30,
+              ),
+              const SizedBox(width: 10),
+              const Text('MOTIO', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 26.0)),
+            ],
           ),
-          const SizedBox(width: 10),
-          const Text('MOTIO', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 26.0)),
+          IconButton(
+            icon: const Icon(Icons.person, color: Colors.white),
+            onPressed: () {
+              _showUserSettings(context);
+            },
+          ),
         ],
       ),
       iconTheme: const IconThemeData(color: Colors.white),
@@ -102,6 +116,37 @@ class _CarouselAppBarState extends State<CarouselAppBar> {
           textAlign: TextAlign.center,
         ),
       ),
+    );
+  }
+
+  void _showUserSettings(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Wyloguj się'),
+                onTap: () {
+                  authService.logout();
+                  Navigator.of(context).pop();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

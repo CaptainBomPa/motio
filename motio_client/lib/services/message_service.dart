@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:motio_client/services/user_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'local_notification_service.dart';
 
@@ -22,8 +23,7 @@ class MessagingService {
     FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
 
     if (Platform.isIOS) {
-      NotificationSettings settings =
-          await _firebaseMessaging.requestPermission(
+      NotificationSettings settings = await _firebaseMessaging.requestPermission(
         alert: true,
         badge: true,
         sound: true,
@@ -38,25 +38,19 @@ class MessagingService {
       _localNotificationService.showNotification(message);
     });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {});
 
     String? token = await _firebaseMessaging.getToken();
     if (token != null) {
       UserService userService = UserService();
       userService.updateNotificationToken(token);
       listenToPublic();
-    } else {
-
-    }
+    } else {}
   }
 
   void listenToPublic() {
-    _firebaseMessaging.subscribeToTopic("all_users").then((_) {
-
-    }).catchError((error) {
-
-    });
+    if (!kIsWeb && Platform.isAndroid) {
+      _firebaseMessaging.subscribeToTopic("all_users").then((_) {}).catchError((error) {});
+    }
   }
 }
-

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motio_client/services/message_service.dart';
 import '../providers/user_provider.dart';
-import '../widgets/home_screen_body.dart';
+import 'home_screen_body.dart';
 import '../widgets/carousel_app_bar.dart';
 import '../screens/debt_screen.dart';
 import 'events_screen.dart';
