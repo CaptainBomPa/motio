@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
 import '../models/meal.dart';
 import '../providers/meal_service_provider.dart';
@@ -52,42 +53,76 @@ class _MealsScreenState extends ConsumerState<MealsScreen> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Przepisy: ${widget.categoryName}'),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : FutureBuilder<List<Meal>>(
-              future: _mealsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('Brak przepisów'));
-                } else {
-                  final meals = snapshot.data!;
-                  return FadeTransition(
-                    opacity: _animation,
-                    child: ListView.builder(
-                      itemCount: meals.length,
-                      itemBuilder: (context, index) {
-                        final meal = meals[index];
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0, -0.1),
-                            end: Offset.zero,
-                          ).animate(_animation),
-                          child: MealTile(meal: meal),
-                        );
-                      },
-                    ),
-                  );
-                }
-              },
+    return Container(
+      decoration: getDecoration(),
+      child: Scaffold(
+        appBar: AppBar(
+          iconTheme: const IconThemeData(
+            color: Colors.white,
+          ),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: Svg('assets/main/app_bar.svg'),
+                fit: BoxFit.cover,
+              ),
             ),
+          ),
+          title: Text(
+            'Przepisy: ${widget.categoryName}',
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
+        body: _isLoading
+            ? Container(
+            decoration: getDecoration(),
+            child: Container(decoration: getDecoration(), child: const Center(child: CircularProgressIndicator())))
+            : FutureBuilder<List<Meal>>(
+          future: _mealsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Container(decoration: getDecoration(), child: const Center(child: CircularProgressIndicator()));
+            } else if (snapshot.hasError) {
+              return Container(
+                  decoration: getDecoration(),
+                  child: Container(decoration: getDecoration(), child: Center(child: Text('Error: ${snapshot.error}'))));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Container(decoration: getDecoration(), child: const Center(child: Text('Brak przepisów')));
+            } else {
+              final meals = snapshot.data!;
+              return Container(
+                decoration: getDecoration(),
+                child: FadeTransition(
+                  opacity: _animation,
+                  child: ListView.builder(
+                    itemCount: meals.length,
+                    itemBuilder: (context, index) {
+                      final meal = meals[index];
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0, -0.1),
+                          end: Offset.zero,
+                        ).animate(_animation),
+                        child: MealTile(meal: meal),
+                      );
+                    },
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  BoxDecoration getDecoration() {
+    return BoxDecoration(
+      image: DecorationImage(
+        image: const Svg('assets/main/home_body.svg'),
+        fit: BoxFit.cover,
+        colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../models/meal.dart';
@@ -66,9 +67,7 @@ class _AddEditMealScreenState extends ConsumerState<AddEditMealScreen> with Tick
           _selectedImage = imageFile;
         });
       }
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
 
   @override
@@ -137,97 +136,151 @@ class _AddEditMealScreenState extends ConsumerState<AddEditMealScreen> with Tick
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.meal == null ? 'Dodaj przepis' : 'Edytuj przepis'),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  children: [
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _mealNameController,
-                      decoration: const InputDecoration(labelText: 'Nazwa posiłku'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Proszę podać nazwę posiłku';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    const Text('Kategorie'),
-                    const SizedBox(height: 5.0),
-                    SizedBox(
-                      height: 200, // Ograniczamy wysokość do około 4 elementów
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: theme.inputDecorationTheme.fillColor,
-                          borderRadius: const BorderRadius.all(Radius.circular(15)),
-                        ),
-                        child: ListView.builder(
-                          itemCount: categories.length,
-                          itemBuilder: (context, index) {
-                            final category = categories[index];
-                            return CheckboxListTile(
-                              side: BorderSide(color: (isDarkMode ? Colors.white : Colors.black)),
-                              title: Text(category.name, style: Theme.of(context).textTheme.bodyMedium),
-                              value: _selectedCategories.contains(category),
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  if (value == true) {
-                                    _selectedCategories.add(category);
-                                  } else {
-                                    _selectedCategories.remove(category);
-                                  }
-                                });
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16.0),
-                    const Text('Składniki'),
-                    IngredientField(
-                      controllers: _ingredientsControllers,
-                      listKey: _ingredientsListKey,
-                    ),
-                    const SizedBox(height: 16.0),
-                    const Text('Kroki'),
-                    StepField(
-                      controllers: _stepsControllers,
-                      listKey: _stepsListKey,
-                    ),
-                    const SizedBox(height: 16.0),
-                    ElevatedButton(
-                      onPressed: _submitForm,
-                      child: Text(widget.meal == null ? 'Dodaj posiłek' : 'Zapisz zmiany'),
-                    ),
-                    const SizedBox(height: 16.0),
-                    _selectedImage == null
-                        ? const Text('Brak wybranego zdjęcia')
-                        : SizedBox(
-                      height: 150, // Ustaw wysokość obrazu
-                      child: Image.file(_selectedImage!),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.camera_alt),
-                      onPressed: _pickImage,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        title: Text(
+          widget.meal == null ? 'Dodaj przepis' : 'Edytuj przepis',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: Svg('assets/main/app_bar.svg'),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),
+      body: _isLoading
+          ? Center(
+          child: Container(
+            decoration: getDecoration(),
+            child: const CircularProgressIndicator(),
+          ))
+          : Container(
+        decoration: getDecoration(),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    children: [
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _mealNameController,
+                        decoration: const InputDecoration(labelText: 'Nazwa posiłku'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Proszę podać nazwę posiłku';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16.0),
+                      const Text(
+                        'Kategorie',
+                        style: TextStyle(color: Colors.deepPurple),
+                      ),
+                      const SizedBox(height: 5.0),
+                      SizedBox(
+                        height: 250, // Ograniczamy wysokość do około 4 elementów
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: theme.inputDecorationTheme.fillColor,
+                            borderRadius: const BorderRadius.all(Radius.circular(15)),
+                            border: Border.all(
+                              color: Colors.deepPurple, // Kolor obramowania
+                              width: 1.0, // Grubość obramowania 1px
+                            ),
+                          ),
+                          child: ListView.builder(
+                            itemCount: categories.length,
+                            itemBuilder: (context, index) {
+                              final category = categories[index];
+                              return CheckboxListTile(
+                                side: BorderSide(color: (isDarkMode ? Colors.white : Colors.black)),
+                                title: Text(category.name, style: Theme
+                                    .of(context)
+                                    .textTheme
+                                    .bodyMedium),
+                                value: _selectedCategories.contains(category),
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    if (value == true) {
+                                      _selectedCategories.add(category);
+                                    } else {
+                                      _selectedCategories.remove(category);
+                                    }
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      const Text(
+                        'Składniki',
+                        style: TextStyle(color: Colors.deepPurple),
+                      ),
+                      IngredientField(
+                        controllers: _ingredientsControllers,
+                        listKey: _ingredientsListKey,
+                      ),
+                      const SizedBox(height: 16.0),
+                      const Text(
+                        'Kroki',
+                        style: TextStyle(color: Colors.deepPurple),
+                      ),
+                      StepField(
+                        controllers: _stepsControllers,
+                        listKey: _stepsListKey,
+                      ),
+                      const SizedBox(height: 16.0),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple, // Kolor tła przycisku
+                        ),
+                        onPressed: _submitForm,
+                        child: Text(widget.meal == null ? 'Dodaj posiłek' : 'Zapisz zmiany'),
+                      ),
+                      const SizedBox(height: 16.0),
+                      _selectedImage == null
+                          ? const Text('Brak wybranego zdjęcia')
+                          : SizedBox(
+                        height: 150, // Ustaw wysokość obrazu
+                        child: Image.file(_selectedImage!),
+                      ),
+                      IconButton(
+                        color: Colors.deepPurple,
+                        icon: const Icon(Icons.camera_alt),
+                        onPressed: _pickImage,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  BoxDecoration getDecoration() {
+    return BoxDecoration(
+      // image: DecorationImage(
+      // image: const Svg('assets/main/home_body.svg'),
+      // fit: BoxFit.cover,
+      // colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.1), BlendMode.lighten),
+      // ),
     );
   }
 }

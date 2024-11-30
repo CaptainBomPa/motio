@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
 import '../models/meal.dart';
 import '../models/user.dart';
@@ -47,7 +48,6 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
         _imageFile = updatedImageFile;
       });
     } catch (e) {
-
     } finally {
       setState(() {
         _isLoading = false;
@@ -65,70 +65,112 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Udostępnij przepis'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: usersToShow.length,
-                    itemBuilder: (context, index) {
-                      final user = usersToShow[index];
-                      return CheckboxListTile(
-                        title: Text('${user.firstName} ${user.lastName}',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.primary
-                          ),),
-                        value: accessibleUsers.contains(user),
-                        onChanged: (bool? value) {
-                          setState(() {
-                            if (value == true) {
-                              accessibleUsers.add(user);
-                            } else {
-                              accessibleUsers.remove(user);
-                            }
-                          });
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: theme.primaryColor, width: 4),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: const Svg('assets/main/dialog_background.svg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.6), BlendMode.lighten),
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Udostępnij przepis',
+                  style: theme.textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16.0),
+                SizedBox(
+                  width: double.maxFinite,
+                  child: StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: usersToShow.length,
+                        itemBuilder: (context, index) {
+                          final user = usersToShow[index];
+                          return CheckboxListTile(
+                            title: Text(
+                              '${user.firstName} ${user.lastName}',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            value: accessibleUsers.contains(user),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                if (value == true) {
+                                  accessibleUsers.add(user);
+                                } else {
+                                  accessibleUsers.remove(user);
+                                }
+                              });
+                            },
+                            activeColor: theme.colorScheme.primary,
+                            checkColor: theme.colorScheme.onPrimary,
+                            selectedTileColor: theme.primaryColor.withOpacity(0.1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          );
                         },
-                        activeColor: theme.colorScheme.primary,
-                        checkColor: theme.colorScheme.onPrimary,
-                        selectedTileColor: theme.colorScheme.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
                       );
                     },
-                  );
-                }
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(
+                        'Anuluj',
+                        style: theme.textTheme.bodyMedium!.copyWith(
+                          color: theme.textTheme.headlineLarge!.color,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        try {
+                          setState(() {
+                            _meal!.accessibleUsers = accessibleUsers; // Update the meal's accessible users
+                          });
+                          await _mealService.updateMeal(_meal!.id.toString(), _meal!.toJson());
+                          Navigator.of(context).pop();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Przepis został udostępniony.')),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Błąd podczas udostępniania przepisu: $e')),
+                          );
+                        }
+                      },
+                      child: Text(
+                        'Zapisz',
+                        style: theme.textTheme.bodyMedium!.copyWith(
+                          color: theme.textTheme.headlineLarge!.color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Anuluj'),
-            ),
-            TextButton(
-              onPressed: () async {
-                try {
-                  setState(() {
-                    _meal!.accessibleUsers = accessibleUsers; // Update the meal's accessible users
-                  });
-                  await _mealService.updateMeal(_meal!.id.toString(), _meal!.toJson());
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Przepis został udostępniony.')),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Błąd podczas udostępniania przepisu: $e')),
-                  );
-                }
-              },
-              child: Text('Zapisz'),
-            ),
-          ],
         );
+
       },
     );
   }
@@ -141,12 +183,20 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_meal!.mealName),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        title: Text(
+          _meal!.mealName,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: Svg('assets/main/app_bar.svg'),
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
         actions: [
           if (currentUser != null && _meal!.createdByUser.id == currentUser.id) ...[
@@ -171,62 +221,114 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Hero(
-              tag: 'mealImage_${_meal!.id}',
-              child: _imageFile != null
-                  ? Image.file(
-                _imageFile!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 300,
-              )
-                  : Container(
-                height: 300,
-                color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-                alignment: Alignment.center,
-                child: Icon(Icons.image_not_supported, color: isDarkMode ? Colors.white : Colors.black, size: 50),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Składniki',
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
+          ? Container(
+        decoration: getDecoration(),
+        child: const Center(child: CircularProgressIndicator()),
+      )
+          : Container(
+        height: double.infinity,
+        decoration: getDecoration(),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Hero(
+                tag: 'mealImage_${_meal!.id}',
+                child: _imageFile != null
+                    ? Image.file(
+                  _imageFile!,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 300,
+                )
+                    : Container(
+                  height: 300,
+                  color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                  alignment: Alignment.center,
+                  child: Icon(Icons.image_not_supported, color: isDarkMode ? Colors.white : Colors.black, size: 50),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _meal!.ingredients.map((ingredient) => Text('- $ingredient')).toList(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Kroki',
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Składniki',
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    color: Colors.white,
+                    shadows: getTextShadow(),
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _meal!.steps.map((step) => Text('- $step')).toList(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _meal!.ingredients
+                      .map((ingredient) =>
+                      Text(
+                        '- $ingredient',
+                        style: TextStyle(
+                          color: Colors.white,
+                          shadows: getTextShadow(),
+                        ),
+                      ))
+                      .toList(),
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Kroki',
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    color: Colors.white,
+                    shadows: getTextShadow(),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _meal!.steps
+                      .map((step) =>
+                      Text(
+                        '- $step',
+                        style: TextStyle(
+                          color: Colors.white,
+                          shadows: getTextShadow(),
+                        ),
+                      ))
+                      .toList(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  BoxDecoration getDecoration() {
+    return BoxDecoration(
+      image: DecorationImage(
+        image: const Svg('assets/main/home_body.svg'),
+        fit: BoxFit.cover,
+        colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+      ),
+    );
+  }
+
+  List<Shadow> getTextShadow() {
+    return [
+      const Shadow(
+        offset: Offset(-1, -1),
+        color: Colors.black,
+        blurRadius: 5.0,
+      ),
+      const Shadow(
+        offset: Offset(1, 1),
+        color: Colors.black,
+        blurRadius: 5.0,
+      ),
+    ];
   }
 }

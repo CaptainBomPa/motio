@@ -86,15 +86,27 @@ class CategoryTile extends StatelessWidget {
                 },
               ),
               Container(
-                color: isDarkMode ? Colors.grey[800]!.withOpacity(0.2) : Colors.grey[200]!.withOpacity(0.2),
+                decoration: BoxDecoration(
+                  // color: isDarkMode ? Colors.grey[800]!.withOpacity(0.2) : Colors.grey[200]!.withOpacity(0.2),
+                  color: Colors.deepPurple.withOpacity(0.25),
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(color: theme.colorScheme.primary, width: 3.0),
+                ),
                 height: 100,
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 alignment: Alignment.centerLeft,
                 child: Text(
                   category.name,
                   style: theme.textTheme.titleLarge?.copyWith(
-                    color: isDarkMode ? Colors.white : Colors.black,
+                    color: Colors.white,
                     fontSize: 24,
+                    shadows: [
+                      const Shadow(
+                        color: Colors.black,
+                        offset: Offset(0, 0),
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
                 ),
               ),
