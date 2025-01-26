@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
 import '../services/auth_service.dart';
 import 'login_screen.dart';
@@ -43,11 +44,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final success = await _authService.registerUser(username, firstName, lastName, email, password);
     if (success) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pomyślnie zarejestrowano! Teraz możesz się zalogować')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Pomyślnie zarejestrowano! Teraz możesz się zalogować')));
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginScreen()));
     } else {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Rejestracja nie powiodła się. Skontaktuj się z administratorem')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Podczas rejestracji wystąpił problem. Rejestracja została odrzucona.')));
     }
   }
 
@@ -77,69 +80,103 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rejestracja')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Icon(
-                Icons.person_add,
-                size: 100,
-                color: Colors.deepPurple,
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _usernameController,
-                decoration: const InputDecoration(labelText: 'Nazwa użytkownika (min 5 znaków)'),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _firstNameController,
-                decoration: const InputDecoration(labelText: 'Imię'),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _lastNameController,
-                decoration: const InputDecoration(labelText: 'Nazwisko'),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Adres email'),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Hasło (min 8 znaków)'),
-                obscureText: true,
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _confirmPasswordController,
-                decoration: const InputDecoration(labelText: 'Powtórz hasło'),
-                obscureText: true,
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isRegisterButtonEnabled ? _attemptRegister : null,
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+      body: Container(
+        decoration: BoxDecoration(
+            image: DecorationImage(
+              image: const Svg('assets/main/home_body.svg'),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.15), BlendMode.darken),
+            )),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset(
+                    'assets/icon/icon.png',
+                    width: 225,
+                    height: 225,
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _usernameController,
+                    decoration: const InputDecoration(labelText: 'Nazwa użytkownika (min 5 znaków)'),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _firstNameController,
+                    decoration: const InputDecoration(labelText: 'Imię'),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _lastNameController,
+                    decoration: const InputDecoration(labelText: 'Nazwisko'),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Adres email'),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(labelText: 'Hasło (min 8 znaków)'),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _confirmPasswordController,
+                    decoration: const InputDecoration(labelText: 'Powtórz hasło'),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isRegisterButtonEnabled ? _attemptRegister : null,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Text(
+                        'ZAREJESTRUJ SIĘ',
+                        style: TextStyle(fontSize: 18),
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text(
-                    'ZAREJESTRUJ SIĘ',
-                    style: TextStyle(fontSize: 18),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: Navigator
+                          .of(context)
+                          .pop,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.arrow_back, size: 24),
+                          SizedBox(width: 8),
+                          Text(
+                            'WRÓC DO STRONY LOGOWANIA',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(height: 50),
-            ],
+            ),
           ),
         ),
       ),
