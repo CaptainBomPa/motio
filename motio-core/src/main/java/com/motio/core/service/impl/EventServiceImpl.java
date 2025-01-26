@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -59,6 +61,25 @@ public class EventServiceImpl implements EventService {
                 .filter(event -> (event.getAllDayDate() != null && event.getAllDayDate().equals(date)) ||
                         (event.getStartDateTime() != null && event.getStartDateTime().toLocalDate().equals(date)))
                 .toList();
+    }
+
+    @Override
+    public List<Event> getEventsForUsernameWithDateRange(String username, LocalDate startDate, LocalDate endDate) {
+        return getAllEventsForUsername(username).stream()
+                .filter(event -> isInRange(startDate, endDate, event.getStartDateTime()) ||
+                        isInRange(startDate, endDate, event.getEndDateTime()) ||
+                        (event.getAllDayDate() != null && isInRange(startDate, endDate, event.getAllDayDate().atStartOfDay(ZoneId.of("UTC")))))
+                .toList();
+    }
+
+    private boolean isInRange(LocalDate startDate, LocalDate endDate, ZonedDateTime date) {
+        if (date == null) {
+            return false;
+        }
+        LocalDate eventDate = date.toLocalDate();
+        return (eventDate.isEqual(startDate) || eventDate.isAfter(startDate)) &&
+                (eventDate.isEqual(endDate) || eventDate.isBefore(endDate));
+
     }
 
     @Override

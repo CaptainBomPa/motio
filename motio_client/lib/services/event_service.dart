@@ -72,6 +72,22 @@ class EventService extends BaseService {
     }
   }
 
+  Future<List<Event>> getEventsForUsernameOnDateRange(DateTime startDate, DateTime endDate) async {
+    final formattedStartDate = _formatDate(startDate);
+    final formattedEndDate = _formatDate(endDate);
+    final response = await sendAuthenticatedRequest(
+      http.Request('GET', Uri.parse('$_eventsUrl/user/date-range?startDate=$formattedStartDate&endDate=$formattedEndDate')),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));
+      final events = body.map((dynamic item) => Event.fromJson(item)).toList();
+      return events;
+    } else {
+      throw Exception('Failed to load events for user on date range');
+    }
+  }
+
   Future<void> deleteEvent(int id) async {
     final response = await sendAuthenticatedRequest(
       http.Request('DELETE', Uri.parse('$_eventsUrl/$id')),

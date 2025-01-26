@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
+import 'package:motio_client/screens/events/calendar_events.dart';
+import 'package:motio_client/screens/events/nearest_events.dart';
 
 import 'events/event_list.dart';
 
@@ -71,26 +73,10 @@ class _EventsScreenState extends ConsumerState<EventsScreen> with SingleTickerPr
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
-        children: [
-          Center(
-            child: Text(
-              'W trakcie implementacji',
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .bodyMedium,
-            ),
-          ),
-          Center(
-            child: Text(
-              'W trakcie implementacji',
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .bodyMedium,
-            ),
-          ),
-          const EventList(),
+        children: const [
+          NearestEvents(),
+          CalendarEvents(),
+          EventList(),
         ],
       ),
     );

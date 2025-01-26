@@ -6,10 +6,10 @@ import 'add_update_event_screen.dart';
 import '../../widgets/event_tile.dart';
 
 class EventList extends StatefulWidget {
-  const EventList({Key? key}) : super(key: key);
+  const EventList({super.key});
 
   @override
-  _EventListState createState() => _EventListState();
+  State<EventList> createState() => _EventListState();
 }
 
 class _EventListState extends State<EventList> {

@@ -16,5 +16,7 @@ public interface EventService {
 
     List<Event> getEventsForUsernameOnDate(String username, LocalDate date);
 
+    List<Event> getEventsForUsernameWithDateRange(String username, LocalDate startDate, LocalDate endDate);
+
     void deleteEvent(Long id);
 }
