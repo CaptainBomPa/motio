@@ -41,3 +41,4 @@ out/
 
 motio-notification/src/main/resources/motio-notifications-firebase-adminsdk-utdec-2bbc548440.json
 /motio_client/lib/firebase_options.dart
+docker/full_deploy/.env
